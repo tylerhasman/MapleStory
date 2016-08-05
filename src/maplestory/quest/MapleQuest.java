@@ -21,6 +21,7 @@ import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 
 public class MapleQuest {
+	@Getter
 	private final static MapleDataProvider questData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Quest.wz"));
 	private final static Map<Integer, MapleQuest> cache = new HashMap<>();
 	

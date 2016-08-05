@@ -2736,6 +2736,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			client.sendPacket(PacketFactory.updateQuestInfo(quest));
 		}else if(qs == MapleQuestStatus.COMPLETED){
 			client.sendPacket(PacketFactory.completeQuest(quest));
+			client.sendPacket(PacketFactory.playSound("../Game.img/QuestClear"));
 		}
 	}
 
@@ -2783,6 +2784,24 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		}
 		
 		return instance;
+	}
+	
+	public void openQuestNpc(MapleScriptInstance script, int quest, int npc, boolean end){
+		try{
+			QuestScriptManager qm = new QuestScriptManager(this, quest, npc);
+			
+			script.setVariable("qm", qm);
+			
+			script.setQuestEnd(end);
+			
+			setActiveNpc(script);
+			setActiveNpcConversation(qm);
+			
+			script.questAction(1, 0, -1);
+		} catch (ScriptException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+		}
 	}
 	
 	public MapleScriptInstance openNpc(MapleScript script, MapleNPC npc) {

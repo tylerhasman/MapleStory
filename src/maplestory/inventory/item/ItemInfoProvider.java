@@ -26,6 +26,7 @@ import maplestory.inventory.item.SummoningBag.SummoningEntry;
 import maplestory.inventory.storage.MapleStorageBox;
 import maplestory.player.MapleCharacter;
 import maplestory.player.MapleJob;
+import maplestory.quest.MapleQuest;
 import maplestory.server.MapleServer;
 import maplestory.server.MapleStory;
 import maplestory.skill.MapleStatEffect;
@@ -663,6 +664,13 @@ public class ItemInfoProvider {
 			return getEquipInfo(itemId).isCash();
 		}
 		return false;
+	}
+
+	public static int getQuestMedalId(int questId) {
+		MapleData questInfo = MapleQuest.getQuestData().getData("QuestInfo.img");
+		MapleData questData = questInfo.getChildByPath(String.valueOf(questId));
+		int medal = MapleDataTool.getInt("viewMedalItem", questData, -1);
+		return medal;
 	}
 	
 }

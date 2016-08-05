@@ -3437,6 +3437,27 @@ public class PacketFactory {
 		out.write(0);
 		return out.getPacket();
 	}
+
+	public static byte[] whisper(String sender, int channelId, String text) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.WHISPER.getValue());
+		out.write(0x12);
+		out.writeMapleAsciiString(sender);
+		out.writeShort(channelId);
+		out.writeMapleAsciiString(text);
+		return out.getPacket();
+	}
+
+	public static byte[] whisperReply(String name, int reply) {
+		
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.WHISPER.getValue());
+		out.write(0x0A);
+		out.writeMapleAsciiString(name);
+		out.write(reply);
+		
+		return out.getPacket();
+	}
 	
 /*	public static byte[] showCashInventory(MapleCharacter chr) {
 		MaplePacketWriter writer = new MaplePacketWriter();

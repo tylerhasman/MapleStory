@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 
 
 
+
+
 import tools.TimerManager;
 import tools.TimerManager.MapleTask;
 import constants.LoginStatus;
@@ -68,6 +70,7 @@ import maplestory.server.net.handlers.channel.ItemPickupHandler;
 import maplestory.server.net.handlers.channel.KeymapChangeHandler;
 import maplestory.server.net.handlers.channel.MagicDamageHandler;
 import maplestory.server.net.handlers.channel.MesoDropHandler;
+import maplestory.server.net.handlers.channel.MonsterBombHandler;
 import maplestory.server.net.handlers.channel.MonsterDamageMonsterHandler;
 import maplestory.server.net.handlers.channel.MoveMonsterHandler;
 import maplestory.server.net.handlers.channel.MovePetHandler;
@@ -97,6 +100,7 @@ import maplestory.server.net.handlers.channel.UseMountFoodHandler;
 import maplestory.server.net.handlers.channel.UseScrollHandler;
 import maplestory.server.net.handlers.channel.UseSkillBookHandler;
 import maplestory.server.net.handlers.channel.UseSummonBagHandler;
+import maplestory.server.net.handlers.channel.WhisperHandler;
 import maplestory.server.net.handlers.login.CharListRequestHandler;
 import maplestory.server.net.handlers.login.CharSelectWithPicHandler;
 import maplestory.server.net.handlers.login.CheckCharNameHandler;
@@ -208,6 +212,8 @@ public class MapleConnectionHandler extends ChannelInboundHandlerAdapter {
 			handlers.put(RecvOpcode.USE_CASH_ITEM.getValue(), new UseCashItemHandler());
 			handlers.put(RecvOpcode.PET_LOOT.getValue(), new PetLootHandler());
 			handlers.put(RecvOpcode.CASHSHOP_OPERATION.getValue(), new CashShopOperationHandler());
+			handlers.put(RecvOpcode.MONSTER_BOMB.getValue(), new MonsterBombHandler());
+			handlers.put(RecvOpcode.WHISPER.getValue(), new WhisperHandler());
 		}
 	}
 	

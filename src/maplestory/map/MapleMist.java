@@ -28,7 +28,7 @@ public class MapleMist extends AbstractMapleMapObject {
 	private MapleStatEffect effect;
 	private MobSkill skill;
 	@Getter
-	private boolean isMobMist, isPoisonMist, isRecoveryMist;
+	private boolean isMobMist, isPoisonMist;
 	@Getter
 	private int skillDelay;
 	
@@ -38,7 +38,6 @@ public class MapleMist extends AbstractMapleMapObject {
 		this.skill = skill;
 		isMobMist = true;
 		isPoisonMist = true;
-		isRecoveryMist = false;
 		skillDelay = 0;
 	}
 	
@@ -48,7 +47,6 @@ public class MapleMist extends AbstractMapleMapObject {
 		this.effect = source;
 		skillDelay = 8;
 		isMobMist = false;
-		isRecoveryMist = false;
 		isPoisonMist = false;
 		if(source.getSourceId() == Shadower.SMOKE_SCREEN){
 			isPoisonMist = false;

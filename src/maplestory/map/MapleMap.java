@@ -808,6 +808,8 @@ public class MapleMap {
 			}
 		}, duration);
 		
+		mapTasks.add(poisonSchedule);
+		
 	}
 
 	public MaplePortal getClosestPortal(Point targetPosition) {

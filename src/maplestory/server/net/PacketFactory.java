@@ -2085,7 +2085,7 @@ public class PacketFactory {
 		MaplePacketWriter mplew = new MaplePacketWriter();
 		mplew.writeShort(SendOpcode.SPAWN_MIST.getValue());
 		mplew.writeInt(oid);
-		mplew.writeInt(mist.isMobMist() ? 0 : mist.isPoisonMist() ? 1 : mist.isRecoveryMist() ? 4 : 2); // mob mist = 0, player poison = 1,
+		mplew.writeInt(mist.isMobMist() ? 0 : mist.isPoisonMist() ? 1 : 2); // mob mist = 0, player poison = 1,
 											// smokescreen = 2, unknown = 3,
 											// recovery = 4
 		mplew.writeInt(ownerCid);
@@ -2164,18 +2164,18 @@ public class PacketFactory {
 		} else {
 			mplew.writeInt(0);
 		}
-		ArrayList<Short> medalQuests = new ArrayList<>();
-		//List<MapleQuestStatus> completed = chr.getCompletedQuests();
-		/*for (MapleQuestStatus q : completed) {
+		ArrayList<Integer> medalQuests = new ArrayList<>();
+		Collection<MapleQuestInstance> completed = chr.getQuests(MapleQuestStatus.COMPLETED);
+		for (MapleQuestInstance q : completed) {
 			if (q.getQuest().getId() >= 29000) { // && q.getQuest().getId() <=
 													// 29923
 				medalQuests.add(q.getQuest().getId());
 			}
-		}*/
-
+		}
+		
 		Collections.sort(medalQuests);
 		mplew.writeShort(medalQuests.size());
-		for (Short s : medalQuests) {
+		for (Integer s : medalQuests) {
 			mplew.writeShort(s);
 		}
 		return mplew.getPacket();

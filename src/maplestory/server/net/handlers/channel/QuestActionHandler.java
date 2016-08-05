@@ -1,13 +1,20 @@
 package maplestory.server.net.handlers.channel;
 
+import java.io.IOException;
+
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
+
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import maplestory.client.MapleClient;
+import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.player.MapleCharacter;
 import maplestory.quest.MapleQuest;
 import maplestory.quest.MapleQuestInstance;
 import maplestory.script.MapleScript;
+import maplestory.script.MapleScriptInstance;
 import maplestory.server.net.MaplePacketHandler;
 
 public class QuestActionHandler extends MaplePacketHandler {
@@ -55,16 +62,52 @@ public class QuestActionHandler extends MaplePacketHandler {
 		}else if(action == ActionType.FORFEIT){
 			quest.forfeit(chr);
 		}else if(action == ActionType.START_WITH_SCRIPT){
-			if(quest.canStart(chr, npc)){
-				MapleScript script = new MapleScript("scripts/quest/"+questId+".js", "scripts/quest/fallback.js");
+			int medal = ItemInfoProvider.getQuestMedalId(questId);
+			
+			if(questId >= 29900 && medal >= 0){
+				MapleScript script = new MapleScript("scripts/quest/medal_award.js");
 				
-				chr.openQuestNpc(script, questId, npc, false);
+				SimpleBindings sb = new SimpleBindings();
+				sb.put("medal_id", medal);
+				
+				try {
+					chr.openQuestNpc(script.execute(sb), questId, npc, false);
+				} catch (ScriptException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+			}else{
+				if(quest.canStart(chr, npc)){
+					MapleScript script = new MapleScript("scripts/quest/"+questId+".js", "scripts/quest/fallback.js");
+					
+					chr.openQuestNpc(script, questId, npc, false);
+				}
 			}
 		}else if(action == ActionType.END_WITH_SCRIPT){
-			if(quest.canComplete(chr, npc)){
-				MapleScript script = new MapleScript("scripts/quest/"+questId+".js", "scripts/quest/fallback.js");
+			int medal = ItemInfoProvider.getQuestMedalId(questId);
+			
+			if(questId >= 29900 && medal >= 0){
+				MapleScript script = new MapleScript("scripts/quest/medal_award.js");
 				
-				chr.openQuestNpc(script, questId, npc, true);
+				SimpleBindings sb = new SimpleBindings();
+				sb.put("medal_id", medal);
+				
+				try {
+					chr.openQuestNpc(script.execute(sb), questId, npc, true);
+				} catch (ScriptException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+			}else{
+				if(quest.canStart(chr, npc)){
+					MapleScript script = new MapleScript("scripts/quest/"+questId+".js", "scripts/quest/fallback.js");
+					
+					chr.openQuestNpc(script, questId, npc, true);
+				}
 			}
 		}
 	}

@@ -24,6 +24,7 @@ package maplestory.skill;
 import constants.FieldLimit;
 import constants.ItemConstants;
 import constants.MapleBuffStat;
+import constants.MapleDisease;
 import constants.MapleStat;
 import constants.MessageType;
 import constants.MonsterStatus;
@@ -83,6 +84,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -629,16 +631,13 @@ public class MapleStatEffect {
             applyto.getMap().broadcastPacket(PacketFactory.spawnPlayerMapObject(applyto), applyto.getId());
         }
         if (isDispel() && makeChanceResult()) {
-           // applyto.dispelDebuffs();
+            applyto.dispelDebuffs();
         } else if (isHeroWill()) {
-          ///  applyto.dispelDebuff(MapleDisease.SEDUCE);
+            applyto.dispelDebuff(MapleDisease.SEDUCE);
         }
         if (isComboReset()) {
            // applyto.setCombo((short) 0);
         }
-        /*if (applyfrom.getMp() < getMpCon()) {
-         AutobanFactory.MPCON.addPoint(applyfrom.getAutobanManager(), "mpCon hack for skill:" + sourceid + "; Player MP: " + applyto.getMp() + " MP Needed: " + getMpCon());
-         } */
         if (hpchange != 0) {
             if (hpchange < 0 && (-hpchange) > applyto.getHp()) {
                 return false;
@@ -765,19 +764,15 @@ public class MapleStatEffect {
             MapleMist mist = new MapleMist(bounds, applyfrom, this);
             applyfrom.getMap().spawnMist(mist, getDuration(), sourceid != Shadower.SMOKE_SCREEN, false);
         } else if (isTimeLeap()) { // Time Leap
-            /*for (PlayerCoolDownValueHolder i : applyto.getAllCooldowns()) {
-                if (i.skillId != Buccaneer.TIME_LEAP) {
-                    applyto.removeCooldown(i.skillId);
-                }
-            }*/
+           applyto.timeleap();
         }
         return true;
     }
 
     private void applyBuff(MapleCharacter applyfrom) {
-        /*if (isPartyBuff() && (applyfrom.getParty() != null || isGmBuff())) {
+        if (isPartyBuff() && (applyfrom.getParty() != null || isGmBuff())) {
             Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-            List<MapleMapObject> affecteds = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.PLAYER));
+            List<MapleMapObject> affecteds = applyfrom.getMap().getMapObjectsInBox(bounds, Arrays.asList(MapleMapObjectType.PLAYER));
             List<MapleCharacter> affectedp = new ArrayList<>(affecteds.size());
             for (MapleMapObject affectedmo : affecteds) {
                 MapleCharacter affected = (MapleCharacter) affectedmo;
@@ -786,35 +781,33 @@ public class MapleStatEffect {
                         affectedp.add(affected);
                     }
                     if (isTimeLeap()) {
-                        for (PlayerCoolDownValueHolder i : affected.getAllCooldowns()) {
-                            affected.removeCooldown(i.skillId);
-                        }
+                        affected.timeleap();
                     }
                 }
             }
             for (MapleCharacter affected : affectedp) {
                 applyTo(applyfrom, affected, false, null);
-                affected.getClient().announce(PacketFactory.showOwnBuffEffect(sourceid, 2));
-                affected.getMap().broadcastMessage(affected, PacketFactory.showBuffeffect(affected.getId(), sourceid, 2), false);
+                affected.getClient().sendPacket(PacketFactory.showOwnBuffEffect(sourceid, 2));
+                affected.getMap().broadcastPacket(PacketFactory.getShowBuffEffect(affected.getId(), sourceid, 2), affected.getId());
             }
-        }*/
+        }
     }
 
     private void applyMonsterBuff(MapleCharacter applyfrom) {
-        /*Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-        List<MapleMapObject> affected = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.MONSTER));
+        Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
+        List<MapleMapObject> affected = applyfrom.getMap().getMapObjectsInBox(bounds, Arrays.asList(MapleMapObjectType.MONSTER));
         Skill skill_ = SkillFactory.getSkill(sourceid);
         int i = 0;
         for (MapleMapObject mo : affected) {
             MapleMonster monster = (MapleMonster) mo;
             if (makeChanceResult()) {
-                monster.applyStatus(applyfrom, new MonsterStatusEffect(getMonsterStati(), skill_, null, false), isPoison(), getDuration());
+            	monster.applyStatusEffect(applyfrom, new MonsterStatusEffect(skill_, applyfrom.getSkillLevel(skill_)), getDuration());
             }
             i++;
             if (i >= mobCount) {
                 break;
             }
-        }*/
+        }
     }
 
     private Rectangle calculateBoundingBox(Point posFrom, boolean facingLeft) {
@@ -955,12 +948,7 @@ public class MapleStatEffect {
                 List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<>(MapleBuffStat.MORPH, Integer.valueOf(getMorph(applyto))));
                 mbuff = PacketFactory.giveForeignBuff(applyto.getId(), stat);
             } else if (isTimeLeap()) {
-            	applyto.sendMessage(MessageType.POPUP, "Time Leap doesn't currently work! Neither do cooldowns...");
-                /*for (PlayerCoolDownValueHolder i : applyto.getAllCooldowns()) {
-                    if (i.skillId != Buccaneer.TIME_LEAP) {
-                        applyto.removeCooldown(i.skillId);
-                    }
-                }*/
+                applyto.timeleap();
             }
             long starttime = System.currentTimeMillis();
             CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, starttime);

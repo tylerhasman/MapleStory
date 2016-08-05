@@ -96,6 +96,7 @@ import constants.skills.Assassin;
 import constants.skills.Bishop;
 import constants.skills.BlazeWizard;
 import constants.skills.Bowmaster;
+import constants.skills.Buccaneer;
 import constants.skills.Corsair;
 import constants.skills.DarkKnight;
 import constants.skills.DawnWarrior;
@@ -2503,15 +2504,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		
 		synchronized (cooldowns) {
 			return cooldowns.containsKey(skillId);
-			/*Pair<Long, ScheduledFuture<?>> cd = cooldowns.get(skillId);
-			
-			if(cd == null){
-				return false;
-			}
-			
-			long time = System.currentTimeMillis() - cd.getLeft();
-			
-			return time >= 0;*/	
 		}
 		
 	}
@@ -2609,14 +2601,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 
 	public Set<Integer> getAllCooldowns() {
-		return cooldowns.keySet();
+		synchronized (cooldowns) {
+			return cooldowns.keySet();
+		}
 	}
 
 	public long getCooldownTimeLeft(int skillId) {
-		return cooldowns.get(skillId).getTimeLeft();
+		synchronized (cooldowns) {
+			return cooldowns.get(skillId).getTimeLeft();	
+		}
 	}
-	
-
 
 	public void pauseCooldowns() {
 		for(int skillId : getAllCooldowns()){
@@ -2626,6 +2620,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 				holder.pauseTask();
 			}
 		}
+	}
+	
+	public void timeleap(){
+		for (int i : getAllCooldowns()) {
+        	if(i != Buccaneer.TIME_LEAP)
+        		clearCooldown(i);
+        }
 	}
 
 	public void startCooldownTimers() {
@@ -2668,6 +2669,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			diseases.remove(disease).cancel(false);
 		}
 		
+	}
+	
+	public void dispelDebuffs(){
+		for(MapleDisease dis : diseases.keySet()){
+			dispelDebuff(dis);
+		}
 	}
 	
 	public void giveDebuff(MapleDisease disease, MobSkill skill) {

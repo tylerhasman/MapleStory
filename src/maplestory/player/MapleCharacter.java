@@ -265,11 +265,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	@Getter
 	private MaplePetInstance[] pets;
 	
+	@Getter @Setter
+	private int activeChair;
+	
 	public MapleCharacter(MapleClient client) {
 		this.client = client;
 		inventories = new HashMap<>();
 		keyBindings = new HashMap<>();
 		godModeEnabled = false;
+		activeChair = 0;
 		quests = new HashMap<>();
 		
         for (InventoryType type : InventoryType.values()) {
@@ -2736,7 +2740,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			client.sendPacket(PacketFactory.updateQuestInfo(quest));
 		}else if(qs == MapleQuestStatus.COMPLETED){
 			client.sendPacket(PacketFactory.completeQuest(quest));
-			client.sendPacket(PacketFactory.playSound("../Game.img/QuestClear"));
 		}
 	}
 
@@ -2975,6 +2978,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		
 		return null;
 	}
-
+	
 	
 }

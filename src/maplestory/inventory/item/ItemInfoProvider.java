@@ -1,5 +1,6 @@
 package maplestory.inventory.item;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import provider.MapleCanvas;
 import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
 import provider.MapleDataFileEntry;
@@ -394,8 +396,8 @@ public class ItemInfoProvider {
 	}
 	
 	public static EquipItemInfo getEquipInfo(int itemId){
-		if(InventoryType.getByItemId(itemId) != InventoryType.EQUIP){
-			throw new IllegalArgumentException(itemId+" isn't an equip");
+		if(InventoryType.getByItemId(itemId) != InventoryType.EQUIP && !ItemType.CHAIR.isThis(itemId)){
+			throw new IllegalArgumentException(itemId+" isn't an equip or chair");
 		}
 		
 		EquipItemInfo info = new EquipItemInfo(getStatInfo(itemId));
@@ -671,6 +673,19 @@ public class ItemInfoProvider {
 		MapleData questData = questInfo.getChildByPath(String.valueOf(questId));
 		int medal = MapleDataTool.getInt("viewMedalItem", questData, -1);
 		return medal;
+	}
+
+	public static int getItemWidth(int id) {
+		MapleData itemData = getItemData(id);
+		
+		MapleData infoData = itemData.getChildByPath("info");
+		if(infoData == null){
+			return 0;
+		}
+		
+		MapleCanvas canvas = (MapleCanvas) infoData.getChildByPath("icon").getData();
+		
+		return canvas.getWidth();
 	}
 	
 }

@@ -3458,6 +3458,28 @@ public class PacketFactory {
 		
 		return out.getPacket();
 	}
+
+	public static byte[] portalChairEffect(MapleCharacter character) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.SHOW_CHAIR.getValue());
+		out.writeInt(character.getId());
+		out.writeInt(character.getActiveChair());
+		
+		return out.getPacket();
+	}
+
+	public static byte[] chairSitResponse(short chair) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.CHAIR_RESPONSE.getValue());
+		if(chair == -1){
+			out.write(0);
+		}else{
+			out.write(1);
+			out.writeShort(chair);
+		}
+
+		return out.getPacket();
+	}
 	
 /*	public static byte[] showCashInventory(MapleCharacter chr) {
 		MaplePacketWriter writer = new MaplePacketWriter();

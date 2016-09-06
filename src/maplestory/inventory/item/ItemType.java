@@ -85,7 +85,7 @@ public enum ItemType {
 	SETUP{
 		@Override
 		public boolean isThis(int itemId) {
-			return itemId >= 4000000 && itemId < 5000000;
+			return itemId >= 3000000 && itemId < 4000000;
 		}
 	},
 	
@@ -177,6 +177,13 @@ public enum ItemType {
 		@Override
 		public boolean isThis(int itemId) {
 			return itemId / 10000 == 539;
+		}
+	}, 
+	
+	CHAIR {
+		@Override
+		public boolean isThis(int itemId) {
+			return itemId / 10000 == 301;
 		}
 	}
 	

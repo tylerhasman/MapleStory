@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 
 
 
+
+
 import tools.TimerManager;
 import tools.TimerManager.MapleTask;
 import constants.LoginStatus;
@@ -44,6 +46,7 @@ import maplestory.server.net.handlers.channel.AutoAssignAPHandler;
 import maplestory.server.net.handlers.channel.CancelBuffHandler;
 import maplestory.server.net.handlers.channel.CashShopCouponHandler;
 import maplestory.server.net.handlers.channel.CashShopOperationHandler;
+import maplestory.server.net.handlers.channel.ChairSitRequestHandler;
 import maplestory.server.net.handlers.channel.ChangeChannelHandler;
 import maplestory.server.net.handlers.channel.ChangeFameHandler;
 import maplestory.server.net.handlers.channel.ChangeMapHandler;
@@ -85,6 +88,7 @@ import maplestory.server.net.handlers.channel.PetLootHandler;
 import maplestory.server.net.handlers.channel.PlayerLoggedInHandler;
 import maplestory.server.net.handlers.channel.QuestActionHandler;
 import maplestory.server.net.handlers.channel.RangedAttackHandler;
+import maplestory.server.net.handlers.channel.SitRequestHandler;
 import maplestory.server.net.handlers.channel.SkillEffectHandler;
 import maplestory.server.net.handlers.channel.SpawnPetHandler;
 import maplestory.server.net.handlers.channel.SpecialMoveHandler;
@@ -214,6 +218,8 @@ public class MapleConnectionHandler extends ChannelInboundHandlerAdapter {
 			handlers.put(RecvOpcode.CASHSHOP_OPERATION.getValue(), new CashShopOperationHandler());
 			handlers.put(RecvOpcode.MONSTER_BOMB.getValue(), new MonsterBombHandler());
 			handlers.put(RecvOpcode.WHISPER.getValue(), new WhisperHandler());
+			handlers.put(RecvOpcode.USE_CHAIR.getValue(), new ChairSitRequestHandler());
+			handlers.put(RecvOpcode.CHAIR_ACTION.getValue(), new SitRequestHandler());
 		}
 	}
 	

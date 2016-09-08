@@ -1,15 +1,11 @@
 package maplestory.script;
 
 import java.awt.Point;
-import java.util.Collections;
-import java.util.Random;
 
 import tools.TimerManager;
 import tools.data.output.MaplePacketWriter;
-import constants.MapleBuffStat;
 import constants.MessageType;
 import constants.PopupInfo;
-import constants.Song;
 import lombok.Getter;
 import maplestory.client.MapleClient;
 import maplestory.inventory.item.Item;
@@ -28,6 +24,7 @@ import maplestory.quest.MapleQuest;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
 import maplestory.server.net.PacketFactory;
 import maplestory.server.net.SendOpcode;
+import maplestory.skill.SkillFactory;
 import maplestory.util.Randomizer;
 
 public class AbstractScriptManager {
@@ -53,6 +50,10 @@ public class AbstractScriptManager {
 	
 	public void openDuey(){
 		character.openDuey();
+	}
+	
+	public void showIntro(String path){
+		character.getClient().sendPacket(PacketFactory.showIntro(path));
 	}
 	
 	public void openGuildCreateMenu(){
@@ -238,8 +239,16 @@ public class AbstractScriptManager {
 		MapleQuest.getQuest(questId).start(getCharacter(), npc);
 	}
 	
+	public void updateQuest(int questId, int data){
+		getCharacter().getQuest(questId).setProgress(0, data);
+	}
+	
 	public boolean canHold(int itemId){
 		return getClient().getCharacter().getInventory(itemId).getFreeSlot() > -1;
+	}
+	
+	public void teachSkill(int id, int level, int masterLevel){
+		getCharacter().changeSkillLevel(SkillFactory.getSkill(id), level, masterLevel);
 	}
 	
 	public void sendMessage(String type, String msg){
@@ -254,7 +263,10 @@ public class AbstractScriptManager {
 			return character.getInventory(id).removeItem(id, -amount).isAllRemoved();
 		}
 		
-		
+	}
+	
+	public String itemName(int id){
+		return ItemInfoProvider.getItemName(id);
 	}
 	
 	public boolean giveItem(int id){

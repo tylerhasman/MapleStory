@@ -2,9 +2,7 @@ package maplestory.map;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,9 +19,9 @@ import java.util.stream.Collectors;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
+import constants.ItemLetterFont;
 import constants.MessageType;
 import constants.ServerConstants;
-import constants.Song;
 import tools.TimerManager;
 import tools.TimerManager.MapleTask;
 import lombok.Getter;
@@ -371,6 +368,34 @@ public class MapleMap {
         }
         return ret;
     }
+    
+    public void dropText(String text, ItemLetterFont font, int x, int y, boolean center){
+    	
+    	int x2 = x;
+    	
+    	if(center){
+    		int totalWidth = font.calculateWidth(text);
+    		x2 -= totalWidth / 2;
+    	}
+    	
+    	for(char c : text.toCharArray()){
+    		if(c == ' '){
+    			x2 += 30;
+    		}
+    		if(!font.isCharacterSupported(c)){
+    			continue;
+    		}
+    		int itemId = font.getCharacter(c);
+    		int width = font.getWidth(c);
+    		
+    		MapleMapItem item = MapleMapItem.getItemDrop(ItemFactory.getItem(itemId, 1), new Point(x2, y), this, -1, DropType.OWNER_ONLY, null);
+    		
+    		addMapObject(item, false);
+    		item.broadcastDropPacket();
+    		x2 += width;
+    	}
+    	
+    }
 	
 	public void addPlayer(MapleCharacter mapleCharacter) {
 		charactersLock.lock();
@@ -404,7 +429,6 @@ public class MapleMap {
 					monster.findNewController();
 				}
 			}
-			
 			
 			executeMapScript(mapleCharacter, "onPlayerEnter", mapleCharacter);
 			
@@ -440,7 +464,8 @@ public class MapleMap {
 		
 		try {
 			scriptInstance.function(funcName, args);
-		} catch (NoSuchMethodException | ScriptException e) {
+		} catch (NoSuchMethodException e) {
+		} catch (ScriptException e) {
 			e.printStackTrace();
 		}
 

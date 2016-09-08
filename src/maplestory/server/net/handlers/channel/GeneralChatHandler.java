@@ -6,37 +6,27 @@ import java.io.FileWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-
 import javax.script.Bindings;
 import javax.script.SimpleBindings;
 
 import tools.TimerManager;
 import tools.data.output.MaplePacketWriter;
-import constants.EquipSlot;
 import constants.ExpTable;
+import constants.ItemLetterFont;
 import constants.LoginStatus;
 import constants.MessageType;
 import constants.Song;
-import constants.SummonMovementType;
-import constants.skills.Bishop;
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
 import maplestory.guild.MapleGuild;
 import maplestory.inventory.Inventory;
 import maplestory.inventory.InventoryOperation;
 import maplestory.inventory.InventoryType;
-import maplestory.inventory.MapleInventory;
-import maplestory.inventory.item.EquipItem;
-import maplestory.inventory.item.EquipItemInfo;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemFactory;
 import maplestory.inventory.item.ItemInfoProvider;
@@ -44,11 +34,8 @@ import maplestory.life.MapleLifeFactory;
 import maplestory.life.MapleMonster;
 import maplestory.life.MapleMount;
 import maplestory.life.MapleNPC;
-import maplestory.life.MapleSummon;
-import maplestory.map.MapleFoothold;
 import maplestory.map.MapleMagicDoor;
 import maplestory.map.MapleMap;
-import maplestory.map.MapleMapFactory;
 import maplestory.map.MapleMapItem;
 import maplestory.map.MapleMapObject;
 import maplestory.map.MapleMapObjectType;
@@ -57,15 +44,11 @@ import maplestory.map.MapleReactor;
 import maplestory.map.MapleMap.SpawnPoint;
 import maplestory.map.MapleReactor.ReactorData;
 import maplestory.party.MapleParty;
-import maplestory.party.PartyOperationType;
 import maplestory.player.MapleCharacter;
 import maplestory.player.MapleJob;
 import maplestory.quest.MapleQuest;
-import maplestory.quest.MapleQuestActionType;
 import maplestory.quest.MapleQuestInstance;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
-import maplestory.quest.MapleQuestRequirement.NpcRequirement;
-import maplestory.quest.MapleQuestRequirement;
 import maplestory.script.MapleScript;
 import maplestory.script.NpcConversationManager;
 import maplestory.server.MapleServer;
@@ -79,34 +62,6 @@ import maplestory.util.StringUtil;
 
 public class GeneralChatHandler extends MaplePacketHandler {
 
-	private void loadMaps(MapleMap map, int mapsLeft, List<Integer> loaded){
-		if(mapsLeft <= 0){
-			return;
-		}
-		for(MaplePortal portal : map.getPortals()){
-			if(portal.getTargetMapId() == map.getMapId()){
-				continue;
-			}else if(portal.getName().isEmpty()){
-				continue;
-			}else if(portal.getTargetMapId() == 999999999){
-				continue;
-			}else if(loaded.contains(portal.getTargetMapId())){
-				continue;
-			}
-			loaded.add(portal.getTargetMapId());
-			MapleMap next = map.getChannel().getMapFactory().getMap(portal.getTargetMapId());
-			if(next == null){
-				continue;
-			}
-			mapsLeft--;
-			if(mapsLeft >= 0){
-				loadMaps(next, mapsLeft, loaded);	
-			}else{
-				return;
-			}
-		}
-	}
-	
 	@Override
 	public void handle(ByteBuf buf, MapleClient client) {
 		String text = readMapleAsciiString(buf);
@@ -136,6 +91,17 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					}else{
 						client.getCharacter().sendMessage(MessageType.POPUP, "No player named "+args[1]);
 					}
+				}else if(args[0].equalsIgnoreCase("!textdrop")){
+					
+					String msg = "";
+					
+					for(int i = 1; i < args.length;i++){
+						msg += args[i] + " ";
+					}
+					
+					msg = msg.substring(0, msg.length() - 1);
+					
+					client.getCharacter().getMap().dropText(msg, ItemLetterFont.GREEN, client.getCharacter().getPosition().x, client.getCharacter().getPosition().y, true);
 					
 				}else if(args[0].equalsIgnoreCase("!skill")){
 					int id = Integer.parseInt(args[1]);
@@ -243,7 +209,6 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					long[] threadIds = bean.findDeadlockedThreads();
 					
 					if(threadIds != null){
-						NpcConversationManager cm = new NpcConversationManager(client.getCharacter(), MapleLifeFactory.getNPC(2042000));
 						
 						ThreadInfo[] info = bean.getThreadInfo(threadIds);
 						
@@ -294,7 +259,6 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					
 					q.start(client.getCharacter(), 0);
 				}else if(args[0].equalsIgnoreCase("!test")){
-					
 					
 					
 				}else if(args[0].equalsIgnoreCase("!emblem")){

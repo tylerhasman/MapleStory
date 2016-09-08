@@ -5,8 +5,6 @@ import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
 import maplestory.map.MapleMapObject;
 import maplestory.map.MapleReactor;
-import maplestory.map.MapleReactor.ReactorData;
-import maplestory.map.MapleReactor.ReactorStateStage;
 import maplestory.server.net.MaplePacketHandler;
 
 public class DamageReactorHandler extends MaplePacketHandler {

@@ -1,7 +1,6 @@
 package maplestory.server.net.handlers.channel;
 
 import io.netty.buffer.ByteBuf;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import maplestory.client.MapleClient;
 import maplestory.player.MapleCharacter;

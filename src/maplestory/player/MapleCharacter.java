@@ -3,7 +3,6 @@ package maplestory.player;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -42,7 +40,6 @@ import maplestory.inventory.MapleWeaponType;
 import maplestory.inventory.item.CashItem;
 import maplestory.inventory.item.DueyParcel;
 import maplestory.inventory.item.EquipItem;
-import maplestory.inventory.item.EquipItemInfo;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemFactory;
 import maplestory.inventory.item.ItemInfoProvider;
@@ -115,7 +112,6 @@ import constants.skills.Spearman;
 import constants.skills.SuperGM;
 import constants.skills.Swordsman;
 import constants.skills.ThunderBreaker;
-import database.ExecuteResult;
 import database.MapleDatabase;
 import database.QueryResult;
 
@@ -2065,9 +2061,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			throw new IllegalArgumentException("level cannot be less than 0");
 		}
 		
-		if(masterLevel < 0){
+		/*if(masterLevel < 0){
 			throw new IllegalArgumentException("masterLevel cannot be less than 0");
-		}
+		}*/
 		
 		if(level > skill.getMaxLevel()){
 			throw new IllegalArgumentException("level cannot be greater than "+skill.getMaxLevel()+" (SKILL "+SkillFactory.getSkillName(skill.getId()));

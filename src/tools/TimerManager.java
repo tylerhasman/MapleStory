@@ -1,11 +1,13 @@
 package tools;
 
-import java.util.Queue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import lombok.Getter;
 
@@ -15,6 +17,8 @@ public class TimerManager {
 	private static TimerManager instance = new TimerManager();
 	
 	private ScheduledThreadPoolExecutor executor;
+	
+	private static final Logger logger = LoggerFactory.getLogger("TimerManager");
 	
 	public TimerManager() {
 		executor = new ScheduledThreadPoolExecutor(4, new ThreadFactory() {
@@ -62,7 +66,7 @@ public class TimerManager {
 	}
 	
 	public static void shutdown(){
-		instance.executor.shutdown();
+		instance.executor.shutdownNow();
 	}
 
 	public static MapleTask schedule(Runnable runnable, long delay) {
@@ -107,7 +111,19 @@ public class TimerManager {
 			try{
 				task.run();
 			}catch(Exception e){
-				e.printStackTrace();
+				logger.error("Error with task! Error below");
+				logger.error(e.getCause().getClass().getName());
+				for(StackTraceElement ele : e.getStackTrace()){
+					if(ele.getFileName() != null){
+						System.out.println(ele.toString());
+					}
+				}
+				logger.error("Error source below");
+				for(StackTraceElement ele : sourceStack){
+					if(ele.getFileName() != null){
+						System.out.println(ele.toString());
+					}
+				}
 			}
 			
 			timesExecuted++;

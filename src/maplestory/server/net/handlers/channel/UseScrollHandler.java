@@ -1,14 +1,11 @@
 package maplestory.server.net.handlers.channel;
 
 import constants.MessageType;
-import constants.skills.Beginner;
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
 import maplestory.inventory.Inventory;
 import maplestory.inventory.InventoryType;
-import maplestory.inventory.MapleInventory;
 import maplestory.inventory.item.EquipItem;
-import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.inventory.item.ItemType;
 import maplestory.inventory.item.ScrollItem;

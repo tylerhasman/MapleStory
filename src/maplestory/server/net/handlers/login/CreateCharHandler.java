@@ -3,7 +3,6 @@ package maplestory.server.net.handlers.login;
 import java.sql.SQLException;
 
 import constants.EquipSlot;
-import constants.ServerConstants;
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
 import maplestory.inventory.Inventory;
@@ -12,6 +11,8 @@ import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemFactory;
 import maplestory.player.MapleCharacter;
 import maplestory.player.MapleJob;
+import maplestory.quest.MapleQuest;
+import maplestory.quest.MapleQuestInstance;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
 

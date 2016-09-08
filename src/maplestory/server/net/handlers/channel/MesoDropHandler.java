@@ -1,7 +1,6 @@
 package maplestory.server.net.handlers.channel;
 
 import io.netty.buffer.ByteBuf;
-import maplestory.channel.MapleChannel;
 import maplestory.client.MapleClient;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.MaplePacketHandler;
@@ -16,11 +15,12 @@ public class MesoDropHandler extends MaplePacketHandler {
 	
 	@Override
 	public void handle(ByteBuf buf, MapleClient client) {
-		buf.skipBytes(4);
+		
+		int time = buf.readInt();
 		
 		int amount = buf.readInt();
 		
-		if(amount < 10){
+		if(amount < 10 || amount > 50000){
 			client.sendReallowActions();
 			return;
 		}

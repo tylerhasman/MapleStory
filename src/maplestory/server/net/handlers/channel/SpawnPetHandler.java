@@ -1,6 +1,5 @@
 package maplestory.server.net.handlers.channel;
 
-import constants.MessageType;
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
 import maplestory.inventory.InventoryType;

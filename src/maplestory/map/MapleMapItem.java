@@ -8,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import maplestory.client.MapleClient;
-import maplestory.inventory.Inventory;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.player.MapleCharacter;
@@ -36,6 +35,8 @@ public class MapleMapItem extends AbstractMapleMapObject {
 	
 	private boolean sendDestroyData;
 	
+	private long dropTime;
+	
 	MapleMapItem(Item item, int owner, Point location, DropType dropType, MapleMap map, MapleMapObject source) {
 		this.owner = owner;
 		this.dropType = dropType;
@@ -59,7 +60,7 @@ public class MapleMapItem extends AbstractMapleMapObject {
 		Point to = map.calcDropPosition(getPosition());
 
 		//Spawns it with no drop effect
-		client.sendPacket(PacketFactory.getDropItemPacket(this, to, null, 2));
+		client.sendPacket(PacketFactory.getDropItemPacket(this, to, sourcePosition, 2));
 	}
 
 	@Override
@@ -84,6 +85,10 @@ public class MapleMapItem extends AbstractMapleMapObject {
 	
 	public void pickup(MapleCharacter chr){
 		boolean success = false;
+		if(System.currentTimeMillis() - dropTime < 900){
+			chr.getClient().sendReallowActions();
+			return;
+		}
 		if(isMesoDrop()){
 			chr.giveMesos(mesos);
 			chr.getClient().sendReallowActions();
@@ -161,6 +166,12 @@ public class MapleMapItem extends AbstractMapleMapObject {
 	
 	public static MapleMapItem getItemDrop(Item item, Point location, MapleMap map, int owner, DropType dropType, MapleMapObject source){
 		return new MapleMapItem(item, owner, location, dropType, map, source);
+	}
+	
+	@Override
+	public void setObjectId(int id) {
+		super.setObjectId(id);
+		dropTime = System.currentTimeMillis();
 	}
 
 	public static enum DropType{

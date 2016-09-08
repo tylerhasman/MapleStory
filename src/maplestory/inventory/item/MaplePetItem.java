@@ -2,7 +2,6 @@ package maplestory.inventory.item;
 
 import lombok.Setter;
 import lombok.Getter;
-import maplestory.player.MapleCharacter;
 
 
 public class MaplePetItem extends MapleCashItem implements PetItem {

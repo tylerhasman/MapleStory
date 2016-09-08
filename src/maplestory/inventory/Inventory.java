@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import maplestory.inventory.item.Item;
 import maplestory.player.MapleCharacter;
-import maplestory.player.MaplePetInstance;
 
 public interface Inventory {
 

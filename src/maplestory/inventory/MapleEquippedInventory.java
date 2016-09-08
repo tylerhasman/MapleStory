@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import constants.MapleBuffStat;
-import constants.MessageType;
 import maplestory.inventory.item.EquipItem;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemFlag;

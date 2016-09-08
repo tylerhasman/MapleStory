@@ -36,7 +36,6 @@ import constants.skills.ThunderBreaker;
 import constants.skills.WindArcher;
 import lombok.Getter;
 import maplestory.player.MapleCharacter;
-import maplestory.player.MapleJob;
 
 public enum MapleWeaponType {
     NOT_A_WEAPON(0),

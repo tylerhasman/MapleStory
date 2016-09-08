@@ -4,10 +4,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import lombok.Getter;
-import maplestory.inventory.item.CashItem;
-import maplestory.inventory.item.EquipItem;
-import maplestory.inventory.item.Item;
-import maplestory.inventory.item.PetItem;
 
 public class MapleDatabase extends Database {
 

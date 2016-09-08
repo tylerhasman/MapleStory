@@ -14,8 +14,6 @@ import constants.MessageType;
 import constants.ServerConstants;
 import lombok.Getter;
 import maplestory.channel.MapleChannel;
-import maplestory.guild.MapleGuild;
-import maplestory.map.MapleMap;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.MapleConnectionHandler;
 import maplestory.server.net.PacketFactory;

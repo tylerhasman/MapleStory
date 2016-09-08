@@ -1,6 +1,5 @@
 package maplestory.guild;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-
-import com.sun.corba.se.impl.encoding.CodeSetConversion.BTCConverter;
 
 import constants.MessageType;
 import database.ExecuteResult;

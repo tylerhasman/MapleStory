@@ -1,6 +1,5 @@
 package maplestory.map;
 
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import tools.TimerManager.MapleTask;

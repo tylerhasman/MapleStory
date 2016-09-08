@@ -3,7 +3,6 @@ package maplestory.guild;
 import java.lang.ref.WeakReference;
 
 import lombok.Getter;
-import lombok.Setter;
 import maplestory.player.MapleCharacter;
 import maplestory.player.MapleCharacterSnapshot;
 

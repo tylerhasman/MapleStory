@@ -6,7 +6,6 @@ import java.util.Map;
 import sun.nio.cs.ext.ISCII91;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import maplestory.player.MapleCharacter;
 import maplestory.util.StringUtil;
 
 public interface PetItem extends CashItem {

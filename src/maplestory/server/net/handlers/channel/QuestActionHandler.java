@@ -14,7 +14,6 @@ import maplestory.player.MapleCharacter;
 import maplestory.quest.MapleQuest;
 import maplestory.quest.MapleQuestInstance;
 import maplestory.script.MapleScript;
-import maplestory.script.MapleScriptInstance;
 import maplestory.server.net.MaplePacketHandler;
 
 public class QuestActionHandler extends MaplePacketHandler {

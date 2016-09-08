@@ -21,6 +21,7 @@
 */
 package maplestory.server.net.handlers.channel;
 
+import tools.TimerManager;
 import maplestory.client.MapleClient;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.PacketFactory;
@@ -50,7 +51,12 @@ public final class MagicDamageHandler extends AbstractDealDamageHandler {
                 player.addCooldown(SkillFactory.getSkill(attack.skill), attack.skilllevel);
             }
         }
-        applyAttack(attack, player, effect.getAttackCount());
+        if(skill.getAnimationTime() > 0){
+        	TimerManager.schedule(() -> applyAttack(attack, player, effect.getAttackCount()), skill.getAnimationTime());
+        }else{
+        	applyAttack(attack, player, effect.getAttackCount());
+        }
+      
         Skill eaterSkill = SkillFactory.getSkill((player.getJob().getId() - (player.getJob().getId() % 10)) * 10000);// MP Eater, works with right job
         int eaterLevel = player.getSkillLevel(eaterSkill);
         if (eaterLevel > 0) {

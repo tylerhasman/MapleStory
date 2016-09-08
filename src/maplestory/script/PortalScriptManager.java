@@ -1,9 +1,7 @@
 package maplestory.script;
 
-import constants.PopupInfo;
 import lombok.Getter;
 import lombok.Setter;
-import maplestory.client.MapleClient;
 import maplestory.map.MaplePortal;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.PacketFactory;

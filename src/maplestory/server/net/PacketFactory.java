@@ -7,7 +7,6 @@ import java.awt.Point;
 import java.net.InetAddress;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,8 +14,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
-
 import lombok.SneakyThrows;
 import maplestory.cashshop.CashShopItemData;
 import maplestory.cashshop.CashShopPackage;
@@ -492,6 +489,15 @@ public class PacketFactory {
         mplew.writeInt(ServerConstants.CHARACTER_SLOTS);
         
         return mplew.getPacket();
+    }
+    
+    public static byte[] showIntro(String path){
+    	MaplePacketWriter out = new MaplePacketWriter();
+    	out.writeShort(SendOpcode.FIELD_UPDATE.getValue());
+    	out.write(0x12);
+    	out.writeMapleAsciiString(path);
+    	
+    	return out.getPacket();
     }
     
     private static void addCharStats(MaplePacketWriter mplew, MapleCharacter chr) {
@@ -1650,7 +1656,7 @@ public class PacketFactory {
 
 	public static byte[] showOwnBuffEffect(int skillid, int effectid) {
 		MaplePacketWriter mplew = new MaplePacketWriter();
-		mplew.writeShort(SendOpcode.SHOW_ITEM_GAIN_INCHAT.getValue());
+		mplew.writeShort(SendOpcode.FIELD_UPDATE.getValue());
 		mplew.write(effectid);
 		mplew.writeInt(skillid);
 		mplew.write(0xA9);
@@ -2519,7 +2525,7 @@ public class PacketFactory {
 
 	public static byte[] showInfo(String path) {
 		MaplePacketWriter mplew = new MaplePacketWriter();
-		mplew.writeShort(SendOpcode.SHOW_ITEM_GAIN_INCHAT.getValue());
+		mplew.writeShort(SendOpcode.FIELD_UPDATE.getValue());
 		mplew.write(0x17);
 		mplew.writeMapleAsciiString(path);
 		mplew.writeInt(1);
@@ -2565,7 +2571,7 @@ public class PacketFactory {
 	public static byte[] getShowItemGain(int itemId, int quantity, boolean inChat) {
 		final MaplePacketWriter mplew = new MaplePacketWriter();
 		if (inChat) {
-			mplew.writeShort(SendOpcode.SHOW_ITEM_GAIN_INCHAT.getValue());
+			mplew.writeShort(SendOpcode.FIELD_UPDATE.getValue());
 			mplew.write(3);
 			mplew.write(1);
 			mplew.writeInt(itemId);
@@ -3279,7 +3285,7 @@ public class PacketFactory {
 	
 	public static byte[] showSpecialEffect(int effect) {
 		final MaplePacketWriter mplew = new MaplePacketWriter();
-		mplew.writeShort(SendOpcode.SHOW_ITEM_GAIN_INCHAT.getValue());
+		mplew.writeShort(SendOpcode.FIELD_UPDATE.getValue());
 		mplew.write(effect);
 		return mplew.getPacket();
 	}

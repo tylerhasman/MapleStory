@@ -3,7 +3,6 @@ package database;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 
 @AllArgsConstructor
 public class ExecuteResult {

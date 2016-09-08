@@ -4,12 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import database.QueryResult;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import maplestory.inventory.item.ItemStatInfo.ItemStat;
 
 @EqualsAndHashCode(callSuper = false)
 @Data

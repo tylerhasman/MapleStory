@@ -6,11 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import constants.ItemConstants;
 import database.MapleDatabase;
 import database.QueryResult;
 import lombok.Getter;
-import maplestory.client.MapleClient;
 import maplestory.inventory.Inventory;
 import maplestory.inventory.InventoryType;
 import maplestory.inventory.item.Item;

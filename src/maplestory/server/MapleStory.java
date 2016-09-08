@@ -10,8 +10,6 @@ import org.w3c.dom.DOMConfiguration;
 
 import lombok.Getter;
 import maplestory.inventory.item.ItemInfoProvider;
-import maplestory.player.MapleJob;
-import maplestory.quest.MapleQuest;
 import maplestory.skill.SkillFactory;
 import constants.ServerConstants;
 import database.MapleDatabase;

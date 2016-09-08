@@ -2,7 +2,6 @@ package maplestory.inventory;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import maplestory.inventory.item.ItemType;
 
 @AllArgsConstructor
 public enum InventoryType {

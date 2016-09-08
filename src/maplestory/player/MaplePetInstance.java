@@ -5,16 +5,10 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
-import maplestory.client.MapleClient;
 import maplestory.inventory.item.PetItem;
-import maplestory.life.MapleLifeFactory;
 import maplestory.life.movement.AbsoluteLifeMovement;
 import maplestory.life.movement.LifeMovement;
 import maplestory.life.movement.LifeMovementFragment;
-import maplestory.map.AbstractLoadedMapleLife;
-import maplestory.map.AbstractMapleMapObject;
-import maplestory.map.MapleMapObject;
-import maplestory.map.MapleMapObjectType;
 import maplestory.server.MapleServer;
 
 public class MaplePetInstance {

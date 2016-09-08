@@ -22,19 +22,14 @@
 package tools.data.output;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import constants.ItemConstants;
 import maplestory.guild.MapleGuildEmblem;
 import maplestory.inventory.item.CashItem;
 import maplestory.inventory.item.EquipItem;
 import maplestory.inventory.item.Item;
-import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.inventory.item.PetItem;
 import maplestory.map.MapleMagicDoor;
 import maplestory.party.MapleParty;
@@ -211,7 +206,12 @@ public class MaplePacketWriter extends GenericLittleEndianWriter {
         }
         if (equip == null) {
             writeShort(item.getAmount());
-            writeMapleAsciiString(" "+item.getOwner());
+            if(item.getOwner().isEmpty()){
+            	writeMapleAsciiString("");
+            }else{
+            	writeMapleAsciiString(" "+item.getOwner());
+            }
+            
             writeShort(item.getFlag()); // flag
 
             if (ItemConstants.isRechargable(item.getItemId())) {

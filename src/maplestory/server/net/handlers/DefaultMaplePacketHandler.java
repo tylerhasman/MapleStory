@@ -3,7 +3,6 @@ package maplestory.server.net.handlers;
 import constants.MessageType;
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
-import maplestory.server.MapleServer;
 import maplestory.server.MapleStory;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.RecvOpcode;

@@ -3,7 +3,6 @@ package maplestory.server.net.handlers.channel;
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
 import maplestory.life.MapleMonster;
-import maplestory.player.MapleCharacter;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.util.Randomizer;
 

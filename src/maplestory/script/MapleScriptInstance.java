@@ -7,7 +7,6 @@ import javax.script.ScriptException;
 
 import lombok.Getter;
 import lombok.Setter;
-import maplestory.player.MapleCharacter;
 
 public class MapleScriptInstance {
 

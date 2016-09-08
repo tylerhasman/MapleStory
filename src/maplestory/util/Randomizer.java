@@ -2,8 +2,6 @@ package maplestory.util;
 
 import java.util.Random;
 
-import lombok.Getter;
-
 public class Randomizer {
 
     private final static Random rand = new Random();

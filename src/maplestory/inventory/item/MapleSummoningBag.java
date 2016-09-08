@@ -1,10 +1,7 @@
 package maplestory.inventory.item;
 
 import java.awt.Point;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-
 import maplestory.life.MapleLifeFactory;
 import maplestory.life.MapleMonster;
 import maplestory.map.MapleMap;

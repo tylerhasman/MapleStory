@@ -10,7 +10,6 @@ import constants.ServerConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import maplestory.inventory.InventoryType;
-import maplestory.inventory.Inventory.RemoveItemResult;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemFactory;
 import maplestory.inventory.item.ItemInfoProvider;

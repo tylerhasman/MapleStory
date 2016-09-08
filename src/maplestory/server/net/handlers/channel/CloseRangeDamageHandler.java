@@ -21,9 +21,9 @@
 */
 package maplestory.server.net.handlers.channel;
 
+import tools.TimerManager;
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
-import maplestory.life.MapleMonster;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.PacketFactory;
 import maplestory.skill.MapleStatEffect;
@@ -40,6 +40,8 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
     public void handle(ByteBuf buf, MapleClient c) {
         MapleCharacter player = c.getCharacter();
         AttackInfo attack = parseDamage(buf, player, false);
+        
+        
         player.getMap().broadcastPacket(PacketFactory.closeRangeAttack(player, attack.skill, attack.skilllevel, attack.stance, attack.numAttackedAndDamage, attack.allDamage, attack.speed, attack.direction, attack.display), player.getId());
         
         /*int numFinisherOrbs = 0;
@@ -115,8 +117,12 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         /*if (numFinisherOrbs == 0 && isFinisher(attack.skill)) {
             return;
         }*/
+        
+        int animationTime = 0;
+        
         if (attack.skill > 0) {
             Skill skill = SkillFactory.getSkill(attack.skill);
+            animationTime = skill.getAnimationTime();
             MapleStatEffect effect_ = skill.getEffect(player.getSkillLevel(skill));
             if (effect_.getCooldown() > 0) {
                 if (player.isSkillCoolingDown(attack.skill)) {
@@ -131,8 +137,14 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             player.cancelEffectFromBuffStat(MapleBuffStat.DARKSIGHT);
             player.cancelBuffStats(MapleBuffStat.DARKSIGHT);
         }*/
+        System.out.println(animationTime);
+        if(animationTime > 0){
+        	TimerManager.schedule(() -> applyAttack(attack, player, attackCount), animationTime);
+        }else{
+        	applyAttack(attack, player, attackCount);
+        }
+       
         
         
-        applyAttack(attack, player, attackCount);
     }
 }

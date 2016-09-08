@@ -10,7 +10,7 @@ public class ServerConstants {
 	
 	public static final String JDBC = "jdbc:mysql://127.0.0.1/maplestory?autoReconnect=true&useSSL=false";
 	public static final String DB_USER = "root";
-	public static final String DB_PASS = "";
+	public static final String DB_PASS = "1234";
 
 	public static final int CHANNEL_LOAD = 50;
 
@@ -28,9 +28,8 @@ public class ServerConstants {
 	
 	public static final boolean VERBOSE_DATABASE = false;
 
-	public static final boolean ENABLE_MAP_UNLOADING = true;
+	public static final boolean ENABLE_MAP_UNLOADING = false;
 	public static final long EMPTY_MAP_UNLOAD_TIME = 5000;//the number of milliseconds before a map will unload if there are no players in it
-
 	public static final int MAP_NEIGHBOR_UNLOAD_THRESHHOLD = 1;//If a map has more loaded neighbor maps than this number it wont be unloaded 
 
 	public static final long DEFAULT_CASH_ITEM_EXPIRE_TIME = TimeUnit.DAYS.toMillis(15);

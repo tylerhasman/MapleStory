@@ -7,11 +7,12 @@ You must first load it into another script after creating a variable like so:
 var medal_id = [medal item id];
 
 */
+
 var status = -1;
 
 function start(mode, type, selection){
 	qm.forceStartQuest();
-	qm.getClient().getCharacter().showInfoText("You have earned the <#t"+medal_id+"#> title. You can receive a Medal from NPC Dalair.");
+	qm.sendMessage("YELLOW_POPUP", "You have earned the < #t"+qm.itemName(medal_id)+"# > title. You can receive a Medal from NPC Dalair.");
 	qm.dispose();
 }
 

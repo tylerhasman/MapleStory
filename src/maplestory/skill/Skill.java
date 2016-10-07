@@ -24,6 +24,7 @@ package maplestory.skill;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
 import lombok.Setter;
 import constants.MapleElement;
 import constants.skills.Bishop;
@@ -46,11 +47,15 @@ import constants.skills.WindArcher;
 public class Skill {
 	@Setter
     private int id;
+	
     protected List<MapleStatEffect> effects = new ArrayList<>();
+    
     @Setter
     private MapleElement element;
+    
     @Setter
     private int animationTime;
+    
     @Setter
     private boolean action;
 

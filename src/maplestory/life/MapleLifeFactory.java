@@ -34,21 +34,27 @@ import maplestory.map.AbstractLoadedMapleLife;
 import maplestory.server.MapleStory;
 import maplestory.util.Pair;
 import maplestory.util.StringUtil;
-import provider.MapleData;
-import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
-import provider.MapleDataTool;
-import provider.wz.MapleDataType;
+import me.tyler.mdf.MapleDataType;
+import me.tyler.mdf.Node;
 
 public class MapleLifeFactory {
 
-    private static MapleDataProvider data = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Mob.wz"));
-    private final static MapleDataProvider stringDataWZ = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz"));
-    private static MapleData mobStringData = stringDataWZ.getData("Mob.img");
-    private static MapleData npcStringData = stringDataWZ.getData("Npc.img");
-    private static MapleDataProvider npcSpeakDataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Npc.wz"));
-    private static Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
+	private static Node mobStringData = getStringDataRoot().readNode("Mob.img");
+	private static Node npcStringData = getStringDataRoot().readNode("Npc.img");
+	private static Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
 
+	private static Node getStringDataRoot(){
+    	return MapleStory.getDataFile("String.mdf").getRootNode();
+    }
+    
+    private static Node getMobData(){
+    	return MapleStory.getDataFile("Mob.mdf").getRootNode();
+    }
+    
+    private static Node getNpcData(){
+    	return MapleStory.getDataFile("Npc.mdf").getRootNode();
+    }
+    
     public static AbstractLoadedMapleLife getLife(int id, String type) {
         if (type.equalsIgnoreCase("n")) {
             return getNPC(id);
@@ -63,92 +69,84 @@ public class MapleLifeFactory {
     public static MapleMonster getMonster(int mid) {
         MapleMonsterStats stats = monsterStats.get(mid);
         if (stats == null) {
-            MapleData monsterData = data.getData(StringUtil.getLeftPaddedStr(Integer.toString(mid) + ".img", '0', 11));
+            Node monsterData = getMobData().readNode(StringUtil.getLeftPaddedStr(Integer.toString(mid) + ".img", '0', 11));
             if (monsterData == null) {
                 return null;
             }
-            MapleData monsterInfoData = monsterData.getChildByPath("info");
+            Node monsterInfoData = monsterData.getChild("info");
             stats = new MapleMonsterStats();
-            stats.setHp(MapleDataTool.getIntConvert("maxHP", monsterInfoData));
-            stats.setMp(MapleDataTool.getIntConvert("maxMP", monsterInfoData, 0));
-            stats.setPADamage(MapleDataTool.getIntConvert("PADamage", monsterInfoData));
-            stats.setPDDamage(MapleDataTool.getIntConvert("PDDamage", monsterInfoData));
-            stats.setMADamage(MapleDataTool.getIntConvert("MADamage", monsterInfoData));
-            stats.setMDDamage(MapleDataTool.getIntConvert("MDDamage", monsterInfoData));  
-            stats.setExp(MapleDataTool.getIntConvert("exp", monsterInfoData, 0));
-            stats.setLevel(MapleDataTool.getIntConvert("level", monsterInfoData));
-            stats.setRemoveAfter(MapleDataTool.getIntConvert("removeAfter", monsterInfoData, 0));
-            stats.setBoss(MapleDataTool.getIntConvert("boss", monsterInfoData, 0) > 0);
-            stats.setExplosiveReward(MapleDataTool.getIntConvert("explosiveReward", monsterInfoData, 0) > 0);
-            stats.setFfaLoot(MapleDataTool.getIntConvert("publicReward", monsterInfoData, 0) > 0);
-            stats.setUndead(MapleDataTool.getIntConvert("undead", monsterInfoData, 0) > 0);
-            stats.setName(MapleDataTool.getString(mid + "/name", mobStringData, "MISSINGNO"));
-            stats.setBuffToGive(MapleDataTool.getIntConvert("buff", monsterInfoData, -1));
-            stats.setCP(MapleDataTool.getIntConvert("getCP", monsterInfoData, 0));
-            stats.setRemoveOnMiss(MapleDataTool.getIntConvert("removeOnMiss", monsterInfoData, 0) > 0);
+            stats.setHp(monsterInfoData.readInt("maxHP"));
+            stats.setMp(monsterInfoData.readInt("maxMP"));
+            stats.setPADamage(monsterInfoData.readInt("PADamage"));
+            stats.setPDDamage(monsterInfoData.readInt("PDDamage"));
+            stats.setMADamage(monsterInfoData.readInt("MADamage"));
+            stats.setMDDamage(monsterInfoData.readInt("MDDamage"));
+            stats.setExp(monsterInfoData.readInt("exp"));
+            stats.setLevel(monsterInfoData.readInt("level"));
+            stats.setRemoveAfter(monsterInfoData.readInt("removeAfter"));
+            stats.setBoss(monsterInfoData.readInt("boss") > 0);
+            stats.setExplosiveReward(monsterInfoData.readInt("explosiveReward") > 0);
+            stats.setFfaLoot(monsterInfoData.readInt("publicReward") > 0);
+            stats.setUndead(monsterInfoData.readInt("undead") > 0);
+            stats.setName(mobStringData.readString(mid + "/name", "No Name"));
+            stats.setBuffToGive(monsterInfoData.readInt("buff", -1));
+            stats.setCP(monsterInfoData.readInt("getCP"));
+            stats.setRemoveOnMiss(monsterInfoData.readInt("removeOnMiss") > 0);
 
-            MapleData special = monsterInfoData.getChildByPath("coolDamage");
+            Node special = monsterInfoData.getChild("coolDamage");
             if (special != null) {
-                int coolDmg = MapleDataTool.getIntConvert("coolDamage", monsterInfoData);
-                int coolProb = MapleDataTool.getIntConvert("coolDamageProb", monsterInfoData, 0);
+                int coolDmg = monsterInfoData.readInt("coolDamage");
+                int coolProb = monsterInfoData.readInt("coolDamageProb");
                 stats.setCoolDamage(new Pair<>(coolDmg, coolProb));
             }
-            special = monsterInfoData.getChildByPath("loseItem");
+            special = monsterInfoData.getChild("loseItem");
             if (special != null) {
-                for (MapleData liData : special.getChildren()) {
-                    stats.addLoseItem(new LoseItem(MapleDataTool.getInt(liData.getChildByPath("id")), (byte) MapleDataTool.getInt(liData.getChildByPath("prop")), (byte) MapleDataTool.getInt(liData.getChildByPath("x"))));
+                for (Node liData : special.getChildren()) {
+                    stats.addLoseItem(new LoseItem(liData.readInt("id"), liData.readByte("prop"), liData.readByte("x")));
                 }
             }
-            special = monsterInfoData.getChildByPath("selfDestruction");
+            special = monsterInfoData.getChild("selfDestruction");
             if (special != null) {
-                stats.setSelfDestruction(new SelfDestruction((byte) MapleDataTool.getInt(special.getChildByPath("action")), MapleDataTool.getIntConvert("removeAfter", special, -1), MapleDataTool.getIntConvert("hp", special, -1)));
+                stats.setSelfDestruction(new SelfDestruction(special.readByte("action"), special.readInt("removeAfter", -1), special.readInt("hp", -1)));
             }
-            MapleData firstAttackData = monsterInfoData.getChildByPath("firstAttack");
-            int firstAttack = 0;
-            if (firstAttackData != null) {
-                if (firstAttackData.getType() == MapleDataType.FLOAT) {
-                    firstAttack = Math.round(MapleDataTool.getFloat(firstAttackData));
-                } else {
-                    firstAttack = MapleDataTool.getInt(firstAttackData);
-                }
-            }
+            int firstAttack = monsterInfoData.readInt("firstAttack");
             stats.setFirstAttack(firstAttack > 0);
-            stats.setDropPeriod(MapleDataTool.getIntConvert("dropItemPeriod", monsterInfoData, 0) * 10000);
+            stats.setDropPeriod(monsterInfoData.readInt("dropItemPeriod") * 10000);
             
-            stats.setTagColor(MapleDataTool.getIntConvert("hpTagColor", monsterInfoData, 0));
-            stats.setTagBgColor(MapleDataTool.getIntConvert("hpTagBgcolor", monsterInfoData, 0));
+            stats.setTagColor(monsterInfoData.readInt("hpTagColor"));
+            stats.setTagBgColor(monsterInfoData.readInt("hpTagBgColor"));
 
-            for (MapleData idata : monsterData) {
+            for (Node idata : monsterData) {
                 if (!idata.getName().equals("info")) {
                     int delay = 0;
-                    for (MapleData pic : idata.getChildren()) {
-                        delay += MapleDataTool.getIntConvert("delay", pic, 0);
+                    for (Node pic : idata.getChildren()) {
+                        delay += pic.readInt("delay");
                     }
                     stats.setAnimationTime(idata.getName(), delay);
                 }
             }
-            MapleData reviveInfo = monsterInfoData.getChildByPath("revive");
+            Node reviveInfo = monsterInfoData.getChild("revive");
             if (reviveInfo != null) {
                 List<Integer> revives = new LinkedList<>();
-                for (MapleData data_ : reviveInfo) {
-                    revives.add(MapleDataTool.getInt(data_));
+                for (Node data_ : reviveInfo) {
+                    revives.add(data_.intValue());
                 }
                 stats.setRevives(revives);
             }
-            decodeElementalString(stats, MapleDataTool.getString("elemAttr", monsterInfoData, ""));
-            MapleData monsterSkillData = monsterInfoData.getChildByPath("skill");
+            decodeElementalString(stats, monsterInfoData.readString("elemAttre", ""));
+            Node monsterSkillData = monsterInfoData.getChild("skill");
             if (monsterSkillData != null) {
                 int i = 0;
                 List<Pair<Integer, Integer>> skills = new ArrayList<>();
-                while (monsterSkillData.getChildByPath(Integer.toString(i)) != null) {
-                    skills.add(new Pair<>(Integer.valueOf(MapleDataTool.getInt(i + "/skill", monsterSkillData, 0)), Integer.valueOf(MapleDataTool.getInt(i + "/level", monsterSkillData, 0))));
+                while (monsterSkillData.getChild(Integer.toString(i)) != null) {
+                    skills.add(new Pair<>(monsterSkillData.readInt(i+"/skill"), monsterSkillData.readInt(i+"/level")));
                     i++;
                 }
                 stats.setSkills(skills);
             }
-            MapleData banishData = monsterInfoData.getChildByPath("ban");
+            Node banishData = monsterInfoData.getChild("ban");
             if (banishData != null) {
-                stats.setBanishInfo(new BanishInfo(MapleDataTool.getString("banMsg", banishData), MapleDataTool.getInt("banMap/0/field", banishData, -1), MapleDataTool.getString("banMap/0/portal", banishData, "sp")));
+                stats.setBanishInfo(new BanishInfo(banishData.readString("banMsg"), banishData.readInt("banMap/0/field", -1), banishData.readString("banMap/0/portal", "sp")));
             }
             monsterStats.put(Integer.valueOf(mid), stats);
         }
@@ -164,7 +162,7 @@ public class MapleLifeFactory {
     
     public static MapleNPC getNPC(int nid) {
     	
-    	MapleData speakData = npcSpeakDataProvider.getData(StringUtil.getLeftPaddedStr(String.valueOf(nid), '0', 7)+".img");
+    	Node speakData = getNpcData().readNode(StringUtil.getLeftPaddedStr(String.valueOf(nid), '0', 7)+".img");
     	
     	boolean hasClientSideScript = searchAllChildren(speakData, "speak") != null;
     	
@@ -172,21 +170,21 @@ public class MapleLifeFactory {
     }
     
     public static String getNpcName(int nid){
-    	String name = MapleDataTool.getString(nid + "/name", npcStringData, "MISSINGNO");
+    	String name = npcStringData.readString(nid + "/name", "No Name");
     	
     	return name;
     }
     
-    private static MapleData searchAllChildren(MapleData data, String name){
+    private static Node searchAllChildren(Node data, String name){
     	if(data == null){
     		return null;
     	}
-    	for(MapleData d : data.getChildren()){
+    	for(Node d : data.getChildren()){
     		if(d.getName().equalsIgnoreCase(name)){
     			return d;
     		}else{
     			if(d.getChildren() != null && d.getChildren().size() > 0){
-    				MapleData result = searchAllChildren(d, name);
+    				Node result = searchAllChildren(d, name);
     				if(result != null){
     					return result;
     				}

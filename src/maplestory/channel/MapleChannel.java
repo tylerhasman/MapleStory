@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import provider.MapleDataProviderFactory;
 import constants.MessageType;
 import constants.ServerConstants;
 import tools.TimerManager;
@@ -45,7 +44,7 @@ public class MapleChannel {
 	//private EventLoopGroup boss, worker;
 	
 	public MapleChannel(int id, int port, World world, EventLoopGroup eventLoopGroupBoss, EventLoopGroup eventLoopGroupWorker) {
-		mapFactory = new MapleMapFactory(MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Map.wz")), MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz")), world.getId(), id);
+		mapFactory = new MapleMapFactory(world.getId(), id);
 		this.id = id;
 		this.port = port;
 		this.world = world;

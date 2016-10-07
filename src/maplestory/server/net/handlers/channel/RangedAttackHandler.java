@@ -46,7 +46,7 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
 		}
 		
 		int projectile = 0;
-		byte bulletCount = 1;
+		int bulletCount = 1;
 		MapleStatEffect effect = null;
 		if(attack.skill != 0){
 			effect = attack.getAttackEffect(chr, null);
@@ -74,10 +74,10 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
 			
 			if(!soulArrow && !shadowClaw && !isConsumeException(attack.skill)){
 				
-				byte bulletConsume = bulletCount;
+				int bulletConsume = bulletCount;
 				
 				if(effect != null && effect.getBulletConsume() != 0){
-					bulletConsume = (byte) (effect.getBulletConsume() * (hasShadowPartner ? 2 : 1));
+					bulletConsume = (effect.getBulletConsume() * (hasShadowPartner ? 2 : 1));
 				}
 				
 				inv.removeItem(projectile, bulletConsume);

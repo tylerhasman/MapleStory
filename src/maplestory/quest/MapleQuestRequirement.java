@@ -2,26 +2,27 @@ package maplestory.quest;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import provider.MapleData;
-import provider.MapleDataTool;
 import lombok.Getter;
 import maplestory.inventory.InventoryType;
 import maplestory.player.MapleCharacter;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
 import maplestory.server.MapleStory;
+import me.tyler.mdf.Node;
 import static maplestory.quest.MapleQuestRequirementType.*;
 
 public interface MapleQuestRequirement {
 
 	public boolean isConditionMet(MapleCharacter chr, int npc);
 	
-	public void processData(MapleData data);
+	public void processData(Node data);
 	
-	public static MapleQuestRequirement getFromType(MapleQuestRequirementType type, MapleQuest quest, MapleData data){
+	public static MapleQuestRequirement getFromType(MapleQuestRequirementType type, MapleQuest quest, Node data){
 		
 		MapleQuestRequirement req = null;
 		
@@ -83,11 +84,11 @@ public interface MapleQuestRequirement {
 		}
 
 		@Override
-		public void processData(MapleData data) {
+		public void processData(Node data) {
 			quests = new HashMap<>();
-			for(MapleData questEntry : data.getChildren()){
-				int quest = MapleDataTool.getInt("id", questEntry);
-				int state = MapleDataTool.getInt("state", questEntry);
+			for(Node questEntry : data){
+				int quest = questEntry.readInt("id");
+				int state = questEntry.readInt("state");
 				
 				quests.put(quest, state);
 			}
@@ -124,8 +125,8 @@ public interface MapleQuestRequirement {
 		}
 
 		@Override
-		public void processData(MapleData data) {
-			npcReq = MapleDataTool.getInt(data);
+		public void processData(Node data) {
+			npcReq = data.intValue();
 		}
 		
 	}
@@ -139,7 +140,7 @@ public interface MapleQuestRequirement {
 		}
 
 		@Override
-		public void processData(MapleData data) {
+		public void processData(Node data) {
 			
 		}
 		
@@ -169,11 +170,11 @@ public interface MapleQuestRequirement {
 		}
 
 		@Override
-		public void processData(MapleData data) {
+		public void processData(Node data) {
 			mobs = new HashMap<>();
-			for(MapleData mobEntry : data.getChildren()){
-				int mobId = MapleDataTool.getInt("id", mobEntry);
-				int count = MapleDataTool.getInt("count", mobEntry);
+			for(Node mobEntry : data.getChildren()){
+				int mobId = mobEntry.readInt("id");
+				int count = mobEntry.readInt("count");
 				mobs.put(mobId, count);
 			}
 		}
@@ -192,8 +193,8 @@ public interface MapleQuestRequirement {
 		}
 
 		@Override
-		public void processData(MapleData data) {
-			min = MapleDataTool.getInt(data);
+		public void processData(Node data) {
+			min = data.intValue();
 		}
 		
 	}
@@ -208,8 +209,8 @@ public interface MapleQuestRequirement {
 		}
 
 		@Override
-		public void processData(MapleData data) {
-			minLevel = MapleDataTool.getInt(data);
+		public void processData(Node data) {
+			minLevel = data.intValue();
 		}
 		
 	}
@@ -223,8 +224,8 @@ public interface MapleQuestRequirement {
 		}
 
 		@Override
-		public void processData(MapleData data) {
-			maxLevel = MapleDataTool.getInt(data);
+		public void processData(Node data) {
+			maxLevel = data.intValue();
 		}
 		
 	}
@@ -251,8 +252,8 @@ public interface MapleQuestRequirement {
 		}
 
 		@Override
-		public void processData(MapleData data) {
-			interval = MapleDataTool.getInt(data) * 60 * 1000;
+		public void processData(Node data) {
+			interval = data.intValue() * 60 * 1000;
 		}
 		
 	}
@@ -274,11 +275,10 @@ public interface MapleQuestRequirement {
 		}
 
 		@Override
-		public void processData(MapleData data) {
+		public void processData(Node data) {
 			expected = new ArrayList<>();
-			for(MapleData infoEx : data.getChildren()){
-				MapleData value = infoEx.getChildByPath("value");
-				expected.add(MapleDataTool.getString(value, ""));
+			for(Node infoEx : data.getChildren()){
+				expected.add(infoEx.readString("value", ""));
 			}
 		}
 		
@@ -294,8 +294,8 @@ public interface MapleQuestRequirement {
 		}
 
 		@Override
-		public void processData(MapleData data) {
-			mapId = MapleDataTool.getInt("0", data);
+		public void processData(Node data) {
+			mapId = data.readInt("0");
 		}
 		
 		
@@ -311,8 +311,8 @@ public interface MapleQuestRequirement {
 		}
 
 		@Override
-		public void processData(MapleData data) {
-			String timeStr = MapleDataTool.getString(data);
+		public void processData(Node data) {
+			String timeStr = data.stringValue();
 			
 			int year, month, date, hour;
 			year = Integer.parseInt(timeStr.substring(0, 4));
@@ -338,8 +338,8 @@ public interface MapleQuestRequirement {
 		}
 
 		@Override
-		public void processData(MapleData data) {
-			questAmount = MapleDataTool.getInt(data);
+		public void processData(Node data) {
+			questAmount = data.intValue();
 		}
 		
 	}
@@ -373,16 +373,14 @@ public interface MapleQuestRequirement {
 		}
 
 		@Override
-		public void processData(MapleData data) {
-			List<MapleData> children = data.getChildren();
+		public void processData(Node data) {
+			Collection<Node> children = data.getChildren();
 			
 			items = new HashMap<>();
 			
-			for(int i = 0; i < children.size();i++){
-				MapleData child = children.get(i);
-				
-				int id = MapleDataTool.getInt("id", child);
-				int count = MapleDataTool.getInt("count", child);
+			for(Node child : children){
+				int id = child.readInt("id");
+				int count = child.readInt("count");
 				
 				items.put(id, count);
 			}
@@ -407,13 +405,15 @@ public interface MapleQuestRequirement {
 		}
 
 		@Override
-		public void processData(MapleData data) {
-			List<MapleData> children = data.getChildren();
+		public void processData(Node data) {
+			Collection<Node> children = data.getChildren();
 			
 			jobs = new int[children.size()];
 			
-			for(int i = 0; i < children.size();i++){
-				jobs[i] = MapleDataTool.getInt(children.get(i));
+			Iterator<Node> iterator = children.iterator();
+			
+			for(int i = 0; iterator.hasNext();i++){
+				jobs[i] = iterator.next().intValue();
 			}
 		}
 		

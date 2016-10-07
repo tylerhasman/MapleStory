@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,10 +13,6 @@ import java.util.Map;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
-import provider.MapleData;
-import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
-import provider.MapleDataTool;
 import tools.TimerManager;
 import lombok.Data;
 import lombok.Getter;
@@ -24,13 +21,13 @@ import maplestory.player.MapleCharacter;
 import maplestory.script.MapleScript;
 import maplestory.script.MapleScriptInstance;
 import maplestory.script.ReactorScriptManager;
+import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
 import maplestory.util.Randomizer;
 import maplestory.util.StringUtil;
+import me.tyler.mdf.Node;
 
 public class MapleReactor extends AbstractMapleMapObject {
-
-	private static final MapleDataProvider reactorWz = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Reactor.wz"));
 	
 	@Getter
 	private int id;
@@ -309,16 +306,23 @@ public class MapleReactor extends AbstractMapleMapObject {
 		
 	}
 	
-	public static String getAction(int reactorId){
+	private static Node getReactorRootNode(int reactorId){
 		String id = String.valueOf(reactorId);
 		
 		id = StringUtil.getLeftPaddedStr(id, '0', 7);
 		
-		MapleData data = reactorWz.getData(id+".img");
+		Node data = MapleStory.getDataFile("Reactor.mdf").getRootNode().readNode(id+"img");
 		
-		MapleData action = data.getChildByPath("action");
+		return data;	
+	}
+	
+	public static String getAction(int reactorId){
+		
+		Node data = getReactorRootNode(reactorId);
+		
+		Node action = data.readNode("action");
 		if(action != null){
-			return action.getData().toString();
+			return action.stringValue();
 		}
 		
 		return null;
@@ -328,45 +332,42 @@ public class MapleReactor extends AbstractMapleMapObject {
 		
 		Map<Integer, ReactorStateStage> stages = new HashMap<>();
 		
-		String id = String.valueOf(reactorId);
+		Node data = getReactorRootNode(reactorId);
 		
-		id = StringUtil.getLeftPaddedStr(id, '0', 7);
+		String id;
 		
-		MapleData data = reactorWz.getData(id+".img");
-		
-		if(data.getChildByPath("info") != null){
-			MapleData info = data.getChildByPath("info");
+		if(data.readNode("info") != null){
+			Node info = data.readNode("info");
 			
-			if(info.getChildByPath("link") != null){
-				id = StringUtil.getLeftPaddedStr(MapleDataTool.getString("link", info), '0', 7);
-				data = reactorWz.getData(id+".img");
+			if(info.readNode("link") != null){
+				data = getReactorRootNode(info.readInt("link"));
 			}
 		}
 		
-		MapleData stage = null;
+		Node stage = null;
 		int i = 0;
 		
-		while((stage = data.getChildByPath(String.valueOf(i))) != null){
+		while((stage = data.readNode(String.valueOf(i))) != null){
 			
 			ReactorStateStage newStage = new ReactorStateStage();
-			MapleData event = stage.getChildByPath("event");
+			Node event = stage.readNode("event");
 			
 			if(event != null){
 				
-				for(MapleData eventData : event){
+				for(Node eventData : event){
 					
-					newStage.nextStage = MapleDataTool.getInt("state", eventData, -1);
+					newStage.nextStage = eventData.readInt("state", -1);
 					
-					int type = MapleDataTool.getInt("type", eventData, -1);
+					int type = eventData.readInt("type", -1);
 					
 					if(type == 0){
 						newStage.type = ReactorStageType.HIT;
 					}else if(type == 100){
 						newStage.type = ReactorStageType.WAIT_FOR_ITEM;
 						
-						int itemId = MapleDataTool.getInt("0", eventData);
-						Point leftBound = MapleDataTool.getPoint("lt", eventData);
-						Point rightBound = MapleDataTool.getPoint("rb", eventData);
+						int itemId = eventData.readInt("0");
+						Point leftBound = eventData.readVector("lt").toPoint();
+						Point rightBound = eventData.readVector("rb").toPoint();
 						
 						newStage.leftBound = leftBound;
 						newStage.rightBound = rightBound;
@@ -382,15 +383,15 @@ public class MapleReactor extends AbstractMapleMapObject {
 				newStage.nextStage = -1;
 			}
 			
-			MapleData hit = stage.getChildByPath("hit");
+			Node hit = stage.readNode("hit");
 			
 			if(hit != null){
-				List<MapleData> delayChildren = hit.getChildren();
+				Collection<Node> delayChildren = hit.getChildren();
 				
 				newStage.totalDelay = 0;
 				
-				for(MapleData delayChild : delayChildren){
-					newStage.totalDelay += MapleDataTool.getInt("delay", delayChild, 0);
+				for(Node delayChild : delayChildren){
+					newStage.totalDelay += delayChild.readInt("delay", 0);
 				}
 			}
 			

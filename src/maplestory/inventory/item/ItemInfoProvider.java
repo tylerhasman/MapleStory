@@ -2,17 +2,12 @@ package maplestory.inventory.item;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import provider.MapleCanvas;
-import provider.MapleData;
-import provider.MapleDataDirectoryEntry;
-import provider.MapleDataFileEntry;
-import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
-import provider.MapleDataTool;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import maplestory.cashshop.CashShopItemData;
@@ -28,16 +23,18 @@ import maplestory.player.MapleJob;
 import maplestory.quest.MapleQuest;
 import maplestory.server.MapleStory;
 import maplestory.skill.MapleStatEffect;
+import me.tyler.mdf.MapleFile;
+import me.tyler.mdf.Node;
 
 public class ItemInfoProvider {
 
-	private MapleDataProvider itemData, equipData, stringData, etcData;
+	private MapleFile itemData, equipData, stringData, etcData;
 	
-	private MapleData cashStringData, eqpStringData, etcStringData, insStringData, petStringData, consumeStringData;
+	private Node cashStringData, eqpStringData, etcStringData, insStringData, petStringData, consumeStringData;
 	
-	private Map<Integer, MapleData> itemDataCache;
+	private Map<Integer, Node> itemDataCache;
 	
-	private static ItemInfoProvider instance = null;
+	private static ItemInfoProvider instance;
 
     private Map<Integer, MapleStatEffect> effectCache;
     
@@ -49,16 +46,16 @@ public class ItemInfoProvider {
     private Map<Integer, String> itemNames;
 	
 	public ItemInfoProvider() {
-		 itemData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Item.wz"));
-	     equipData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Character.wz"));
-	     stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/String.wz"));
-	     etcData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Etc.wz"));
-	     cashStringData = stringData.getData("Cash.img");
-	     consumeStringData = stringData.getData("Consume.img");
-	     eqpStringData = stringData.getData("Eqp.img");
-	     etcStringData = stringData.getData("Etc.img");
-	     insStringData = stringData.getData("Ins.img");
-	     petStringData = stringData.getData("Pet.img");
+		 itemData = MapleStory.getDataFile("Item.mdf");
+	     equipData = MapleStory.getDataFile("Character.mdf");
+	     stringData = MapleStory.getDataFile("String.mdf");
+	     etcData = MapleStory.getDataFile("Etc.mdf");
+	     cashStringData = stringData.getRootNode().readNode("Cash.img");
+	     consumeStringData = stringData.getRootNode().readNode("Consume.img");
+	     eqpStringData = stringData.getRootNode().readNode("Eqp.img");
+	     etcStringData = stringData.getRootNode().readNode("Etc.img");
+	     insStringData = stringData.getRootNode().readNode("Ins.img");
+	     petStringData = stringData.getRootNode().readNode("Pet.img");
 	     itemDataCache = new HashMap<>();
 	     effectCache = new HashMap<>();
 	     cashShopItemCache = new HashMap<>();
@@ -68,17 +65,15 @@ public class ItemInfoProvider {
 	
 	public static void loadCashShop(){
 		
-		System.setProperty("wzpath", "wz/");
+		Node commodity = getInstance().etcData.getRootNode().readNode("Commodity.img");
 		
-		MapleData commodity = getInstance().etcData.getData("Commodity.img");
-		
-		for(MapleData child : commodity){
-			int sn = MapleDataTool.getIntConvert("SN", child);
-			int itemId = MapleDataTool.getIntConvert("ItemId", child);
-			int count = MapleDataTool.getIntConvert("Count", child);
-			int price = MapleDataTool.getIntConvert("Price", child, 0);
-			int period = MapleDataTool.getIntConvert("Period", child, 1000);
-			boolean onSale = MapleDataTool.getIntConvert("OnSale", child, 0) == 1;
+		for(Node child : commodity){
+			int sn = child.readInt("SN");
+			int itemId = child.readInt("ItemId");
+			int count = child.readInt("Count");
+			int price = child.readInt("Price", 0);
+			int period = child.readInt("Period", 1000);
+			boolean onSale = child.readInt("OnSale", 0) == 1;
 			
 			CashShopItemData data = new CashShopItemData(sn, itemId, count, price, period, onSale);
 			
@@ -87,19 +82,21 @@ public class ItemInfoProvider {
 			
 		}
 		
-		MapleData packageData = getInstance().etcData.getData("CashPackage.img");
+		Node packageData = getInstance().etcData.getRootNode().readNode("CashPackage.img");
 		
-		for(MapleData child : packageData){
+		for(Node child : packageData){
 			
-			MapleData cashShopEntryIds = child.getChildByPath("SN");
+			Node cashShopEntryIds = child.readNode("SN");
 			
-			List<MapleData> children = cashShopEntryIds.getChildren();
+			Collection<Node> children = cashShopEntryIds.getChildren();
 			
 			int[] ids = new int[children.size()];
 			int packageId = Integer.valueOf(child.getName());
 			
+			Iterator<Node> it = children.iterator();
+			
 			for(int i = 0; i < ids.length;i++){
-				ids[i] = MapleDataTool.getInt(children.get(i));
+				ids[i] = cashShopEntryIds.readInt(it.next().getName());
 			}
 			
 			getInstance().cashShopPackages.put(packageId, new CashShopPackage(packageId, ids));
@@ -111,32 +108,32 @@ public class ItemInfoProvider {
 		
 	}
 	
-	private static MapleData getItemDataNoCache(int itemId){
-		MapleData data = null;
+	private static Node getItemDataNoCache(int itemId){
+		Node data = null;
 		String id = "0" + String.valueOf(itemId);
 		
-		MapleDataDirectoryEntry root = getInstance().itemData.getRoot();
-		for(MapleDataDirectoryEntry topDir : root.getSubdirectories()){
-			for(MapleDataFileEntry file : topDir.getFiles()){
+		Node root = getInstance().itemData.getRootNode();
+		for(Node topDir : root){
+			for(Node file : topDir){
 				if(file.getName().equals(id.substring(0, 4) + ".img")){
-					data = getInstance().itemData.getData(topDir.getName()+"/"+file.getName());
+					data = getInstance().itemData.getRootNode().getChild(topDir.getName()+"/"+file.getName());
 					
 					if(data == null){
 						return null;
 					}
-					data = data.getChildByPath(id);
+					data = data.getChild(id);
 					return data;
 				}else if(file.getName().equals(id.substring(1) + ".img")){
-					return getInstance().itemData.getData(topDir.getName() + "/" + file.getName());
+					return getInstance().itemData.getRootNode().getChild(topDir.getName() + "/" + file.getName());
 				}
 			}
 		}
-		root = getInstance().equipData.getRoot();
+		root = getInstance().equipData.getRootNode();
 		
-		for (MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
-            for (MapleDataFileEntry file : topDir.getFiles()) {
+		for (Node topDir : root) {
+            for (Node file : topDir) {
                 if (file.getName().equals(id + ".img")) {
-                    return getInstance().equipData.getData(topDir.getName() + "/" + file.getName());
+                    return getInstance().equipData.getRootNode().getChild(topDir.getName() + "/" + file.getName());
                 }
             }
         }
@@ -147,29 +144,29 @@ public class ItemInfoProvider {
 	private static String getEquipmentSlot(int itemId){
 		String ret = "";
         
-        MapleData item = getItemData(itemId);
+        Node item = getItemData(itemId);
         
         if (item == null) {
             return null;
         }
         
-        MapleData info = item.getChildByPath("info");
+        Node info = item.getChild("info");
         
         if (info == null) {
             return null;
         }
 
-        ret = MapleDataTool.getString("islot", info, "");
+        ret = info.readString("islot", "");
         
         return ret;
 	}
 	
-	private static MapleData getItemData(int itemId){
+	private static Node getItemData(int itemId){
 		if(getInstance().itemDataCache.containsKey(itemId)){
 			return getInstance().itemDataCache.get(itemId);
 		}
 		
-		MapleData data = getItemDataNoCache(itemId);
+		Node data = getItemDataNoCache(itemId);
 		
 		if(data != null){
 			getInstance().itemDataCache.put(itemId, data);
@@ -178,9 +175,9 @@ public class ItemInfoProvider {
 		return data;
 	}
 	
-	public static MapleData getStringData(int itemId){
+	public static Node getStringData(int itemId){
 		String category = null;
-		MapleData data = null;
+		Node data = null;
 		
 		if(ItemType.CASH.isThis(itemId) && !ItemType.PET.isThis(itemId)){
 			data = getInstance().cashStringData;
@@ -249,16 +246,16 @@ public class ItemInfoProvider {
 		
 		
 		if(category == null){
-			return data.getChildByPath(String.valueOf(itemId));
+			return data.getChild(String.valueOf(itemId));
 		}else{
-			return data.getChildByPath(category + "/" + itemId);
+			return data.getChild(category + "/" + itemId);
 		}
 	}
 	
 	public static int getSlotMax(int itemId){
-		MapleData data = getItemData(itemId);
+		Node data = getItemData(itemId);
 		if(data != null){
-			MapleData entry = data.getChildByPath("info/slotMax");
+			Node entry = data.getChild("info/slotMax");
 			if(entry == null){
 				if(InventoryType.getByItemId(itemId) == InventoryType.EQUIP){
 					return 1;
@@ -266,7 +263,7 @@ public class ItemInfoProvider {
 					return 100;
 				}
 			}else{
-				return MapleDataTool.getInt(entry);
+				return (int) entry.getValue();
 			}
 		}
 		
@@ -306,16 +303,16 @@ public class ItemInfoProvider {
 	}
 	
 	private static int getValue(int itemId, String name, int def){
-		MapleData item = getItemData(itemId);
+		Node item = getItemData(itemId);
 		
 		if(item == null){
 			throw new IllegalArgumentException("Unknown itemId "+itemId);
 		}
 		
-		MapleData entry = item.getChildByPath(name);
+		Node entry = item.getChild(name);
 		
 		if(entry != null){
-			return MapleDataTool.getInt(entry);
+			return (int) entry.getValue();
 		}
 		
 		return def;
@@ -340,20 +337,20 @@ public class ItemInfoProvider {
 	public static ItemStatInfo getStatInfo(int itemId){
 		ItemStatInfo stats = new ItemStatInfo();
 		
-		MapleData item = getItemData(itemId);
+		Node item = getItemData(itemId);
 		
 		if(item == null){
 			throw new IllegalArgumentException("Unknown item "+itemId);
 		}
 		
-		MapleData info = item.getChildByPath("info");
+		Node info = item.getChild("info");
 		
-		for(MapleData data : info.getChildren()){
+		for(Node data : info){
 			
 			ItemStat stat = ItemStat.getByWzName(data.getName());
 			
 			if(stat != null){
-				stat.setStat(stats, MapleDataTool.getInt(data));
+				stat.setStat(stats, data.intValue());
 			}
 			
 		}
@@ -366,23 +363,23 @@ public class ItemInfoProvider {
 			throw new IllegalArgumentException(itemId+" isn't a scroll!");
 		}
 		
-		MapleData item = getItemData(itemId);
+		Node item = getItemData(itemId);
 		
 		if(item == null){
 			throw new IllegalArgumentException("Unknown item "+itemId);
 		}
 		
-		MapleData info = item.getChildByPath("info");
+		Node info = item.getChild("info");
 		
-		int cursed = MapleDataTool.getInt("cursed", info, 0);
-		int success = MapleDataTool.getInt("success", info, 100);
+		int cursed = info.readInt("cursed", 0);
+		int success = info.readInt("success", 100);
 		
 		ScrollStatInfo ssi = new ScrollStatInfo(getStatInfo(itemId), cursed, success);
 		
-		if(item.getChildByPath("req") != null){
+		if(item.getChild("req") != null){
 			ssi.setItemsUseableOn(new ArrayList<>());
-			for(MapleData child : item.getChildByPath("req")){
-				int reqId = MapleDataTool.getInt(child);
+			for(Node child : item.getChild("req")){
+				int reqId = (int) child.getValue();
 				ssi.getItemsUseableOn().add(reqId);
 			}
 		}
@@ -398,15 +395,15 @@ public class ItemInfoProvider {
 		
 		EquipItemInfo info = new EquipItemInfo(getStatInfo(itemId));
 		
-		MapleData item = getItemData(itemId);
+		Node item = getItemData(itemId);
 		
-		MapleData data = item.getChildByPath("info");
+		Node data = item.getChild("info");
 		
-		for(MapleData child : data.getChildren()){
+		for(Node child : data.getChildren()){
 			EquipStat stat = EquipStat.getByWzName(child.getName());
 			
 			if(stat != null){
-				stat.setStat(info, MapleDataTool.getInt(child));
+				stat.setStat(info, child.intValue());
 			}
 		}
 		
@@ -414,9 +411,9 @@ public class ItemInfoProvider {
 	}
 	
 	public static boolean isQuestItem(int itemId) {
-		MapleData data = getItemData(itemId);
+		Node data = getItemData(itemId);
 		
-		boolean questItem = MapleDataTool.getIntConvert("info/quest", data, 0) == 1;
+		boolean questItem = data.readNode("info").readInt("quest", 0) == 1;
 		
 		return questItem;
 	}
@@ -433,12 +430,12 @@ public class ItemInfoProvider {
 
 		List<SummoningEntry> entries = new ArrayList<>();
 		
-		MapleData data = getItemData(itemId);
-		MapleData summons = data.getChildByPath("mob");
+		Node data = getItemData(itemId);
+		Node summons = data.getChild("mob");
 		if(summons != null){
-			for(MapleData child : summons.getChildren()){
-				int id = MapleDataTool.getInt("id", child);
-				int prob = MapleDataTool.getInt("prob", child);
+			for(Node child : summons.getChildren()){
+				int id = child.readInt("id");
+				int prob = child.readInt("prob");
 				entries.add(new SummoningEntry(id, prob));
 			}
 		}
@@ -449,11 +446,11 @@ public class ItemInfoProvider {
 	public static MapleStatEffect getItemEffect(int itemId) {
 		MapleStatEffect ret = getInstance().effectCache.get(itemId);
         if (ret == null) {
-            MapleData item = getItemData(itemId);
+            Node item = getItemData(itemId);
             if (item == null) {
                 return null;
             }
-            MapleData spec = item.getChildByPath("spec");
+            Node spec = item.getChild("spec");
             ret = MapleStatEffect.loadItemEffectFromData(spec, itemId);
             getInstance().effectCache.put(itemId, ret);
         }
@@ -461,11 +458,11 @@ public class ItemInfoProvider {
 	}
 
 	public static boolean noCancelMouse(int itemId) {
-        MapleData item = getItemData(itemId);
+        Node item = getItemData(itemId);
         if (item == null) {
             return false;
         }
-        return MapleDataTool.getIntConvert("info/noCancelMouse", item, 0) == 1;
+        return item.readNode("info").readInt("noCancelMouse", 0) == 1;
 	}
 
 	public static MapleWeaponType getWeaponType(int itemId) {
@@ -480,43 +477,42 @@ public class ItemInfoProvider {
 	}
 
 	public static String getItemName(int itemId) {
-		if(instance.itemNames == null){
-			instance.itemNames = new HashMap<>();
+		if(getInstance().itemNames == null){
+			getInstance().itemNames = new HashMap<>();
 		}
-		if(instance.itemNames.containsKey(itemId)){
-			return instance.itemNames.get(itemId);
+		if(getInstance().itemNames.containsKey(itemId)){
+			return getInstance().itemNames.get(itemId);
 		}
-		MapleData strings = getStringData(itemId);
+		Node strings = getStringData(itemId);
 		if (strings == null) {
 			return null;
 		}
-		String ret = MapleDataTool.getString("name", strings, null);
-		instance.itemNames.put(itemId, ret);
+		String ret = strings.readString("name");
+		getInstance().itemNames.put(itemId, ret);
 		return ret;
 	}
 
 	public static List<Integer> getAllItemIds(){
-		/*if (instance.allItemIdCache == null) {
-			instance.allItemIdCache = instance.getAllItems();
+		if (getInstance().allItemIdCache == null) {
+			getInstance().allItemIdCache = getInstance().getAllItems();
 		}
 
-		return instance.allItemIdCache;*/
-		return instance.getAllItems();
+		return getInstance().allItemIdCache;
 	}
 	
 	private List<Integer> getAllItems(){
 		List<Integer> ids = new ArrayList<>();
 		
-		MapleData[] allStringData = new MapleData[] { eqpStringData.getChildByPath("Eqp"), etcStringData.getChildByPath("Etc"), insStringData, petStringData, consumeStringData, cashStringData };
+		Node[] allStringData = new Node[] { eqpStringData.getChild("Eqp"), etcStringData.getChild("Etc"), insStringData, petStringData, consumeStringData, cashStringData };
 	    
 		
-		for(MapleData stringData : allStringData){
+		for(Node stringData : allStringData){
 			
 			int id = -1;
 			
-			for(MapleData child : stringData.getChildren()){
+			for(Node child : stringData.getChildren()){
 				if(stringData.getName().equals("Eqp")){
-					for(MapleData cat : child){
+					for(Node cat : child){
 						id = Integer.parseInt(cat.getName());
 						ids.add(id);
 					}
@@ -530,75 +526,32 @@ public class ItemInfoProvider {
 			
 		}
 		
-		/*for(MapleDataDirectoryEntry directory : getInstance().itemData.getRoot().getSubdirectories()){
-
-			for(MapleDataFileEntry sub : directory.getFiles()){
-				
-				MapleData data = getInstance().itemData.getData(directory.getName()+"/"+sub.getName());
-				
-				for(MapleData child : data){
-					
-					if(child.getName().startsWith("0")){
-						String idStr = child.getName().substring(1);
-						ids.add(Integer.parseInt(idStr));
-					}
-					
-					
-				}
-				
-			}
-		}
-		
-		for(MapleDataDirectoryEntry directory : getInstance().equipData.getRoot().getSubdirectories()){
-
-			if(directory.getName().equals("Dragon") || directory.getName().equals("Afterimage") || directory.getName().equals("Face") || directory.getName().equals("Hair")){
-				continue;
-			}
-			
-			for(MapleDataFileEntry dataFile : directory.getFiles()){
-				
-				MapleData data = getInstance().equipData.getData(directory.getName()+"/"+dataFile.getName());
-				
-				for(MapleData child : data){
-					
-					if(child.getName().startsWith("0")){
-						String idStr = child.getName().substring(1);
-						ids.add(Integer.parseInt(idStr));
-					}
-					
-					
-				}
-				
-			}
-			
-		}*/
-		
 		return ids;
 	}
 	
 	public static SkillBookData getSkillBookData(int itemId) {
 		SkillBookData data = null;
 		
-		MapleData item = getItemData(itemId);
+		Node item = getItemData(itemId);
 		
 		if(item == null){
 			throw new IllegalArgumentException(itemId+" is unknown.");
 		}
 		
-		MapleData info = item.getChildByPath("info");
+		Node info = item.getChild("info");
 		if(info == null){
 			throw new IllegalArgumentException(itemId+" has no skill information! Is it even a skillbook?");
 		}
 		
-		int masterLevel = MapleDataTool.getInt("masterLevel", info, 0);
-		int reqLevel = MapleDataTool.getInt("reqSkillLevel", info, 0);
-		int successRate = MapleDataTool.getInt("success", info, 0);
-		MapleData skillData = info.getChildByPath("skill");
+		int masterLevel = info.readInt("masterLevel", 0);
+		int reqLevel = info.readInt("reqSkillLevel", 0);
+		int successRate = info.readInt("success", 0);
+		Node skillData = info.getChild("skill");
 		
 		int[] skills = new int[skillData.getChildren().size()];
 		
 		for(int i = 0; i < skills.length;i++){
-			int skillId = MapleDataTool.getInt(String.valueOf(i), skillData, 0);
+			int skillId = skillData.readInt(String.valueOf(i), 0);
 			
 			if(skillId == 0){
 				break;
@@ -623,23 +576,24 @@ public class ItemInfoProvider {
 	}
 
 	public static boolean isDropRestricted(int itemId) {
-		MapleData data = getItemData(itemId);
-        boolean bRestricted = MapleDataTool.getIntConvert("info/tradeBlock", data, 0) == 1;
+		Node data = getItemData(itemId);
+		Node info = data.readNode("info");
+        boolean bRestricted = info.readInt("tradeBlock", 0) == 1;
         if (!bRestricted) {
-        	bRestricted = MapleDataTool.getIntConvert("info/accountSharable", data, 0) == 1;
+        	bRestricted = info.readInt("accountSharable", 0) == 1;
         }
         if (!bRestricted) {
-            bRestricted = MapleDataTool.getIntConvert("info/quest", data, 0) == 1;
+            bRestricted = info.readInt("quest", 0) == 1;
         }
 		return bRestricted;
 	}
 
 	public static CashShopItemData getCashShopItemData(int entryId){
-		return instance.cashShopItemCache.get(entryId);
+		return getInstance().cashShopItemCache.get(entryId);
 	}
 
 	public static CashShopItemData getCashShopItemDataByItemId(int itemId) {
-		return getCashShopItemData(instance.cashShopItemCacheByItemId.get(itemId));
+		return getCashShopItemData(getInstance().cashShopItemCacheByItemId.get(itemId));
 	}
 
 	public static CashShopPackage getCashShopPackage(int boughtId) {
@@ -647,9 +601,9 @@ public class ItemInfoProvider {
 	}
 
 	public static int getProjectileWatkBonus(int itemId) {
-		MapleData data = getItemData(itemId);
-		int atk = MapleDataTool.getInt("info/incPAD", data, 0);
-		
+		Node data = getItemData(itemId);
+		int atk = data.readNode("info").readInt("incPAD", 0);
+	
 		return atk;
 	}
 
@@ -665,23 +619,50 @@ public class ItemInfoProvider {
 	}
 
 	public static int getQuestMedalId(int questId) {
-		MapleData questInfo = MapleQuest.getQuestData().getData("QuestInfo.img");
-		MapleData questData = questInfo.getChildByPath(String.valueOf(questId));
-		int medal = MapleDataTool.getInt("viewMedalItem", questData, -1);
-		return medal;
+		/*Node questInfo = MapleQuest.getQuestData().getData("QuestInfo.img");
+		Node questData = questInfo.getChild(String.valueOf(questId));
+		int medal = questData.readInt("viewMedalItem", -1);
+		return medal;*/
+		return 0;
 	}
 
 	public static int getItemWidth(int id) {
-		MapleData itemData = getItemData(id);
+/*		Node itemData = getItemData(id);
 		
-		MapleData infoData = itemData.getChildByPath("info");
+		Node infoData = itemData.getChild("info");
 		if(infoData == null){
 			return 0;
 		}
 		
-		MapleCanvas canvas = (MapleCanvas) infoData.getChildByPath("icon").getData();
+		MapleCanvas canvas = (MapleCanvas) infoData.getChild("icon").getData();
 		
-		return canvas.getWidth();
+		return canvas.getWidth();*/
+		return 20;
+	}
+	
+	public static void main(String[] args) {
+		List<Integer> ids = ItemInfoProvider.getAllItemIds();
+		
+		for(int id : ids){
+			
+			try{
+				Item item = ItemFactory.getItem(id, 1);
+				
+				if(item instanceof EquipItem){
+					System.out.println(id+" "+ItemInfoProvider.getItemName(id));
+					EquipItemInfo info = ((EquipItem) item).getStatInfo();
+					
+					System.out.println(info);
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+				
+			}
+			
+
+		}
+		
+		System.out.println(ids.size());
 	}
 	
 }

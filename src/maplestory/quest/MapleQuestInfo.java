@@ -6,10 +6,9 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import provider.MapleData;
-import provider.MapleDataTool;
 import lombok.Getter;
 import maplestory.player.MapleCharacter;
+import me.tyler.mdf.Node;
 
 public class MapleQuestInfo {
 
@@ -33,7 +32,7 @@ public class MapleQuestInfo {
 	@Getter
 	private Map<Integer, Integer> relevantItems, relevantMobs;
 	
-	protected MapleQuestInfo(MapleQuest quest, MapleData info, MapleData acts, MapleData reqs){
+	protected MapleQuestInfo(MapleQuest quest, Node info, Node acts, Node reqs){
 		loadInfo(info);
 		relevantMobs = new HashMap<>();
 		relevantItems = new HashMap<>();
@@ -42,11 +41,11 @@ public class MapleQuestInfo {
 	}
 	
 	
-	protected void loadWzData(MapleData acts, MapleData reqs, MapleQuest quest){
-		MapleData startReqs = reqs.getChildByPath("0");
-		MapleData endReqs = reqs.getChildByPath("1");
-		MapleData startActs = acts.getChildByPath("0");
-		MapleData endActs = acts.getChildByPath("1");
+	protected void loadWzData(Node acts, Node reqs, MapleQuest quest){
+		Node startReqs = reqs.getChild("0");
+		Node endReqs = reqs.getChild("1");
+		Node startActs = acts.getChild("0");
+		Node endActs = acts.getChild("1");
 		
 		startRequirements = loadRequirements(quest, startReqs);
 		completionRequirements = loadRequirements(quest, endReqs);
@@ -57,10 +56,10 @@ public class MapleQuestInfo {
 		repeatable = startRequirements.containsKey(MapleQuestRequirementType.INTERVAL);
 	}
 	
-	private EnumMap<MapleQuestActionType, MapleQuestAction> loadActions(MapleQuest quest, MapleData data){
+	private EnumMap<MapleQuestActionType, MapleQuestAction> loadActions(MapleQuest quest, Node data){
 		EnumMap<MapleQuestActionType, MapleQuestAction> actions = new EnumMap<>(MapleQuestActionType.class);
 		
-		for(MapleData child : data.getChildren()){
+		for(Node child : data.getChildren()){
 			MapleQuestActionType type = MapleQuestActionType.getByWZName(child.getName());
 			MapleQuestAction action = MapleQuestAction.getFromType(quest, type, child);
 			
@@ -74,26 +73,26 @@ public class MapleQuestInfo {
 		return actions;
 	}
 	
-	private EnumMap<MapleQuestRequirementType, MapleQuestRequirement> loadRequirements(MapleQuest quest, MapleData data){
+	private EnumMap<MapleQuestRequirementType, MapleQuestRequirement> loadRequirements(MapleQuest quest, Node data){
 		EnumMap<MapleQuestRequirementType, MapleQuestRequirement> requirements = new EnumMap<>(MapleQuestRequirementType.class);
 		
-		for(MapleData child : data.getChildren()){
+		for(Node child : data.getChildren()){
 			String name = child.getName();
 			
 			MapleQuestRequirementType qrt = MapleQuestRequirementType.getByWzName(name);
 			
 			if(qrt == MapleQuestRequirementType.INFO_NUMBER){
-				infoNumber = MapleDataTool.getInt(child, 0);
+				infoNumber = child.intValue();
 			}else if(qrt == MapleQuestRequirementType.MOB){
-				for(MapleData mobData : child.getChildren()){
-					int id = MapleDataTool.getInt("id", mobData);
-					int count = MapleDataTool.getInt("count", mobData);
+				for(Node mobData : child.getChildren()){
+					int id = mobData.readInt("id");
+					int count = mobData.readInt("count");
 					relevantMobs.put(id, count);
 				}
 			}else if(qrt == MapleQuestRequirementType.ITEM){
-				for(MapleData itemData : child.getChildren()){
-					int id = MapleDataTool.getInt("id", itemData);
-					int count = MapleDataTool.getInt("count", itemData);
+				for(Node itemData : child.getChildren()){
+					int id = itemData.readInt("id");
+					int count = itemData.readInt("count");
 					relevantItems.put(id, count);
 				}
 			}
@@ -105,11 +104,11 @@ public class MapleQuestInfo {
 		return requirements;
 	}
 	
-	private void loadInfo(MapleData info){
-		timeLimit = MapleDataTool.getInt("timeLimit", info, -1);
-		autoStarted = MapleDataTool.getInt("autoStart", info, 0) == 1;
-		autoCompleted = MapleDataTool.getInt("autoComplete", info, 0) == 1;
-		autoPreCompleted = MapleDataTool.getInt("autoPreComplete", info, 0) == 1;
+	private void loadInfo(Node info){
+		timeLimit = info.readInt("timeLimit", -1);
+		autoStarted = info.readInt("autoStart", 0) == 1;
+		autoCompleted = info.readInt("autoComplete", 0) == 1;
+		autoPreCompleted = info.readInt("autoPreComplete", 0) == 1;
 	}
 	
 	public Collection<MapleQuestAction> getStartActions(){

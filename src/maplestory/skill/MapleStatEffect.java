@@ -136,11 +136,11 @@ public class MapleStatEffect {
     private Point lt, rb;
     private int bulletCount, bulletConsume;
 
-    public static MapleStatEffect loadSkillEffectFromData(Node<?> source, int skillid, boolean overtime) {
+    public static MapleStatEffect loadSkillEffectFromData(Node source, int skillid, boolean overtime) {
         return loadFromData(source, skillid, true, overtime);
     }
 
-    public static MapleStatEffect loadItemEffectFromData(Node<?> source, int itemid) {
+    public static MapleStatEffect loadItemEffectFromData(Node source, int itemid) {
         return loadFromData(source, itemid, false, false);
     }
 
@@ -150,7 +150,7 @@ public class MapleStatEffect {
         }
     }
 
-    private static MapleStatEffect loadFromData(Node<?> source, int sourceid, boolean skill, boolean overTime) {
+    private static MapleStatEffect loadFromData(Node source, int sourceid, boolean skill, boolean overTime) {
         MapleStatEffect ret = new MapleStatEffect();
         ret.duration = source.readInt("time", -1);
         ret.hp = source.readInt("hp", 0);
@@ -844,7 +844,7 @@ public class MapleStatEffect {
 
         final long starttime = System.currentTimeMillis();
 //	final CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, starttime);
-//	final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, ((starttime + 99999) - System.currentTimeMillis()));
+//	final ScheduledFuture schedule = TimerManager.getInstance().schedule(cancelAction, ((starttime + 99999) - System.currentTimeMillis()));
         applyto.registerEffect(this, starttime, null);
     }
 

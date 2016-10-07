@@ -28,10 +28,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import provider.MapleData;
-import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
-import provider.MapleDataTool;
+
+import maplestory.server.MapleStory;
+import me.tyler.mdf.MapleVector;
+import me.tyler.mdf.Node;
 
 /**
  *
@@ -40,10 +40,14 @@ import provider.MapleDataTool;
 public class MobSkillFactory {
 
     private static Map<String, MobSkill> mobSkills = new HashMap<String, MobSkill>();
-    private final static MapleDataProvider dataSource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Skill.wz"));
-    private static MapleData skillRoot = dataSource.getData("MobSkill.img");
+/*    private final static NodeProvider dataSource = NodeProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Skill.wz"));
+    private static Node skillRoot = dataSource.getData("MobSkill.img");*/
     private static ReentrantReadWriteLock dataLock = new ReentrantReadWriteLock();
 
+    private static Node getDataSource(){
+    	return MapleStory.getDataFile("Skill.mdf").getRootNode().readNode("MobSkill.img");
+    }
+    
     public static MobSkill getMobSkill(final int skillId, final int level) {
         final String key = skillId + "" + level;
         dataLock.readLock().lock();
@@ -60,31 +64,31 @@ public class MobSkillFactory {
             MobSkill ret;
             ret = mobSkills.get(key);
             if (ret == null) {
-                MapleData skillData = skillRoot.getChildByPath(skillId + "/level/" + level);
+                Node skillData = getDataSource().getChild(skillId + "/level/" + level);
                 if (skillData != null) {
-                    int mpCon = MapleDataTool.getInt(skillData.getChildByPath("mpCon"), 0);
+                    int mpCon = skillData.readInt("mpCon", 0);
                     List<Integer> toSummon = new ArrayList<Integer>();
                     for (int i = 0; i > -1; i++) {
-                        if (skillData.getChildByPath(String.valueOf(i)) == null) {
+                        if (skillData.getChild(String.valueOf(i)) == null) {
                             break;
                         }
-                        toSummon.add(Integer.valueOf(MapleDataTool.getInt(skillData.getChildByPath(String.valueOf(i)), 0)));
+                        toSummon.add(skillData.readInt(String.valueOf(i), 0));
                     }
-                    int effect = MapleDataTool.getInt("summonEffect", skillData, 0);
-                    int hp = MapleDataTool.getInt("hp", skillData, 100);
-                    int x = MapleDataTool.getInt("x", skillData, 1);
-                    int y = MapleDataTool.getInt("y", skillData, 1);
-                    long duration = MapleDataTool.getInt("time", skillData, 0) * 1000;
-                    long cooltime = MapleDataTool.getInt("interval", skillData, 0) * 1000;
-                    int iprop = MapleDataTool.getInt("prop", skillData, 100);
+                    int effect = skillData.readInt("summonEffect", 0);
+                    int hp = skillData.readInt("hp", 100);
+                    int x = skillData.readInt("x", 1);
+                    int y = skillData.readInt("y", 1);
+                    long duration = skillData.readInt("time", 0) * 1000;
+                    long cooltime = skillData.readInt("interval", 0) * 1000;
+                    int iprop = skillData.readInt("prop", 100);
                     float prop = iprop / 100;
-                    int limit = MapleDataTool.getInt("limit", skillData, 0);
-                    MapleData ltd = skillData.getChildByPath("lt");
+                    int limit = skillData.readInt("limit", 0);
+                    Node ltd = skillData.readNode("lt");
                     Point lt = null;
                     Point rb = null;
                     if (ltd != null) {
-                        lt = (Point) ltd.getData();
-                        rb = (Point) skillData.getChildByPath("rb").getData();
+                        lt = ltd.vectorValue().toPoint();
+                        rb = skillData.readVector("rb").toPoint();
                     }
                     ret = new MobSkill(skillId, level);
                     ret.setSummons(toSummon);

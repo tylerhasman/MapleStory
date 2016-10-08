@@ -263,7 +263,7 @@ public class ItemInfoProvider {
 					return 100;
 				}
 			}else{
-				return (int) entry.getValue();
+				return entry.intValue();
 			}
 		}
 		

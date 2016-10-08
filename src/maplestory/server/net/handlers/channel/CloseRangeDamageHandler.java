@@ -118,11 +118,11 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             return;
         }*/
         
-        int animationTime = 0;
+        //int animationTime = 0;
         
         if (attack.skill > 0) {
             Skill skill = SkillFactory.getSkill(attack.skill);
-            animationTime = skill.getAnimationTime();
+            //animationTime = skill.getAnimationTime();
             MapleStatEffect effect_ = skill.getEffect(player.getSkillLevel(skill));
             if (effect_.getCooldown() > 0) {
                 if (player.isSkillCoolingDown(attack.skill)) {
@@ -137,14 +137,13 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
             player.cancelEffectFromBuffStat(MapleBuffStat.DARKSIGHT);
             player.cancelBuffStats(MapleBuffStat.DARKSIGHT);
         }*/
-        System.out.println(animationTime);
-        if(animationTime > 0){
+        /*if(animationTime > 0){
         	TimerManager.schedule(() -> applyAttack(attack, player, attackCount), animationTime);
         }else{
         	applyAttack(attack, player, attackCount);
-        }
+        }*/
        
-        
+        applyAttack(attack, player, attackCount);
         
     }
 }

@@ -46,11 +46,8 @@ public class MapleMapFactory {
 			mapName = getMapId(Integer.parseInt(link));
 			mapData = source.getChild(mapName);
 		}
-		float monsterRate = 0;
-		Node mobRate = mapData.getChild("info/mobRate");
-		if (mobRate != null) {
-			monsterRate = mobRate.floatValue();
-		}
+		float monsterRate = mapData.readFloat("info/mobRate");
+
 		map = new MapleMap(mapid, world, channel, mapData.readInt("info/returnMap"), monsterRate);
 		maps.put(mapid, map);
 		// map.setOnFirstUserEnter(NodeTool.getString(mapData.getChild("info/onFirstUserEnter"),
@@ -192,7 +189,6 @@ public class MapleMapFactory {
 			}
 			
 			return map;
-				
 		} finally {
 			mapLock.unlock();
 		}
@@ -242,8 +238,11 @@ public class MapleMapFactory {
     
     private AbstractLoadedMapleLife loadLife(Node life, String id, String type) {
         AbstractLoadedMapleLife myLife = MapleLifeFactory.getLife(Integer.parseInt(id), type);
+
         myLife.setCy(life.readInt("cy"));
-        myLife.setF(life.readInt("f"));
+        if(life.hasChild("f")){
+            myLife.setF(life.readInt("f"));	
+        }
         myLife.setFh(life.readInt("fh"));
         myLife.setRx0(life.readInt("rx0"));
         myLife.setRx1(life.readInt("rx1"));

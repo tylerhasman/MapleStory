@@ -91,6 +91,13 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					}else{
 						client.getCharacter().sendMessage(MessageType.POPUP, "No player named "+args[1]);
 					}
+				}else if(args[0].equalsIgnoreCase("!unloadmap")){
+					
+					int id = Integer.parseInt(args[1]);
+					
+					client.getChannel().getMapFactory().unloadMap(id);
+					
+					
 				}else if(args[0].equalsIgnoreCase("!textdrop")){
 					
 					String msg = "";

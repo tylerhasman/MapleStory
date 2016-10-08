@@ -51,11 +51,13 @@ public final class MagicDamageHandler extends AbstractDealDamageHandler {
                 player.addCooldown(SkillFactory.getSkill(attack.skill), attack.skilllevel);
             }
         }
-        if(skill.getAnimationTime() > 0){
+        /*if(skill.getAnimationTime() > 0){
         	TimerManager.schedule(() -> applyAttack(attack, player, effect.getAttackCount()), skill.getAnimationTime());
         }else{
         	applyAttack(attack, player, effect.getAttackCount());
-        }
+        }*/
+        
+        applyAttack(attack, player, effect.getAttackCount());
       
         Skill eaterSkill = SkillFactory.getSkill((player.getJob().getId() - (player.getJob().getId() % 10)) * 10000);// MP Eater, works with right job
         int eaterLevel = player.getSkillLevel(eaterSkill);

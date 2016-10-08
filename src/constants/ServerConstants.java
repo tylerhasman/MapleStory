@@ -18,7 +18,7 @@ public class ServerConstants {
 
 	public static final int CHARACTER_SLOTS = 6;
 
-	public static final String CHANNEL_SERVER_IP = "23.16.34.98";
+	public static final String CHANNEL_SERVER_IP = "127.0.0.1";
 	
 	public static final boolean ALLOW_BEGINNER_PARTIES = false;
 

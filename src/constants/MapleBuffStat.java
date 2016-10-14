@@ -89,6 +89,7 @@ public enum MapleBuffStat {
     MONSTER_RIDING(0x20000000000000L, true),
     HOMING_BEACON(0x80000000000000L, true),
     SPEED_INFUSION(0x100000000000000L, true);
+    
     private final long i;
     private final boolean isFirst;
 

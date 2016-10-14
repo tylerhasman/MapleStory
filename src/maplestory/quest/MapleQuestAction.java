@@ -21,18 +21,17 @@ import maplestory.skill.MapleStatEffect;
 import maplestory.skill.Skill;
 import maplestory.skill.SkillFactory;
 import maplestory.util.Randomizer;
-import provider.MapleData;
-import provider.MapleDataTool;
+import me.tyler.mdf.Node;
 
 public interface MapleQuestAction {
 
-	public void processData(MapleData data);
+	public void processData(Node data);
 	
 	public boolean isRunnableOn(MapleCharacter chr, int selection);
 	
 	public void run(MapleCharacter chr, int selection);
 
-	public static MapleQuestAction getFromType(MapleQuest quest, MapleQuestActionType type, MapleData child){
+	public static MapleQuestAction getFromType(MapleQuest quest, MapleQuestActionType type, Node child){
 		MapleQuestAction action = null;
 		
 		if(type == MapleQuestActionType.BUFF){
@@ -69,18 +68,18 @@ public interface MapleQuestAction {
 		private Map<Integer, SkillActionData> skills;
 		
 		@Override
-		public void processData(MapleData data) {
+		public void processData(Node data) {
 			skills = new HashMap<>();
-			for(MapleData entry : data.getChildren()){
-				int id = MapleDataTool.getInt("id", entry);
-				int level = MapleDataTool.getInt("skillLevel", entry);
-				int masterLevel = MapleDataTool.getInt("masterLevel", entry);
+			for(Node entry : data.getChildren()){
+				int id = entry.readInt("id");
+				int level = entry.readInt("skillLevel");
+				int masterLevel = entry.readInt("masterLevel");
 				
 				List<Integer> jobs = new ArrayList<>();
-				MapleData applicable = entry.getChildByPath("job");
+				Node applicable = entry.getChild("job");
 				if(applicable != null){
-					for(MapleData applicableEntry : applicable.getChildren()){
-						jobs.add(MapleDataTool.getInt(applicableEntry));
+					for(Node applicableEntry : applicable.getChildren()){
+						jobs.add(applicableEntry.intValue());
 					}
 				}
 				
@@ -127,11 +126,11 @@ public interface MapleQuestAction {
 		private Map<Integer, Integer> quests;
 		
 		@Override
-		public void processData(MapleData data) {
+		public void processData(Node data) {
 			quests = new HashMap<>();
-			for(MapleData entry : data.getChildren()){
-				int id = MapleDataTool.getInt("id", entry);
-				int state = MapleDataTool.getInt("state", entry);
+			for(Node entry : data.getChildren()){
+				int id = entry.readInt("id");
+				int state = entry.readInt("state");
 				quests.put(id, state);
 			}
 		}
@@ -164,8 +163,8 @@ public interface MapleQuestAction {
 		
 		
 		@Override
-		public void processData(MapleData data) {
-			quest = MapleDataTool.getInt(data);
+		public void processData(Node data) {
+			quest = data.intValue();
 		}
 
 		@Override
@@ -191,8 +190,8 @@ public interface MapleQuestAction {
 		private int amount;
 		
 		@Override
-		public void processData(MapleData data) {
-			amount = MapleDataTool.getInt(data);
+		public void processData(Node data) {
+			amount = data.intValue();
 		}
 
 		@Override
@@ -212,14 +211,14 @@ public interface MapleQuestAction {
 		private List<ItemData> possibleItems;
 		
 		@Override
-		public void processData(MapleData data) {
+		public void processData(Node data) {
 			possibleItems = new ArrayList<>();
-			for(MapleData child : data.getChildren()){
-				int id = MapleDataTool.getInt("id", child);
-				int count = MapleDataTool.getInt("count", child, 1);
-				int prop = MapleDataTool.getInt("prop", child, -1);
-				int gender = MapleDataTool.getInt("gender", child, -1);
-				int job = MapleDataTool.getInt("job", child, -1);
+			for(Node child : data.getChildren()){
+				int id = child.readInt("id");
+				int count =  child.readInt("count", 1);
+				int prop = child.readInt("prop", -1);
+				int gender = child.readInt("gender", -1);
+				int job = child.readInt("job", -1);
 				
 				possibleItems.add(new ItemData(id, count, prop, gender, job));
 				
@@ -369,8 +368,8 @@ public interface MapleQuestAction {
 		private int amount;
 		
 		@Override
-		public void processData(MapleData data) {
-			amount = MapleDataTool.getInt(data);
+		public void processData(Node data) {
+			amount = data.intValue();
 		}
 
 		@Override
@@ -390,8 +389,8 @@ public interface MapleQuestAction {
 		private int amount;
 		
 		@Override
-		public void processData(MapleData data) {
-			amount = MapleDataTool.getInt(data);
+		public void processData(Node data) {
+			amount = data.intValue();
 		}
 
 		@Override
@@ -411,8 +410,8 @@ public interface MapleQuestAction {
 		private int item;
 		
 		@Override
-		public void processData(MapleData data) {
-			item = MapleDataTool.getInt(data);
+		public void processData(Node data) {
+			item = data.intValue();
 		}
 
 		@Override

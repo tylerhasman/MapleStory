@@ -1,24 +1,4 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package maplestory.skill;
 
 import constants.MapleElement;
@@ -74,22 +54,20 @@ import constants.skills.WhiteKnight;
 import constants.skills.WindArcher;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import provider.MapleData;
-import provider.MapleDataDirectoryEntry;
-import provider.MapleDataFileEntry;
-import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
-import provider.MapleDataTool;
+import maplestory.server.MapleStory;
+import me.tyler.mdf.MapleFile;
+import me.tyler.mdf.Node;
 
 public class SkillFactory {
 	private static Map<Integer, Skill> skills = new HashMap<>();
-	private static MapleDataProvider datasource = MapleDataProviderFactory
-			.getDataProvider(MapleDataProviderFactory.fileInWZPath("Skill.wz"));
 
+	private static final String REGEX = "^[0-9]*$";//Matches digits, aka jobs
+	
 	public static Skill getSkill(int id) {
 		if (!skills.isEmpty()) {
 			return skills.get(id);
@@ -98,50 +76,52 @@ public class SkillFactory {
 	}
 
 	public static void loadAllSkills() {
-		final MapleDataDirectoryEntry root = datasource.getRoot();
-
-		int skillid;
-
-		for (MapleDataFileEntry topDir : root.getFiles()) { // Loop thru jobs
-			if (topDir.getName().length() <= 8) {
-				for (MapleData data : datasource.getData(topDir.getName())) { // Loop
-																				// thru
-																				// each
-																				// jobs
-					if (data.getName().equals("skill")) {
-						for (MapleData data2 : data) { // Loop thru each jobs
-							if (data2 != null) {
-								skillid = Integer.parseInt(data2.getName());
-								skills.put(skillid,
-										loadFromData(skillid, data2));
-							}
-						}
-					}
+		
+		MapleFile source = MapleStory.getDataFile("Skill.mdf");
+		
+		for(Node job : source.getRootNode().getChildren()){
+			String name = job.getName();
+			
+			
+			if(name.replace(".img", "").matches(REGEX)){
+				
+				Node skillsNode = job.getChild("skill");
+				
+				for(Node skill : skillsNode.getChildren()){
+					
+					int skillId = Integer.parseInt(skill.getName());
+					
+					skills.put(skillId, loadFromNode(skillId, skill));
+					
 				}
+				
+				
 			}
+			
 		}
+
 	}
 
-	public static Skill loadFromData(int id, MapleData data) {
+	public static Skill loadFromNode(int id, Node data) {
 		Skill ret = new Skill(id);
 		boolean isBuff = false;
-		int skillType = MapleDataTool.getInt("skillType", data, -1);
-		String elem = MapleDataTool.getString("elemAttr", data, null);
+		int skillType = data.readInt("skillType", -1);
+		String elem = data.readString("elemAttr");
 		if (elem != null) {
 			ret.setElement(MapleElement.getFromChar(elem.charAt(0)));
 		} else {
 			ret.setElement(MapleElement.NEUTRAL);
 		}
-		MapleData effect = data.getChildByPath("effect");
+		Node effect = data.getChild("effect");
 		if (skillType != -1) {
 			if (skillType == 2) {
 				isBuff = true;
 			}
 		} else {
-			MapleData action_ = data.getChildByPath("action");
+			Node actionNode = data.getChild("action");
 			boolean action = false;
-			if (action_ == null) {
-				if (data.getChildByPath("prepare/action") != null) {
+			if (actionNode == null) {
+				if (data.getChild("prepare/action") != null) {
 					action = true;
 				} else {
 					switch (id) {
@@ -155,12 +135,10 @@ public class SkillFactory {
 				action = true;
 			}
 			ret.setAction(action);
-			MapleData hit = data.getChildByPath("hit");
-			MapleData ball = data.getChildByPath("ball");
+			Node hit = data.getChild("hit");
+			Node ball = data.getChild("ball");
 			isBuff = effect != null && hit == null && ball == null;
-			isBuff |= action_ != null
-					&& MapleDataTool.getString("0", action_, "").equals(
-							"alert2");
+			isBuff |= actionNode != null && actionNode.readString("0", "").equals("alert2");
 			switch (id) {
 			case Hero.RUSH:
 			case Paladin.RUSH:
@@ -361,15 +339,14 @@ public class SkillFactory {
 				break;
 			}
 		}
-		for (MapleData level : data.getChildByPath("level")) {
+		for (Node level : data.getChild("level")) {
 			 ret.effects.add(MapleStatEffect.loadSkillEffectFromData(level, id, isBuff));
 		}
 		ret.setAnimationTime(0);
 		int animationTime = 0;
 		if (effect != null) {
-			for (MapleData effectEntry : effect) {
-				animationTime += MapleDataTool.getIntConvert("delay",
-						effectEntry, 0);
+			for (Node effectEntry : effect) {
+				animationTime += effectEntry.readInt("delay", 0);
 			}
 			ret.setAnimationTime(animationTime);
 		}
@@ -377,20 +354,19 @@ public class SkillFactory {
 	}
 
 	public static String getSkillName(int skillid) {
-		MapleData data = MapleDataProviderFactory.getDataProvider(
-				new File(System.getProperty("wzpath") + "/" + "String.wz"))
-				.getData("Skill.img");
+		MapleFile stringData = MapleStory.getDataFile("String.mdf");
+
+		Node skillData = stringData.getRootNode().getChild("Skill.img");
 		StringBuilder skill = new StringBuilder();
 		skill.append(String.valueOf(skillid));
 		if (skill.length() == 4) {
 			skill.delete(0, 4);
 			skill.append("000").append(String.valueOf(skillid));
 		}
-		if (data.getChildByPath(skill.toString()) != null) {
-			for (MapleData skilldata : data.getChildByPath(skill.toString())
-					.getChildren()) {
-				if (skilldata.getName().equals("name"))
-					return MapleDataTool.getString(skilldata, null);
+		if (skillData.getChild(skill.toString()) != null) {
+			for (Node skillStringData : skillData.getChild(skill.toString()).getChildren()) {
+				if (skillStringData.getName().equals("name"))
+					return skillStringData.getName();
 			}
 		}
 

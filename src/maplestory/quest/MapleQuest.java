@@ -8,13 +8,11 @@ import lombok.Getter;
 import maplestory.player.MapleCharacter;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
 import maplestory.server.MapleStory;
-import provider.MapleData;
-import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
+import me.tyler.mdf.MapleFile;
+import me.tyler.mdf.Node;
 
 public class MapleQuest {
-	@Getter
-	private final static MapleDataProvider questData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/Quest.wz"));
+	
 	private final static Map<Integer, MapleQuest> cache = new HashMap<>();
 	
 	@Getter
@@ -119,9 +117,15 @@ public class MapleQuest {
 		MapleQuest quest = cache.get(id);
 		if(quest == null){
 			
-			MapleData info = questData.getData("QuestInfo.img").getChildByPath(String.valueOf(id));
-			MapleData acts = questData.getData("Act.img").getChildByPath(String.valueOf(id));
-			MapleData reqs = questData.getData("Check.img").getChildByPath(String.valueOf(id));
+			MapleFile questData = MapleStory.getDataFile("Quest.mdf");
+			
+			Node root = questData.getRootNode();
+			
+			String idStr = String.valueOf(id);
+			
+			Node info = root.readNode("QuestInfo.img").readNode(idStr);
+			Node acts = root.readNode("Act.img").readNode(idStr);
+			Node reqs = root.readNode("Check.img").readNode(idStr);
 			
 			MapleQuestInfo questInfo = new MapleQuestInfo(quest, info, acts, reqs);
 			quest = new MapleQuest(id, questInfo);
@@ -131,9 +135,6 @@ public class MapleQuest {
 			}else{
 				questInfo.loadWzData(acts, reqs, quest);
 			}
-			
-
-			
 			
 			cache.put(id, quest);
 		}

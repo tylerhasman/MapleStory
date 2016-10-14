@@ -1,16 +1,20 @@
 package maplestory.server;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.xml.DOMConfigurator;
+import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.DOMConfiguration;
 
 import lombok.Getter;
 import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.skill.SkillFactory;
+import me.tyler.mdf.MapleFile;
 import constants.ServerConstants;
 import database.MapleDatabase;
 import database.MonsterDropManager;
@@ -20,26 +24,39 @@ public class MapleStory {
 	@Getter
 	private static Logger logger = LoggerFactory.getLogger("[MapleStory]");
 	
+	private static final File dataSourceFolder = new File("wz/");
+	
+	private static final Map<String, MapleFile> dataFiles = new HashMap<>();
+	
+	private static void loadMapleData(){
+
+		loadMapleFile("Map.mdf");
+		loadMapleFile("Character.mdf");
+		loadMapleFile("Mob.mdf");
+		loadMapleFile("Npc.mdf");
+		loadMapleFile("Skill.mdf");
+		loadMapleFile("String.mdf");
+		loadMapleFile("Etc.mdf");
+		loadMapleFile("Item.mdf");
+		loadMapleFile("Quest.mdf");
+		loadMapleFile("Reactor.mdf");
+		
+
+	}
+	
 	public static void main(String[] args) {
-		
-		System.setProperty("wzpath", "wz/");
-		
+
 		long timeToTake = System.currentTimeMillis();
+		
+		loadMapleData();	
         
 		logger.info("Loading items");
 		
-		ItemInfoProvider.getInstance();
 		ItemInfoProvider.loadCashShop();
-		
-		logger.info("Items loaded in "+((System.currentTimeMillis() - timeToTake) / 1000.0)+" seconds");
-		
-		timeToTake = System.currentTimeMillis();
 		
         logger.info("Loading skills");
         
         SkillFactory.loadAllSkills();
-        
-        logger.info("Skills loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds");
         
         logger.info("Creating monster drop database connection");
         
@@ -65,6 +82,33 @@ public class MapleStory {
 		
 		server.run();
 		
+	}
+
+	private static MapleFile loadMapleFile(String path){
+
+		File f = new File(dataSourceFolder, path);
+		
+		logger.info("Loading "+f.getName());
+		
+		MapleFile file;
+		try {
+			file = new MapleFile(f, false, true);
+			dataFiles.put(path, file);
+		} catch (IOException e) {
+			logger.error("Failed to load "+f.getAbsolutePath(), e);
+			return null;
+		}
+		
+		return file;
+	}
+	
+	public static MapleFile getDataFile(String fileName) {
+		
+		if(dataFiles.containsKey(fileName)){
+			return dataFiles.get(fileName);
+		}
+		
+		return loadMapleFile(fileName);
 	}
 
 }

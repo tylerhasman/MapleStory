@@ -23,8 +23,7 @@ package maplestory.map;
 
 import java.awt.Point;
 
-import provider.MapleData;
-import provider.MapleDataTool;
+import me.tyler.mdf.Node;
 
 public class PortalFactory {
     private int nextDoorPortal;
@@ -33,7 +32,7 @@ public class PortalFactory {
         nextDoorPortal = 0x80;
     }
 
-    public MaplePortal makePortal(int type, MapleData portal) {
+    public MaplePortal makePortal(int type, Node portal) {
         MapleGenericPortal ret = null;
         if (type == MaplePortal.MAP_PORTAL) {
             ret = new MapleMapPortal();
@@ -44,14 +43,14 @@ public class PortalFactory {
         return ret;
     }
 
-    private void loadPortal(MapleGenericPortal myPortal, MapleData portal) {
-        myPortal.setName(MapleDataTool.getString(portal.getChildByPath("pn")));
-        myPortal.setTarget(MapleDataTool.getString(portal.getChildByPath("tn")));
-        myPortal.setTargetMapId(MapleDataTool.getInt(portal.getChildByPath("tm")));
-        int x = MapleDataTool.getInt(portal.getChildByPath("x"));
-        int y = MapleDataTool.getInt(portal.getChildByPath("y"));
+    private void loadPortal(MapleGenericPortal myPortal, Node portal) {
+        myPortal.setName(portal.readString("pn"));
+        myPortal.setTarget(portal.readString("tn"));
+        myPortal.setTargetMapId(portal.readInt("tm"));
+        int x = portal.readInt("x");
+        int y = portal.readInt("y");
         myPortal.setPosition(new Point(x, y));
-        String script = MapleDataTool.getString("script", portal, null);
+        String script = portal.readString("script");
         if (script != null && script.equals("")) {
             script = null;
         }

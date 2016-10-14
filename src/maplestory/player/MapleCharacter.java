@@ -29,6 +29,7 @@ import lombok.Setter;
 import lombok.ToString;
 import maplestory.cashshop.CashShopWallet;
 import maplestory.client.MapleClient;
+import maplestory.client.MapleMessenger;
 import maplestory.guild.MapleGuild;
 import maplestory.guild.MapleGuildRankLevel;
 import maplestory.inventory.Inventory;
@@ -264,6 +265,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	@Getter @Setter
 	private int activeChair;
 	
+	private int messengerId;
+	
 	public MapleCharacter(MapleClient client) {
 		this.client = client;
 		inventories = new HashMap<>();
@@ -300,6 +303,35 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         notes = new ArrayList<>();
         damageNumberGenerator = new CRand32();
         pets = new MaplePetInstance[3];
+        messengerId = -1;
+	}
+	
+	public boolean isMessengerOpen(){
+		return messengerId >= 0;
+	}
+	
+	public MapleMessenger getMessenger() {
+		return getWorld().getMessenger(messengerId);
+	}
+	
+	public void openMessenger(){
+		if(!isMessengerOpen()){
+			messengerId = getWorld().createMessenger(this).getUniqueId();
+		}
+	}
+	
+
+	public void joinMessenger(MapleMessenger joining) {
+		this.messengerId = joining.getUniqueId();
+		joining.addPlayer(this);
+	}
+	
+	
+	public void closeMessenger(){
+		if(isMessengerOpen()){
+			getMessenger().removePlayer(this);
+			messengerId = -1;
+		}
 	}
 	
 	public int getStr(){
@@ -1667,6 +1699,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 	
 	public void respawnPlayerForOthers(){
+		if(client.getLoginStatus() != LoginStatus.IN_GAME){
+			return;
+		}
 		if(getMap() != null){
 			
 			MapleMap map = getMap();
@@ -2136,6 +2171,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	public void updateCharacterLook() {
 		getMap().broadcastPacket(PacketFactory.getUpdatePlayerLookPacket(this));
+		
+		if(isMessengerOpen()){
+			MapleMessenger messenger = getMessenger();
+			messenger.updatePlayer(this);
+		}
 	}
 
 	public void addSummon(int sourceid, MapleSummon tosummon) {
@@ -2974,6 +3014,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		
 		return null;
 	}
-	
+
 	
 }

@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import lombok.SneakyThrows;
 import maplestory.cashshop.CashShopItemData;
 import maplestory.cashshop.CashShopPackage;
@@ -3485,6 +3486,98 @@ public class PacketFactory {
 		}
 
 		return out.getPacket();
+	}
+	
+	public static byte[] messengerAddPlayer(String from, MapleCharacter chr, int position, int channel){
+		MaplePacketWriter out = new MaplePacketWriter();
+		
+		out.writeShort(SendOpcode.MESSENGER.getValue());
+		out.write(0x00);
+		out.write(position);
+		addCharLook(out, chr, true);
+		out.writeMapleAsciiString(from);
+		out.write(channel);
+		out.write(0x00);
+		
+		return out.getPacket();
+	}
+
+	public static byte[] messengerInvite(String from, int uniqueId) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		
+		out.writeShort(SendOpcode.MESSENGER.getValue());
+		
+		out.write(0x03);
+		out.writeMapleAsciiString(from);
+		out.write(0);
+		out.writeInt(uniqueId);
+		out.write(0);
+		
+		return out.getPacket();
+	}
+	
+	public static byte[] messengerJoin(int position){
+		MaplePacketWriter out = new MaplePacketWriter();
+		
+		out.writeShort(SendOpcode.MESSENGER.getValue());
+		
+		out.write(0x01);
+		out.write(position);
+		
+		return out.getPacket();
+	}
+	
+	public static byte[] messengerChat(String text){
+		MaplePacketWriter out = new MaplePacketWriter();
+		
+		out.writeShort(SendOpcode.MESSENGER.getValue());
+		
+		out.write(0x06);
+		out.writeMapleAsciiString(text);
+		
+		return out.getPacket();
+	}
+	
+	public static byte[] messengerNote(String text, int mode, int mode2){
+		MaplePacketWriter out = new MaplePacketWriter();
+		
+		out.writeShort(SendOpcode.MESSENGER.getValue());
+		
+		out.write(mode);
+		out.writeMapleAsciiString(text);
+		out.write(mode2);
+		
+		return out.getPacket();
+	}
+
+	public static byte[] messengerUpdatePlayer(MapleCharacter chr, int position, int channel) {
+		
+		MaplePacketWriter out = new MaplePacketWriter();
+		
+		out.writeShort(SendOpcode.MESSENGER.getValue());
+		
+		out.write(0x07);
+		out.write(position);
+		addCharLook(out, chr, true);
+		out.writeMapleAsciiString(chr.getName());
+		out.write(channel);
+		out.write(0);
+		
+		return out.getPacket();
+	}
+	
+	public static byte[] messengerRemovePlayer(int position){
+		
+		MaplePacketWriter out = new MaplePacketWriter();
+		
+		out.writeShort(SendOpcode.MESSENGER.getValue());
+		
+		out.write(0x02);
+		
+		out.write(position);
+		
+		return out.getPacket();
+		
 	}
 	
 /*	public static byte[] showCashInventory(MapleCharacter chr) {

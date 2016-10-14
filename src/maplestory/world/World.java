@@ -21,9 +21,11 @@ import database.QueryResult;
 import lombok.Getter;
 import maplestory.channel.MapleChannel;
 import maplestory.client.MapleClient;
+import maplestory.client.MapleMessenger;
 import maplestory.guild.GuildNotFoundException;
 import maplestory.guild.MapleGuild;
 import maplestory.party.MapleParty;
+import maplestory.player.MapleCharacter;
 import maplestory.server.MapleServer;
 import maplestory.server.net.PacketFactory;
 
@@ -38,6 +40,8 @@ public class World {
 	
 	private Map<Integer, MapleGuild> guilds;
 	
+	private Map<Integer, MapleMessenger> messengers;
+	
 	private Logger logger;
 	
 	public World(int id, int numChannels, EventLoopGroup eventLoopGroupBoss, EventLoopGroup eventLoopGroupWorker) {
@@ -46,6 +50,7 @@ public class World {
 		playerStorage = new PlayerStorage();
 		parties = Collections.synchronizedMap(new HashMap<>());
 		guilds = Collections.synchronizedMap(new HashMap<>());
+		messengers = Collections.synchronizedMap(new HashMap<>());
 		loadAllGuilds();
 		channels = new ArrayList<>(numChannels);
 		for(int i = 0; i < numChannels;i++){
@@ -197,6 +202,22 @@ public class World {
 
 	public void broadcastMessage(MessageType type, String msg) {
 		broadcastPacket(PacketFactory.getServerMessagePacket(type, msg, 1, false));
+	}
+	
+	public MapleMessenger createMessenger(MapleCharacter creator){
+		MapleMessenger ms = new MapleMessenger(creator);
+		
+		synchronized (messengers) {
+			messengers.put(ms.getUniqueId(), ms);
+		}
+		
+		return ms;
+	}
+
+	public MapleMessenger getMessenger(int messengerId) {
+		synchronized (messengers) {
+			return messengers.get(messengerId);
+		}
 	}
 	
 }

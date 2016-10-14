@@ -3,8 +3,10 @@ package maplestory.server.net;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 
 
@@ -67,6 +69,7 @@ import maplestory.server.net.handlers.channel.ItemPickupHandler;
 import maplestory.server.net.handlers.channel.KeymapChangeHandler;
 import maplestory.server.net.handlers.channel.MagicDamageHandler;
 import maplestory.server.net.handlers.channel.MesoDropHandler;
+import maplestory.server.net.handlers.channel.MessengerHandler;
 import maplestory.server.net.handlers.channel.MonsterBombHandler;
 import maplestory.server.net.handlers.channel.MonsterDamageMonsterHandler;
 import maplestory.server.net.handlers.channel.MoveMonsterHandler;
@@ -214,6 +217,7 @@ public class MapleConnectionHandler extends ChannelInboundHandlerAdapter {
 			handlers.put(RecvOpcode.WHISPER.getValue(), new WhisperHandler());
 			handlers.put(RecvOpcode.USE_CHAIR.getValue(), new ChairSitRequestHandler());
 			handlers.put(RecvOpcode.CHAIR_ACTION.getValue(), new SitRequestHandler());
+			handlers.put(RecvOpcode.MESSENGER.getValue(), new MessengerHandler());
 		}
 	}
 	

@@ -46,6 +46,21 @@ public class PlayerStorage {
 		}
 	}
 	
+	public MapleCharacter getByAccountId(int id) {
+		rLock.lock();
+		try{
+			for(MapleCharacter chr : storage.values()){
+				if(chr.getAccountId() == id){
+					return chr;
+				}
+			}
+			
+			return null;
+		}finally{
+			rLock.unlock();
+		}
+	}
+	
 	public void addPlayer(MapleCharacter chr){
 		wLock.lock();
 		try{

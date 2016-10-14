@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,28 +40,23 @@ public class MapleStory {
 		loadMapleFile("Item.mdf");
 		loadMapleFile("Quest.mdf");
 		loadMapleFile("Reactor.mdf");
+		
 
 	}
 	
 	public static void main(String[] args) {
-		
-		loadMapleData();
-		
+
 		long timeToTake = System.currentTimeMillis();
+		
+		loadMapleData();	
         
 		logger.info("Loading items");
 		
 		ItemInfoProvider.loadCashShop();
 		
-		logger.info("Items loaded in "+((System.currentTimeMillis() - timeToTake) / 1000.0)+" seconds");
-		
-		timeToTake = System.currentTimeMillis();
-		
         logger.info("Loading skills");
         
         SkillFactory.loadAllSkills();
-        
-        logger.info("Skills loaded in " + ((System.currentTimeMillis() - timeToTake) / 1000.0) + " seconds");
         
         logger.info("Creating monster drop database connection");
         
@@ -91,8 +88,6 @@ public class MapleStory {
 
 		File f = new File(dataSourceFolder, path);
 		
-		long time = System.currentTimeMillis();
-		
 		logger.info("Loading "+f.getName());
 		
 		MapleFile file;
@@ -104,7 +99,6 @@ public class MapleStory {
 			return null;
 		}
 		
-		logger.info("Successfully loaded "+f.getName()+" in "+(System.currentTimeMillis() - time)+"ms");
 		return file;
 	}
 	

@@ -104,29 +104,31 @@ public class MapleMapFactory {
 		}
 		map.setFootholds(fTree);
 
-		for (Node life : mapData.getChild("life")) {
-			String id = life.readString("id");
-			String type = life.readString("type");
-			if (id.equals("9001105")) {
-				id = "9001108";// soz
-			}
-			AbstractLoadedMapleLife myLife = loadLife(life, id, type);
-			if (myLife instanceof MapleMonster) {
-				MapleMonster monster = (MapleMonster) myLife;
-				int mobTime = life.readInt("mobTime", 0);
-				int team = life.readInt("team", -1);
-				monster.setMap(map);
-				if (mobTime == -1) { // does not respawn, force spawn
-										// once
-					map.spawnMonster(monster);
-				} else {
-					map.addMonsterSpawn(monster, mobTime, team);
+		if(mapData.hasChild("life")){
+			for (Node life : mapData.getChild("life")) {
+				String id = life.readString("id");
+				String type = life.readString("type");
+				if (id.equals("9001105")) {
+					id = "9001108";// soz
 				}
-			} else {
-				map.addMapObject(myLife, false);
+				AbstractLoadedMapleLife myLife = loadLife(life, id, type);
+				if (myLife instanceof MapleMonster) {
+					MapleMonster monster = (MapleMonster) myLife;
+					int mobTime = life.readInt("mobTime", 0);
+					int team = life.readInt("team", -1);
+					monster.setMap(map);
+					if (mobTime == -1) { // does not respawn, force spawn
+											// once
+						map.spawnMonster(monster);
+					} else {
+						map.addMonsterSpawn(monster, mobTime, team);
+					}
+				} else {
+					map.addMapObject(myLife, false);
+				}
 			}
 		}
-		
+	
 		if (mapData.getChild("reactor") != null) {
 			for (Node reactor : mapData.getChild("reactor")) {
 				String id = reactor.readString("id");
@@ -233,7 +235,7 @@ public class MapleMapFactory {
     	if(data == null){
     		return String.valueOf(id);
     	}
-    	return data.readString("mapeName");
+    	return data.readString("mapName");
     }
     
     private AbstractLoadedMapleLife loadLife(Node life, String id, String type) {

@@ -97,7 +97,7 @@ public class MapleItem implements Item {
 
 	@Override
 	public String getOwner() {
-		if(owner == null){
+		if(owner == null || owner.isEmpty()){
 			return "";
 		}
 		return owner;

@@ -238,9 +238,9 @@ public class MapleInventory implements Inventory {
 	}
 	
 	@Override
-	public RemoveItemResult removeItem(int id, int amount) {
+	public boolean removeItem(int id, int amount) {
 		if(amount == 0){
-			return new RemoveItemResult(0, true);
+			return true;
 		}
 		List<Pair<Integer, Item>> existing = listByIdWithSlot(id);
 		List<InventoryOperation> actions = new ArrayList<>();
@@ -272,11 +272,11 @@ public class MapleInventory implements Inventory {
 
 		sendPacket(PacketFactory.getInventoryOperationPacket(true, actions));
 		
-		return new RemoveItemResult(amount, amount <= 0);
+		return amount <= 0;
 	}
 	
 	@Override
-	public RemoveItemResult removeItem(Item item) {
+	public boolean removeItem(Item item) {
 		return removeItem(item.getItemId(), item.getAmount());
 	}
 	
@@ -314,7 +314,7 @@ public class MapleInventory implements Inventory {
 	}
 	
 	@Override
-	public AddItemResult addItem(Item item) {
+	public boolean addItem(Item item) {
 		
 		int slotMax = getOwner().getMaxSlotForItem(item);
 		
@@ -329,7 +329,7 @@ public class MapleInventory implements Inventory {
 				changes.add(InventoryOperation.addItem(item, slot));
 			}
 			sendPacket(PacketFactory.getInventoryOperationPacket(true, changes));
-			return new AddItemResult(slot >= 0, slot >= 0);
+			return slot > 0;
 		}
 		if(!item.isA(ItemType.RECHARGABLE)){
 			for(Pair<Integer, Item> pair : existing){
@@ -349,7 +349,6 @@ public class MapleInventory implements Inventory {
 			int total = item.getAmount();
 			while(total > 0){
 				int newQ = Math.min(item.getAmount(), slotMax);
-				boolean suc = false;
 				if(newQ != 0){
 					total -= item.getAmount();
 					Item nItem = item.copyOf(newQ);
@@ -357,9 +356,8 @@ public class MapleInventory implements Inventory {
 					
 					if(slot == -1){
 						sendPacket(PacketFactory.getInventoryOperationPacket(true, changes));
-						return new AddItemResult(suc, true);
+						return true;
 					}
-					suc = true;
 					changes.add(InventoryOperation.addItem(nItem, slot));
 					setItemInternal(slot, nItem);
 					
@@ -371,18 +369,18 @@ public class MapleInventory implements Inventory {
 			
 			if(slot == -1){
 				sendPacket(PacketFactory.getInventoryOperationPacket(true, changes));
-				return new AddItemResult(false, true);
+				return false;
 			}
 			
 			changes.add(InventoryOperation.addItem(item, slot));
 			
 			setItemInternal(slot, item);
 			sendPacket(PacketFactory.getInventoryOperationPacket(true, changes));
-			return new AddItemResult(true, false);
+			return false;
 		}
 		
 		
-		return new AddItemResult(true, false);
+		return false;
 	}
 	
 	protected void sendPacket(byte[] packet){

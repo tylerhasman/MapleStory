@@ -94,7 +94,7 @@ public class MapleMapItem extends AbstractMapleMapObject {
 			chr.getClient().sendReallowActions();
 			success = true;
 		}else{
-			success = chr.getInventory(item.getItemId()).addItem(item).isSuccess();
+			success = chr.getInventory(item.getItemId()).addItem(item);
 		}
 		
 		if(success){

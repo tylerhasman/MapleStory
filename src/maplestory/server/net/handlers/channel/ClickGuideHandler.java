@@ -13,7 +13,7 @@ public class ClickGuideHandler extends MaplePacketHandler {
 	public void handle(ByteBuf buf, MapleClient client) {
 		MapleScript guide = new MapleScript("scripts/npc/guide.js", "scripts/npc/fallback.js");
 		
-		int npcId = client.getCharacter().getJob() == MapleJob.NOBLESSE ? 1101008 : 1201000;
+		int npcId = client.getCharacter().getJob() == MapleJob.NOBLESSE ? 1101008 : 1202000;
 		
 		client.getCharacter().openNpc(guide, MapleLifeFactory.getNPC(npcId));
 		

@@ -61,12 +61,23 @@ public class ChangeMapHandler extends MaplePacketHandler {
 				if(portal != null){
 					portal.enterPortal(client);
 				}else{
-					client.sendReallowActions();
+					if(startwp.isEmpty()){
+						
+						if(client.getCharacter().getMapId() / 100 == 9140900){
+							if (target == 914090011 || target == 914090012 || target == 914090013 || target == 140090000) {
+								client.getCharacter().changeMap(target);
+							}
+						}
+						
+					}else{
+						client.sendReallowActions();
+					}
+					
 				}	
 			}
 			
 		}
 		
 	}
-
+	
 }

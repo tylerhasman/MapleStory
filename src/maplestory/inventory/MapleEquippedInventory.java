@@ -19,7 +19,7 @@ public class MapleEquippedInventory extends MapleInventory {
 	}
 	
 	@Override
-	public AddItemResult addItem(Item item) {
+	public boolean addItem(Item item) {
 		throw new RuntimeException("You cannot add items to an equip inventory. Use setItem(int, Item) instead.");
 	}
 	

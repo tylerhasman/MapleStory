@@ -20,7 +20,7 @@ function start(mode, type, selection){
         if (qm.getClient().getCharacter().getHp() >= 50) {
             qm.getClient().getCharacter().setHp(25);
         }
-        if (!qm.haveItem(2010007))
+        if (!qm.hasItem(2010007))
             qm.giveItem(2010007, 1);
             qm.forceStartQuest();
             qm.sendNext("Surprised? If HP becomes 0, then you are in trouble. Now, I will give you #rRoger's Apple#k. Please take it. You will feel stronger. Open the Item window and double click to consume. Hey, it's very simple to open the Item window. Just press #bI#k on your keyboard.");

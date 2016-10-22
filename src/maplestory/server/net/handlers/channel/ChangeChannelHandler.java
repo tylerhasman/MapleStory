@@ -14,8 +14,6 @@ public class ChangeChannelHandler extends MaplePacketHandler {
 		
 		client.changeChannel(channel);
 		
-		//client.closeConnection();
-		
 	}
 
 }

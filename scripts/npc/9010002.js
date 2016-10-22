@@ -15,7 +15,7 @@ function action(mode, type, selection){
 	}
 	
 	if(status == 0){
-		if(cm.haveItem(balloons)){
+		if(cm.hasItem(balloons)){
 			cm.sendOk("Do you like the balloons I gave you?");
 			cm.dispose();
 		}else{

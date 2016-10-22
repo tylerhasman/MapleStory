@@ -39,6 +39,12 @@ public class MapleScriptInstance {
 		function("end", mode, type, selection);
 	}
 	
+	public void setValue(String key, Object value){
+		if(instance instanceof ScriptEngine){
+			ScriptEngine engine = (ScriptEngine) instance;
+			engine.put(key, value);
+		}
+	}
 	
 	public void questAction(int mode, int type, int selection) throws NoSuchMethodException, ScriptException{
 		if(isQuestEnd){

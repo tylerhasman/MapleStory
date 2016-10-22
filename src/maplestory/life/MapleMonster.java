@@ -95,7 +95,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 		setController(null);
 		setPosition(getMap().calcDropPosition(point));
 		getMap().broadcastPacket(PacketFactory.getMoveMonsterPacket(0, -1, 0, 0, 0, 0, getObjectId(), getPosition(), Collections.singletonList(new AbsoluteLifeMovement(0, getPosition(), 10, 0))));
-		controller.controlMonster(this);
+		if(controller != null)
+			controller.controlMonster(this);
 	}
 	
 	public void setBossHpBarVisible(boolean bossHpBarVisible) {
@@ -103,7 +104,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 			throw new IllegalStateException("Only bosses can have HP bars! "+toString());
 		}
 		if(spawned && bossHpBarVisible){
-			//getMap().broadcastPacket(PacketFactory.createBossHpBar(this));
+			getMap().broadcastPacket(PacketFactory.createBossHpBar(this));
 		}
 		this.bossHpBarVisible = bossHpBarVisible;
 	}

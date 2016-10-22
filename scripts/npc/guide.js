@@ -54,5 +54,6 @@ function cygnusAction(mode, type, selection){
 
 function legendAction(mode, type, selection){
 
+	cm.openNpc(1202000);
 
 }

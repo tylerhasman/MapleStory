@@ -11,8 +11,6 @@ public class PongHandler extends MaplePacketHandler {
 	
 		client.receivePong();
 		
-		//client.getLogger().info("Ping is "+client.getPing());
-		
 	}
 
 }

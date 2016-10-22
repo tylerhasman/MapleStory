@@ -2,6 +2,7 @@ package maplestory.map;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -93,6 +94,9 @@ public class MapleMap {
 	
 	private MapleScriptInstance scriptInstance;
 	private boolean scriptDisabled;
+	
+	@Setter
+	private String globalScriptOnUserEnter;
 	
 	public MapleMap(int mapid, int world, int channel, int returnMap, float monsterRate) {
 		this.mapId = mapid;
@@ -430,7 +434,30 @@ public class MapleMap {
 				}
 			}
 			
+			mapleCharacter.getClient().sendPacket(PacketFactory.resetAranGodStats());
+			
 			executeMapScript(mapleCharacter, "onPlayerEnter", mapleCharacter);
+			
+			if(!globalScriptOnUserEnter.isEmpty()){
+				
+				MapleScript script = new MapleScript("scripts/map/global/"+globalScriptOnUserEnter+".js");
+				
+				if(!script.isDisabled()){
+					SimpleBindings sb = new SimpleBindings();
+					sb.put("msm", new MapScriptManager(this, mapleCharacter));
+					try {
+						MapleScriptInstance inst = script.execute(sb);
+						inst.function("onUserEnter");
+					} catch (ScriptException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (NoSuchMethodException e) {
+						
+					}
+				}
+				
+			}
 			
 			if(hasClock()){
 				mapleCharacter.getClient().sendPacket(PacketFactory.createClock(clock.getSecondsLeft()));
@@ -461,8 +488,8 @@ public class MapleMap {
 				return;
 			}
 		}
-		
 		try {
+			scriptInstance.setValue("msm", new MapScriptManager(this, mapleCharacter));
 			scriptInstance.function(funcName, args);
 		} catch (NoSuchMethodException e) {
 		} catch (ScriptException e) {
@@ -908,6 +935,11 @@ public class MapleMap {
 			}
 		}
 		return null;
+	}
+
+	public void reloadMapScript() {
+		scriptInstance = null;
+		scriptDisabled = false;
 	}
 	
 }

@@ -9,33 +9,13 @@ import maplestory.inventory.item.Item;
 import maplestory.player.MapleCharacter;
 
 public interface Inventory {
-
-	/**
-	 * The result of an item being added to an inventory
-	 *
-	 */
-	@AllArgsConstructor
-	@Data
-	public static class AddItemResult {
-		
-		private final boolean success;
-		private final boolean inventoryFull;
-		
-	}
-	
-	@Data
-	@AllArgsConstructor
-	public static class RemoveItemResult {
-		private final int remainingAmount;
-		private final boolean allRemoved;
-	}
 	
 	/**
 	 * Add an item to this inventory
 	 * @param item the item to add
-	 * @return see {@link AddItemResult}
+	 * @return true if all items were added
 	 */
-	public AddItemResult addItem(Item item);
+	public boolean addItem(Item item);
 	
 	public Map<Integer, Item> getItems();
 	
@@ -64,9 +44,9 @@ public interface Inventory {
 
 	public Item getItem(int index);
 
-	public RemoveItemResult removeItem(Item item);
+	public boolean removeItem(Item item);
 	
-	public RemoveItemResult removeItem(int id, int amount);
+	public boolean removeItem(int id, int amount);
 	
 	public int getProjectileId(int bulletCount, Item weapon);
 

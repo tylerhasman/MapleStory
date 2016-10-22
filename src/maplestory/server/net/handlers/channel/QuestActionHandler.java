@@ -102,7 +102,7 @@ public class QuestActionHandler extends MaplePacketHandler {
 				}
 				
 			}else{
-				if(quest.canStart(chr, npc)){
+				if(quest.canComplete(chr, npc)){
 					MapleScript script = new MapleScript("scripts/quest/"+questId+".js", "scripts/quest/fallback.js");
 					
 					chr.openQuestNpc(script, questId, npc, true);

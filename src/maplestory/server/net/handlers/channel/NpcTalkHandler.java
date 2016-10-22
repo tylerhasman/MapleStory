@@ -21,6 +21,7 @@ public class NpcTalkHandler extends MaplePacketHandler {
 		
 		MapleMapObject obj = client.getCharacter().getMap().getObject(oid);
 		
+		
 		if(obj instanceof MapleNPC){
 			
 			MapleNPC npc = (MapleNPC) obj;

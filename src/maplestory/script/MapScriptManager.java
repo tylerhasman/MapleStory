@@ -2,6 +2,7 @@ package maplestory.script;
 
 import maplestory.map.MapleMap;
 import maplestory.player.MapleCharacter;
+import maplestory.server.net.PacketFactory;
 
 public class MapScriptManager extends AbstractScriptManager {
 
@@ -14,6 +15,10 @@ public class MapScriptManager extends AbstractScriptManager {
 	
 	public MapleMap getMap(){
 		return getCharacter().getClient().getChannel().getMapFactory().getMap(map);
+	}
+	
+	public void grantGodlyStats(){
+		getClient().sendPacket(PacketFactory.aranGodlyStats());
 	}
 
 }

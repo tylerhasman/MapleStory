@@ -91,12 +91,6 @@ import constants.skills.Marksman;
 import constants.skills.ThunderBreaker;
 import constants.skills.WindArcher;
 
-/**
- * So much stuff ripped from MoopleDev (OdinMS?)
- * TODO: Essentially redo and make everything be a lot better
- * @author Tyler
- *
- */
 public class PacketFactory {
 
 	private final static long FT_UT_OFFSET = 116444592000000000L;
@@ -3578,6 +3572,41 @@ public class PacketFactory {
 		
 		return out.getPacket();
 		
+	}
+
+	public static byte[] showCombo(int combo) {
+		MaplePacketWriter out = new MaplePacketWriter(6);
+		out.writeShort(SendOpcode.SHOW_COMBO.getValue());
+		out.writeInt(combo);
+		
+		return out.getPacket();
+	}
+	
+	public static byte[] aranGodlyStats() {
+		final MaplePacketWriter mplew = new MaplePacketWriter();
+		mplew.writeShort(SendOpcode.FORCED_STAT_SET.getValue());
+		mplew.write(new byte[] { (byte) 0x1F, (byte) 0x0F, 0, 0, (byte) 0xE7, 3, (byte) 0xE7, 3, (byte) 0xE7, 3, (byte) 0xE7, 3, (byte) 0xFF, 0, (byte) 0xE7, 3, (byte) 0xE7, 3, (byte) 0x78, (byte) 0x8C });
+		return mplew.getPacket();
+	}
+
+	public static byte[] resetAranGodStats() {
+		MaplePacketWriter mplew = new MaplePacketWriter();
+		mplew.writeShort(SendOpcode.FORCED_STAT_RESET.getValue());
+		return mplew.getPacket();
+	}
+	
+	public static byte[] lockUI(boolean enable){
+		MaplePacketWriter out = new MaplePacketWriter(3);
+		out.writeShort(SendOpcode.LOCK_UI.getValue());
+		out.writeBool(enable);
+		return out.getPacket();
+	}
+	
+	public static byte[] disableUI(boolean disabled){
+		MaplePacketWriter out = new MaplePacketWriter(3);
+		out.writeShort(SendOpcode.DISABLE_UI.getValue());
+		out.writeBool(disabled);
+		return out.getPacket();
 	}
 	
 /*	public static byte[] showCashInventory(MapleCharacter chr) {

@@ -42,7 +42,7 @@ public class PetLootHandler extends MaplePacketHandler {
 				chr.getMap().broadcastPacket(PacketFactory.getPickupDroppedItemPacket(item, chr, pet));
 				chr.getMap().removeObject(item.getObjectId());
 			}else if(chr.getInventory(InventoryType.EQUIPPED).countById(ITEM_POUCH) >= 1){
-				if(chr.getInventory(item.getItemId()).addItem(item.getItem()).isSuccess()){
+				if(chr.getInventory(item.getItemId()).addItem(item.getItem())){
 					chr.getMap().broadcastPacket(PacketFactory.getPickupDroppedItemPacket(item, chr, pet));
 					chr.getMap().removeObject(item.getObjectId());	
 				}

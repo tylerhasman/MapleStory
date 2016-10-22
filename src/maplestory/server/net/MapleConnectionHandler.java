@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 
 
+
 import tools.TimerManager;
 import tools.TimerManager.MapleTask;
 import constants.LoginStatus;
@@ -37,6 +38,7 @@ import maplestory.server.MapleServer;
 import maplestory.server.net.handlers.DefaultMaplePacketHandler;
 import maplestory.server.net.handlers.NoOpHandler;
 import maplestory.server.net.handlers.PongHandler;
+import maplestory.server.net.handlers.channel.AranComboHandler;
 import maplestory.server.net.handlers.channel.AutoAggroHandler;
 import maplestory.server.net.handlers.channel.AutoAssignAPHandler;
 import maplestory.server.net.handlers.channel.CancelBuffHandler;
@@ -218,6 +220,7 @@ public class MapleConnectionHandler extends ChannelInboundHandlerAdapter {
 			handlers.put(RecvOpcode.USE_CHAIR.getValue(), new ChairSitRequestHandler());
 			handlers.put(RecvOpcode.CHAIR_ACTION.getValue(), new SitRequestHandler());
 			handlers.put(RecvOpcode.MESSENGER.getValue(), new MessengerHandler());
+			handlers.put(RecvOpcode.ARAN_COMBO_COUNTER.getValue(), new AranComboHandler());
 		}
 	}
 	

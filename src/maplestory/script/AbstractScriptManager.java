@@ -56,6 +56,18 @@ public class AbstractScriptManager {
 		character.getClient().sendPacket(PacketFactory.showIntro(path));
 	}
 	
+	public void giveExp(int amount){
+		character.giveExp(amount);
+	}
+	
+	public void startQuestScript(int questId, int npcId){
+		character.openQuestNpc(new MapleScript("scripts/quest/"+questId+".js"), questId, npcId, false);
+	}
+	
+	public void endQuestScript(int questId, int npcId){
+		character.openQuestNpc(new MapleScript("scripts/quest/"+questId+".js"), questId, npcId, true);
+	}
+	
 	public void openGuildCreateMenu(){
 		MaplePacketWriter writer = new MaplePacketWriter();
 		writer.writeShort(SendOpcode.GUILD_OPERATION.getValue());
@@ -73,6 +85,10 @@ public class AbstractScriptManager {
 		}else{
 			throw new IllegalArgumentException(itemId+" is not a consumable.");
 		}
+	}
+	
+	public void playSound(String path){
+		getClient().sendPacket(PacketFactory.playSound(path));
 	}
 	
 	public void changeJob(MapleJob job){
@@ -101,6 +117,12 @@ public class AbstractScriptManager {
 	
 	public void guideTalk(String message){
 		getClient().sendPacket(PacketFactory.guideTalk(message));
+		
+		int guideNpc = getCharacter().getJob() == MapleJob.NOBLESSE ? 1101008 : 1202000;
+		
+		String guideName = MapleLifeFactory.getNpcName(guideNpc);
+		
+		getClient().getCharacter().sendMessage(MessageType.LIGHT_BLUE_TEXT, guideName+": "+message);
 	}
 	
 	public void dropItemPresent(Point position, int... items){
@@ -115,7 +137,16 @@ public class AbstractScriptManager {
 	}
 
 	public void showInfo(String path){
-		getClient().getCharacter().showInfo(PopupInfo.valueOf(path));
+		try{
+			getClient().getCharacter().showInfo(PopupInfo.valueOf(path));
+		}catch(IllegalArgumentException e){
+			getClient().getLogger().error("No PopupInfo value for "+path);
+		}
+
+	}
+	
+	public void showEffect(String path){
+		getClient().sendPacket(PacketFactory.showInfo(path));
 	}
 	
 	public void showInfoText(String text){
@@ -183,7 +214,7 @@ public class AbstractScriptManager {
 	}
 	
 	public void openNpc(String script, int id){
-		MapleScript ms = new MapleScript("scripts/npc/"+script+".js");
+		MapleScript ms = new MapleScript("scripts/npc/"+script+".js", "scripts/npc/fallback.js");
 		
 		getCharacter().openNpc(ms, id);
 	}
@@ -215,11 +246,11 @@ public class AbstractScriptManager {
 		getClient().getCharacter().changeMap(map, map.getPortal(pid));
 	}
 	
-	public boolean haveItem(int itemId){
+	public boolean hasItem(int itemId){
 		return itemAmount(itemId) >= 1;
 	}
 	
-	public boolean haveItem(int itemId, int amount){
+	public boolean hasItem(int itemId, int amount){
 		return itemAmount(itemId) >= amount;
 	}
 	
@@ -258,11 +289,40 @@ public class AbstractScriptManager {
 	public boolean giveItem(int id, int amount) {
 		
 		if(amount > 0){
-			return character.getInventory(id).addItem(ItemFactory.getItem(id, amount)).isSuccess();
+			return character.getInventory(id).addItem(ItemFactory.getItem(id, amount));
 		}else{
-			return character.getInventory(id).removeItem(id, -amount).isAllRemoved();
+			return character.getInventory(id).removeItem(id, -amount);
 		}
 		
+	}
+	
+	public void displayAranIntro() {
+		String intro = "";
+		switch (getCharacter().getMapId()) {
+		case 914090010:
+			intro = "Effect/Direction1.img/aranTutorial/Scene0";
+			break;
+		case 914090011:
+			intro = "Effect/Direction1.img/aranTutorial/Scene1" + (getCharacter().getGender() == 0 ? "0" : "1");
+			break;
+		case 914090012:
+			intro = "Effect/Direction1.img/aranTutorial/Scene2" + (getCharacter().getGender() == 0 ? "0" : "1");
+			break;
+		case 914090013:
+			intro = "Effect/Direction1.img/aranTutorial/Scene3";
+			break;
+		case 914090100:
+			intro = "Effect/Direction1.img/aranTutorial/HandedPoleArm" + (getCharacter().getGender() == 0 ? "0" : "1");
+			break;
+		case 914090200:
+			intro = "Effect/Direction1.img/aranTutorial/Maha";
+			break;
+		}
+		if(intro.isEmpty()){
+			getClient().getLogger().error("Can't display aran intro on map "+getCharacter().getMapId());
+			return;
+		}
+		showIntro(intro);
 	}
 	
 	public String itemName(int id){

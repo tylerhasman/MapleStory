@@ -33,12 +33,14 @@ public class ChangeMapSpecialHandler extends MaplePacketHandler {
         	MapleScript script = new MapleScript("scripts/portal/"+portal.getScriptName()+".js", "scripts/portal/fallback.js");
         	
         	PortalScriptManager pm = new PortalScriptManager(client.getCharacter(), portal);
+        	client.getLogger().debug("Running portal script "+script.getFile().getPath());
         	SimpleBindings sb = new SimpleBindings();
         	sb.put("pm", pm);
         	try {
 				script.execute(sb).startPortal();
 			} catch (Exception e) {
 				e.printStackTrace();
+				client.getLogger().error("Error running script "+portal.getScriptName());
 			}
         	client.sendReallowActions();
         }else{

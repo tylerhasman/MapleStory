@@ -267,6 +267,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	
 	private int messengerId;
 	
+	@Getter
+	private int combo;
+	
 	public MapleCharacter(MapleClient client) {
 		this.client = client;
 		inventories = new HashMap<>();
@@ -304,6 +307,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         damageNumberGenerator = new CRand32();
         pets = new MaplePetInstance[3];
         messengerId = -1;
+	}
+	
+	public void setCombo(int combo){
+		if(combo < this.combo){
+			cancelBuffStats(MapleBuffStat.ARAN_COMBO);
+		}
+		this.combo = Math.min(30000, combo);
+		if(combo > 0 && client.getLoginStatus() == LoginStatus.IN_GAME){
+			client.sendPacket(PacketFactory.showCombo(combo));
+		}
 	}
 	
 	public boolean isMessengerOpen(){
@@ -1310,11 +1323,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	public void setMaxHp(int maxHp){
 		this.maxHp = maxHp;
 		updateStat(MapleStat.MAXHP, maxHp);
+		if(hp > maxHp){
+			setHp(maxHp);
+		}
 	}
 	
 	public void setMaxMp(int maxMp){
 		this.maxMp = maxMp;
 		updateStat(MapleStat.MAXMP, maxMp);
+		if(mp > maxMp){
+			setMp(maxMp);
+		}
 	}
 	
 	public void setMapId(int id){
@@ -2987,6 +3006,22 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			}
 		}
 		return -1;
+	}
+	
+	public void lockUI(){
+		client.sendPacket(PacketFactory.lockUI(true));
+	}
+
+	public void unlockUI(){
+		client.sendPacket(PacketFactory.lockUI(false));
+	}
+	
+	public void disableUI(){
+		client.sendPacket(PacketFactory.disableUI(true));
+	}
+	
+	public void enableUI(){
+		client.sendPacket(PacketFactory.disableUI(false));
 	}
 	
 	public boolean despawnPet(PetItem item) {

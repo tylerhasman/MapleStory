@@ -52,7 +52,7 @@ public class MapleMapFactory {
 		maps.put(mapid, map);
 		// map.setOnFirstUserEnter(NodeTool.getString(mapData.getChild("info/onFirstUserEnter"),
 		// String.valueOf(mapid)));
-		// map.setOnUserEnter(NodeTool.getString(mapData.getChild("info/onUserEnter"),
+		 map.setGlobalScriptOnUserEnter(mapData.readString("info/onUserEnter", ""));
 		// String.valueOf(mapid)));
 		map.setFieldLimit(mapData.readInt("info/fieldLimit"));
 		map.setMobInterval(mapData.readInt("info/createMoveInterval", 5000));

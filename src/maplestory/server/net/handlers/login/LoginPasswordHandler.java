@@ -23,7 +23,6 @@ public class LoginPasswordHandler extends MaplePacketHandler {
 		int result = client.login(username, password);
 		
 		if(result == 0){
-			System.out.println(client.getLoginStatus());
 			if(client.getLoginStatus() == LoginStatus.IN_GAME){
 				
 				for(World world : MapleServer.getWorlds()){

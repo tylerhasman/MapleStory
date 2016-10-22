@@ -24,12 +24,14 @@ package tools.data.output;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedList;
 import java.util.List;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import constants.ItemConstants;
 import maplestory.guild.MapleGuildEmblem;
 import maplestory.inventory.item.CashItem;
 import maplestory.inventory.item.EquipItem;
 import maplestory.inventory.item.Item;
+import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.inventory.item.PetItem;
 import maplestory.map.MapleMagicDoor;
 import maplestory.party.MapleParty;
@@ -237,7 +239,7 @@ public class MaplePacketWriter extends GenericLittleEndianWriter {
         writeShort(equip.getHands()); // hands
         writeShort(equip.getSpeed()); // speed
         writeShort(equip.getJump()); // jump
-        writeMapleAsciiString(" "+equip.getOwner()); // owner name
+        writeMapleAsciiString(equip.getOwner().isEmpty() ? "" : " "+equip.getOwner()); // owner name
         writeShort(equip.getFlag()); //Item Flags
 
         if (isCash) {

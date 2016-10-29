@@ -60,6 +60,7 @@ import maplestory.map.MaplePortal;
 import maplestory.party.MapleParty;
 import maplestory.party.PartyOperationType;
 import maplestory.party.MapleParty.PartyEntry;
+import maplestory.player.monsterbook.MonsterBook;
 import maplestory.quest.MapleQuest;
 import maplestory.quest.MapleQuestInstance;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
@@ -270,6 +271,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	@Getter
 	private int combo;
 	
+	@Getter
+	private MonsterBook monsterBook;
+	
 	public MapleCharacter(MapleClient client) {
 		this.client = client;
 		inventories = new HashMap<>();
@@ -277,6 +281,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		godModeEnabled = false;
 		activeChair = 0;
 		quests = new HashMap<>();
+		monsterBook = new MonsterBook(this);
 		
         for (InventoryType type : InventoryType.values()) {
             byte b = 48;
@@ -1772,7 +1777,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		
 		setMapId(to.getMapId());
 		
-		setPosition(pto.getPosition());
+		if(pto != null){
+			setPosition(pto.getPosition());
+		}
 		
 		MapleMap map = getMap();
 		

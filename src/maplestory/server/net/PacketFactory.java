@@ -56,6 +56,7 @@ import maplestory.player.MapleCharacter;
 import maplestory.player.MapleCharacterSnapshot;
 import maplestory.player.MapleNote;
 import maplestory.player.MaplePetInstance;
+import maplestory.player.monsterbook.MonsterCard;
 import maplestory.quest.MapleQuestInstance;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
 import maplestory.server.net.handlers.channel.AbstractDealDamageHandler.AttackInfo;
@@ -567,9 +568,14 @@ public class PacketFactory {
     }
     
     private static void addMonsterBookInfo(MaplePacketWriter mplew, MapleCharacter chr) {
-        mplew.writeInt(0);
-        mplew.write(0);
-        mplew.writeShort(0);
+        mplew.writeInt(chr.getMonsterBook().hasCover() ? chr.getMonsterBook().getCover() : 0);//Book cover
+        mplew.write(0);//Unknown
+        List<MonsterCard> cards = chr.getMonsterBook().getCards();
+        mplew.writeShort(cards.size());
+        for(MonsterCard card : cards){
+        	mplew.writeShort(card.getMonsterId() % 10000);
+        	mplew.write(card.getLevel());
+        }
     }
     
 
@@ -2153,12 +2159,11 @@ public class PacketFactory {
 		/*for (int sn : chr.getCashShop().getWishList()) {
 			mplew.writeInt(sn);
 		}*/
-		mplew.writeInt(/*chr.getMonsterBook().getBookLevel()*/1);
-		mplew.writeInt(/*chr.getMonsterBook().getNormalCard()*/0);
-		mplew.writeInt(/*chr.getMonsterBook().getSpecialCard()*/0);
-		mplew.writeInt(/*chr.getMonsterBook().getTotalCards()*/0);
-		mplew.writeInt(/*chr.getMonsterBookCover() > 0 ? MapleItemInformationProvider
-				.getInstance().getCardMobId(chr.getMonsterBookCover()) : */0);
+		mplew.writeInt(chr.getMonsterBook().getBookLevel());
+		mplew.writeInt(chr.getMonsterBook().getNormalCards());
+		mplew.writeInt(chr.getMonsterBook().getSpecialCards());
+		mplew.writeInt(chr.getMonsterBook().getTotalCards());
+		mplew.writeInt(0);//Book cover
 		Item medal = chr.getInventory(InventoryType.EQUIPPED).getItem((byte) -49);
 		if (medal != null) {
 			mplew.writeInt(medal.getItemId());
@@ -3606,6 +3611,37 @@ public class PacketFactory {
 		MaplePacketWriter out = new MaplePacketWriter(3);
 		out.writeShort(SendOpcode.DISABLE_UI.getValue());
 		out.writeBool(disabled);
+		return out.getPacket();
+	}
+
+	public static byte[] monsterBookCover(int coverId){
+		MaplePacketWriter out = new MaplePacketWriter(6);
+		out.writeShort(SendOpcode.MONSTER_BOOK_SET_COVER.getValue());
+		out.writeInt(coverId);
+		return out.getPacket();
+	}
+
+	public static byte[] monsterBookCardEffect() {
+		MaplePacketWriter out = new MaplePacketWriter(3);
+		out.writeShort(SendOpcode.FIELD_UPDATE.getValue());
+		out.write(0x0D);
+		return out.getPacket();
+	}
+
+	public static byte[] monsterBookAddCard(boolean success, int cardId, int level) {
+		MaplePacketWriter out = new MaplePacketWriter(11);
+		out.writeShort(SendOpcode.MONSTER_BOOK_SET_CARD.getValue());
+		out.writeBool(success);
+		out.writeInt(cardId);
+		out.writeInt(level);
+		return out.getPacket();
+	}
+
+	public static byte[] monsterBookForeignCardEffect(int id) {
+		MaplePacketWriter out = new MaplePacketWriter(7);
+		out.writeShort(SendOpcode.SHOW_FOREIGN_EFFECT.getValue());
+		out.writeInt(id);
+		out.write(0x0D);
 		return out.getPacket();
 	}
 	

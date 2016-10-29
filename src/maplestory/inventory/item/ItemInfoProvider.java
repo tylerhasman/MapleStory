@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import database.MonsterDropManager.MonsterDrop;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import maplestory.cashshop.CashShopItemData;
@@ -640,29 +641,22 @@ public class ItemInfoProvider {
 		return 20;
 	}
 	
-	public static void main(String[] args) {
-		List<Integer> ids = ItemInfoProvider.getAllItemIds();
+	
+	
+	public static boolean isConsumedOnPickup(int itemId){
 		
-		for(int id : ids){
-			
-			try{
-				Item item = ItemFactory.getItem(id, 1);
-				
-				if(item instanceof EquipItem){
-					System.out.println(id+" "+ItemInfoProvider.getItemName(id));
-					EquipItemInfo info = ((EquipItem) item).getStatInfo();
-					
-					System.out.println(info);
-				}
-			}catch(Exception e){
-				e.printStackTrace();
-				
-			}
-			
-
+		Node data = getItemData(itemId);
+		
+		if(data.hasChild("spec")){
+			return data.readByte("spec/consumeOnPickup", (byte) 0) == 1;
 		}
 		
-		System.out.println(ids.size());
+		return false;
+		
+	}
+
+	public static int getMonsterBookItemId(int cardId) {
+		return 2380000 + cardId;
 	}
 	
 }

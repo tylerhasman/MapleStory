@@ -13,6 +13,7 @@ import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.player.MapleCharacter;
 import maplestory.quest.MapleQuestInstance;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
+import maplestory.script.ItemScriptManager;
 import maplestory.server.MapleServer;
 import maplestory.server.net.PacketFactory;
 
@@ -94,7 +95,17 @@ public class MapleMapItem extends AbstractMapleMapObject {
 			chr.getClient().sendReallowActions();
 			success = true;
 		}else{
-			success = chr.getInventory(item.getItemId()).addItem(item);
+			if(!ItemInfoProvider.isConsumedOnPickup(getItemId())){
+				if(chr.getInventory(item.getItemId()).hasSpace(item.getItemId(), item.getAmount())){
+					success = chr.getInventory(item.getItemId()).addItem(item);
+				}else{
+					success = false;
+				}
+			}else{
+				success = true;
+				ItemScriptManager.onItemPickup(chr, this);
+				chr.getClient().sendReallowActions();
+			}
 		}
 		
 		if(success){

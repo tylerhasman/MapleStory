@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 
 
+
 import tools.TimerManager;
 import tools.TimerManager.MapleTask;
 import constants.LoginStatus;
@@ -49,6 +50,7 @@ import maplestory.server.net.handlers.channel.ChangeChannelHandler;
 import maplestory.server.net.handlers.channel.ChangeFameHandler;
 import maplestory.server.net.handlers.channel.ChangeMapHandler;
 import maplestory.server.net.handlers.channel.ChangeMapSpecialHandler;
+import maplestory.server.net.handlers.channel.ChangeMonsterBookCoverHandler;
 import maplestory.server.net.handlers.channel.CharInfoRequestHandler;
 import maplestory.server.net.handlers.channel.ClickGuideHandler;
 import maplestory.server.net.handlers.channel.CloseRangeDamageHandler;
@@ -221,6 +223,7 @@ public class MapleConnectionHandler extends ChannelInboundHandlerAdapter {
 			handlers.put(RecvOpcode.CHAIR_ACTION.getValue(), new SitRequestHandler());
 			handlers.put(RecvOpcode.MESSENGER.getValue(), new MessengerHandler());
 			handlers.put(RecvOpcode.ARAN_COMBO_COUNTER.getValue(), new AranComboHandler());
+			handlers.put(RecvOpcode.MONSTER_BOOK_COVER.getValue(), new ChangeMonsterBookCoverHandler());
 		}
 	}
 	

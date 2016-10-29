@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import constants.MessageType;
 import constants.MonsterStatus;
 import constants.ServerConstants;
+import constants.skills.FPMage;
 import tools.TimerManager;
 import tools.TimerManager.MapleTask;
 import database.MonsterDropManager;
@@ -28,13 +30,16 @@ import maplestory.map.MapleMapObject;
 import maplestory.map.MapleMapObjectType;
 import maplestory.party.MapleParty.PartyEntry;
 import maplestory.player.MapleCharacter;
+import maplestory.player.monsterbook.MonsterBook;
 import maplestory.quest.MapleQuestInstance;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
 import maplestory.server.MapleServer;
 import maplestory.server.net.PacketFactory;
 import maplestory.skill.MapleStatEffect;
 import maplestory.skill.MonsterStatusEffect;
+import maplestory.skill.SkillFactory;
 import maplestory.util.Pair;
+import maplestory.util.Randomizer;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
 
@@ -182,7 +187,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 	public void sendDestroyData(MapleClient client) {
 		client.sendPacket(PacketFactory.killMonster(getObjectId(), false));
 	}
-
+	
 	public void damage(MapleMapObject source, int amount){
 		if(!isAlive()){
 			return;
@@ -225,6 +230,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 	public void kill(MapleCharacter source){
 		
 		if(source != null){
+
 			if(stats.getExp() > 0){
 				
 				if(source.getParty() != null){
@@ -248,7 +254,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 					source.giveExp(stats.getExp() * ServerConstants.EXP_RATE);
 				}
 				
-
 			}
 			
 			for(MapleQuestInstance quest : source.getQuests(MapleQuestStatus.STARTED)){
@@ -329,8 +334,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 		List<MonsterDrop> actual = possible.stream().filter(drop -> drop.shouldDrop()).collect(Collectors.toList());
 		List<MonsterDrop> global = MonsterDropManager.getInstance().getGlobalDrops().stream().filter(drop -> drop.shouldDrop()).collect(Collectors.toList());
 		
+		actual.addAll(global);
+		
 		dropItems(chr, actual);
-		dropItems(chr, global);
 	}
 	
 	private boolean shouldDropQuestItem(MapleCharacter chr, MonsterDrop drop){

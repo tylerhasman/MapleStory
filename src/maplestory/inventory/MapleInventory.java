@@ -364,6 +364,7 @@ public class MapleInventory implements Inventory {
 				}
 			}
 			sendPacket(PacketFactory.getInventoryOperationPacket(true, changes));
+			return true;
 		}else{
 			int slot = getFreeSlot();
 			
@@ -379,8 +380,6 @@ public class MapleInventory implements Inventory {
 			return false;
 		}
 		
-		
-		return false;
 	}
 	
 	protected void sendPacket(byte[] packet){

@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.ToString;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemFactory;
+import maplestory.inventory.item.ItemInfoProvider;
+import maplestory.player.monsterbook.MonsterBook;
 import maplestory.util.Randomizer;
 
 public class MonsterDropManager {
@@ -94,6 +96,13 @@ public class MonsterDropManager {
 			
 		}catch(SQLException e){
 			
+		}
+		
+		int cardId = MonsterBook.getMonsterCardId(monsterId);
+		
+		if(cardId >= 0){
+			int itemId = ItemInfoProvider.getMonsterBookItemId(cardId);
+			drops.add(MonsterDrop.create(itemId, MonsterBook.getCardDropChance(monsterId), 1, 1));
 		}
 		
 		cache.put(monsterId, drops);

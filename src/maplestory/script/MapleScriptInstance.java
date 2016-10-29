@@ -7,6 +7,8 @@ import javax.script.ScriptException;
 
 import lombok.Getter;
 import lombok.Setter;
+import maplestory.map.MapleMapItem;
+import maplestory.player.MapleCharacter;
 
 public class MapleScriptInstance {
 
@@ -68,6 +70,10 @@ public class MapleScriptInstance {
 			
 			eng.getBindings(ScriptContext.ENGINE_SCOPE).put(name, obj);
 		}
+	}
+
+	public void itemPickup(MapleCharacter chr, MapleMapItem item) throws NoSuchMethodException, ScriptException {
+		function("onPickup", chr, item);
 	}
 
 /*	public void onUserEnter(MapleCharacter mapleCharacter) throws NoSuchMethodException, ScriptException {

@@ -112,12 +112,7 @@ public class TimerManager {
 				task.run();
 			}catch(Exception e){
 				logger.error("Error with task! Error below");
-				logger.error(e.getCause().getClass().getName());
-				for(StackTraceElement ele : e.getStackTrace()){
-					if(ele.getFileName() != null){
-						System.out.println(ele.toString());
-					}
-				}
+				e.printStackTrace();
 				logger.error("Error source below");
 				for(StackTraceElement ele : sourceStack){
 					if(ele.getFileName() != null){

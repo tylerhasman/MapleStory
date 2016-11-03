@@ -6,7 +6,8 @@ import java.util.List;
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
 import maplestory.life.MapleSummon;
-import maplestory.life.movement.LifeMovementFragment;
+import maplestory.life.movement.LifeMovement;
+import maplestory.life.movement.MovementPath;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.PacketFactory;
 
@@ -17,14 +18,14 @@ public class MoveSummonHandler extends MovementPacketHandler {
 		int oid = buf.readInt();
 		
 		Point startPos = readPosition(buf);
-		List<LifeMovementFragment> res = parseMovement(buf);
+		MovementPath res = parseMovement(buf);
 		
 		MapleCharacter chr = client.getCharacter();
 		
 		MapleSummon chosen = chr.getSummonByObjectId(oid);
 		
 		if(chosen != null){
-			updatePosition(res, chosen, 0);
+			res.translateLife(chosen);
 			chr.getMap().broadcastPacket(PacketFactory.moveSummon(chr.getId(), oid, startPos, res), chr.getId());
 		}
 	}

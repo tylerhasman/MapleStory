@@ -24,6 +24,9 @@ import maplestory.client.MapleClient;
 import maplestory.inventory.InventoryType;
 import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.life.movement.AbsoluteLifeMovement;
+import maplestory.life.movement.LifeMovement;
+import maplestory.life.movement.LifeMovementFactory;
+import maplestory.life.movement.MovementPath;
 import maplestory.map.AbstractLoadedMapleLife;
 import maplestory.map.MapleMap;
 import maplestory.map.MapleMapObject;
@@ -99,7 +102,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 		MapleCharacter controller = getController();
 		setController(null);
 		setPosition(getMap().calcDropPosition(point));
-		getMap().broadcastPacket(PacketFactory.getMoveMonsterPacket(0, -1, 0, 0, 0, 0, getObjectId(), getPosition(), Collections.singletonList(new AbsoluteLifeMovement(0, getPosition(), 10, 0))));
+		
+		MovementPath path = MovementPath.singleton(new AbsoluteLifeMovement(getPosition()));
+		
+		getMap().broadcastPacket(PacketFactory.getMoveMonsterPacket(0, -1, 0, 0, 0, 0, getObjectId(), getPosition(), path));
 		if(controller != null)
 			controller.controlMonster(this);
 	}

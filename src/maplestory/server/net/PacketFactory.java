@@ -43,7 +43,8 @@ import maplestory.life.MapleMount;
 import maplestory.life.MapleNPC;
 import maplestory.life.MapleSummon;
 import maplestory.life.MobSkill;
-import maplestory.life.movement.LifeMovementFragment;
+import maplestory.life.movement.LifeMovement;
+import maplestory.life.movement.MovementPath;
 import maplestory.map.MapleMagicDoor;
 import maplestory.map.MapleMap;
 import maplestory.map.MapleMapItem;
@@ -360,20 +361,13 @@ public class PacketFactory {
             mplew.writeInt(chr.getMarriageRing().getRingId());
         }*/
     }
-    
-	private static void serializeMovementList(LittleEndianWriter lew, List<LifeMovementFragment> moves) {
-		lew.write(moves.size());
-		for (LifeMovementFragment move : moves) {
-			move.serialize(lew);
-		}
-	}
 
-	public static byte[] movePlayer(int cid, List<LifeMovementFragment> moves) {
+	public static byte[] movePlayer(int cid, MovementPath path) {
 		MaplePacketWriter mplew = new MaplePacketWriter();
 		mplew.writeShort(SendOpcode.MOVE_PLAYER.getValue());
 		mplew.writeInt(cid);
 		mplew.writeInt(0);
-		serializeMovementList(mplew, moves);
+		mplew.writeMovementPath(path);
 		return mplew.getPacket();
 	}
     
@@ -1298,7 +1292,7 @@ public class PacketFactory {
         return mplew.getPacket();
     }
     
-    public static byte[] getMoveMonsterPacket(int useskill, int skill, int skill_1, int skill_2, int skill_3, int skill_4, int oid, Point startPos, List<LifeMovementFragment> moves) {
+    public static byte[] getMoveMonsterPacket(int useskill, int skill, int skill_1, int skill_2, int skill_3, int skill_4, int oid, Point startPos, MovementPath path) {
         MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.MOVE_MONSTER.getValue());
         mplew.writeInt(oid);
@@ -1310,7 +1304,7 @@ public class PacketFactory {
         mplew.write(skill_3);
         mplew.write(skill_4);
         mplew.writePos(startPos);
-        serializeMovementList(mplew, moves);
+        mplew.writeMovementPath(path);
         return mplew.getPacket();
     }
     
@@ -1936,13 +1930,13 @@ public class PacketFactory {
 		return mplew.getPacket();
 	}
 
-	public static byte[] moveSummon(int cid, int oid, Point startPos, List<LifeMovementFragment> moves) {
+	public static byte[] moveSummon(int cid, int oid, Point startPos, MovementPath path) {
 		MaplePacketWriter mplew = new MaplePacketWriter();
 		mplew.writeShort(SendOpcode.MOVE_SUMMON.getValue());
 		mplew.writeInt(cid);
 		mplew.writeInt(oid);
 		mplew.writePos(startPos);
-		serializeMovementList(mplew, moves);
+		mplew.writeMovementPath(path);
 		return mplew.getPacket();
 	}
 
@@ -3367,14 +3361,14 @@ public class PacketFactory {
 		return out.getPacket();
 	}
 
-	public static byte[] movePet(MapleCharacter chr, MaplePetInstance maplePetInstance, int slot, List<LifeMovementFragment> moves) {
+	public static byte[] movePet(MapleCharacter chr, MaplePetInstance maplePetInstance, int slot, MovementPath path) {
 		
 		MaplePacketWriter out = new MaplePacketWriter();
 		out.writeShort(SendOpcode.MOVE_PET.getValue());
 		out.writeInt(chr.getId());
 		out.write(slot);
 		out.writeInt(maplePetInstance.getSource().getItemId());
-		serializeMovementList(out, moves);
+		out.writeMovementPath(path);
 		
 		return out.getPacket();
 	}

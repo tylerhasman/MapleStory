@@ -6,7 +6,6 @@ import tools.data.output.MaplePacketWriter;
 import lombok.ToString;
 import maplestory.map.AbstractAnimatedMapleMapObject;
 import maplestory.map.AbstractLoadedMapleLife;
-import maplestory.map.AbstractMapleMapObject;
 import io.netty.buffer.ByteBuf;
 
 @ToString

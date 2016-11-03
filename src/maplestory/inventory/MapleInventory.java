@@ -16,7 +16,6 @@ import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.inventory.item.ItemType;
 import maplestory.player.MapleCharacter;
-import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
 import maplestory.util.Pair;
 

@@ -1,11 +1,7 @@
 package maplestory.life.movement;
 
-import java.nio.ByteOrder;
-
 import tools.data.output.MaplePacketWriter;
 import maplestory.map.AbstractAnimatedMapleMapObject;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 
 public class MovementPath {
 

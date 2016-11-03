@@ -1,12 +1,9 @@
 package maplestory.server.net.handlers.channel;
 
 import java.awt.Point;
-import java.util.List;
-
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
 import maplestory.life.MapleSummon;
-import maplestory.life.movement.LifeMovement;
 import maplestory.life.movement.MovementPath;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.PacketFactory;

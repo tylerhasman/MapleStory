@@ -10,10 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import constants.MessageType;
 import constants.MonsterStatus;
 import constants.ServerConstants;
-import constants.skills.FPMage;
 import tools.TimerManager;
 import tools.TimerManager.MapleTask;
 import database.MonsterDropManager;
@@ -24,8 +22,6 @@ import maplestory.client.MapleClient;
 import maplestory.inventory.InventoryType;
 import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.life.movement.AbsoluteLifeMovement;
-import maplestory.life.movement.LifeMovement;
-import maplestory.life.movement.LifeMovementFactory;
 import maplestory.life.movement.MovementPath;
 import maplestory.map.AbstractLoadedMapleLife;
 import maplestory.map.MapleMap;
@@ -33,16 +29,13 @@ import maplestory.map.MapleMapObject;
 import maplestory.map.MapleMapObjectType;
 import maplestory.party.MapleParty.PartyEntry;
 import maplestory.player.MapleCharacter;
-import maplestory.player.monsterbook.MonsterBook;
 import maplestory.quest.MapleQuestInstance;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
 import maplestory.server.MapleServer;
 import maplestory.server.net.PacketFactory;
 import maplestory.skill.MapleStatEffect;
 import maplestory.skill.MonsterStatusEffect;
-import maplestory.skill.SkillFactory;
 import maplestory.util.Pair;
-import maplestory.util.Randomizer;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
 

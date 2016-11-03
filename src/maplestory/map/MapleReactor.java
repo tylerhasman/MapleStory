@@ -2,12 +2,10 @@ package maplestory.map;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.script.ScriptException;
@@ -23,7 +21,6 @@ import maplestory.script.MapleScriptInstance;
 import maplestory.script.ReactorScriptManager;
 import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
-import maplestory.util.Randomizer;
 import maplestory.util.StringUtil;
 import me.tyler.mdf.Node;
 

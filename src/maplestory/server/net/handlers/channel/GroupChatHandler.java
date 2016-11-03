@@ -5,7 +5,6 @@ import lombok.Getter;
 import maplestory.client.MapleClient;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.MaplePacketHandler;
-import maplestory.world.World;
 
 public class GroupChatHandler extends MaplePacketHandler {
 

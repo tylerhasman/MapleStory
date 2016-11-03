@@ -23,13 +23,11 @@ package maplestory.life;
 
 import java.io.File;
 
-import tools.data.output.MaplePacketWriter;
 import lombok.Getter;
 import maplestory.client.MapleClient;
 import maplestory.map.AbstractLoadedMapleLife;
 import maplestory.map.MapleMapObjectType;
 import maplestory.server.net.PacketFactory;
-import maplestory.server.net.SendOpcode;
 
 public class MapleNPC extends AbstractLoadedMapleLife {
 	

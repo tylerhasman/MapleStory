@@ -2,7 +2,6 @@ package maplestory.player.monsterbook;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +11,6 @@ import lombok.Getter;
 import maplestory.client.MapleClient;
 import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.player.MapleCharacter;
-import maplestory.player.MapleCharacterSnapshot;
 import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
 import me.tyler.mdf.MapleFile;

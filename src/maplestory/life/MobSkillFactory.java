@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package maplestory.life;
 
 import java.awt.Point;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +29,6 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import maplestory.server.MapleStory;
-import me.tyler.mdf.MapleVector;
 import me.tyler.mdf.Node;
 
 /**

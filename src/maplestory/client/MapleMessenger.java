@@ -3,8 +3,6 @@ package maplestory.client;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.pisces.PiscesRenderer;
-
 import maplestory.player.MapleCharacter;
 import maplestory.player.MapleCharacterSnapshot;
 import maplestory.server.net.PacketFactory;

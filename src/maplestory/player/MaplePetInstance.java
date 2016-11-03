@@ -1,14 +1,10 @@
 package maplestory.player;
 
 import java.awt.Point;
-import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
 import maplestory.client.MapleClient;
 import maplestory.inventory.item.PetItem;
-import maplestory.life.movement.AbsoluteLifeMovement;
-import maplestory.life.movement.LifeMovement;
 import maplestory.life.movement.MovementPath;
 import maplestory.map.AbstractLoadedMapleLife;
 import maplestory.map.MapleMapObjectType;

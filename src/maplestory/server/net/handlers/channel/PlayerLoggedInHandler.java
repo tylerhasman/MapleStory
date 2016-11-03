@@ -7,7 +7,6 @@ import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
 import maplestory.map.MaplePortal;
 import maplestory.player.MapleCharacter;
-import maplestory.server.net.MapleConnectionHandler;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
 

@@ -1,6 +1,5 @@
 package maplestory.life.movement;
 
-import maplestory.util.Hex;
 import io.netty.buffer.ByteBuf;
 
 public class LifeMovementFactory {

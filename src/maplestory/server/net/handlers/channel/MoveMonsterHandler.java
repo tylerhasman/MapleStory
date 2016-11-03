@@ -1,8 +1,6 @@
 package maplestory.server.net.handlers.channel;
 
 import java.awt.Point;
-import java.util.List;
-
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
 import maplestory.life.MapleMonster;

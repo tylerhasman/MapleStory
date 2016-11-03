@@ -19,7 +19,7 @@ public class UseScrollHandler extends MaplePacketHandler {
 	@Override
 	public void handle(ByteBuf buf, MapleClient client) throws Exception {
 
-		int whatever = buf.readInt();
+		buf.skipBytes(4);//tRequestTime
 		
 		short slot = buf.readShort();
 		short dst = buf.readShort();

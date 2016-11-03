@@ -2,7 +2,6 @@ package maplestory.script;
 
 import java.awt.Point;
 
-import tools.TimerManager;
 import tools.data.output.MaplePacketWriter;
 import constants.MessageType;
 import constants.PopupInfo;
@@ -25,7 +24,6 @@ import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
 import maplestory.server.net.PacketFactory;
 import maplestory.server.net.SendOpcode;
 import maplestory.skill.SkillFactory;
-import maplestory.util.Randomizer;
 
 public class AbstractScriptManager {
 

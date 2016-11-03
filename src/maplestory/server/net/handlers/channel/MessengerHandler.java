@@ -7,7 +7,6 @@ import maplestory.client.MapleMessenger;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
-import maplestory.util.Hex;
 
 public class MessengerHandler extends MaplePacketHandler {
 

@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 import lombok.Getter;
 import maplestory.server.MapleStory;
-import maplestory.util.Randomizer;
 
 /**
  * This class by definition must replicate the programming language C's implementation of a random number generator
@@ -14,7 +13,7 @@ import maplestory.util.Randomizer;
  */
 public class CRand32 {
 	
-	private static final long CONSTANT = 0x6B5FCA6B;//This is defined in the MS client
+	//private static final long CONSTANT = 0x6B5FCA6B;//This is defined in the MS client
 	
 	@Getter
     private long seed1, seed2, seed3;

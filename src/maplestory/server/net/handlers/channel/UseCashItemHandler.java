@@ -15,7 +15,6 @@ import maplestory.player.MaplePetInstance;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
 import maplestory.util.Hex;
-import maplestory.util.StringUtil;
 
 public class UseCashItemHandler extends MaplePacketHandler {
 

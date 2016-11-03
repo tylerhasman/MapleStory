@@ -1,63 +1,70 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 package maplestory.life.movement;
 
 import java.awt.Point;
-import tools.data.output.LittleEndianWriter;
 
-public class AbsoluteLifeMovement extends AbstractLifeMovement {
-    private Point pixelsPerSecond;
-    private int unk;
+import tools.data.output.MaplePacketWriter;
+import lombok.ToString;
+import maplestory.map.AbstractAnimatedMapleMapObject;
+import maplestory.map.AbstractLoadedMapleLife;
+import maplestory.map.AbstractMapleMapObject;
+import io.netty.buffer.ByteBuf;
 
-    public AbsoluteLifeMovement(int type, Point position, int duration, int newstate) {
-        super((byte) type, position, duration, (byte) newstate);
-        pixelsPerSecond = new Point(50, 50);
-    }
+@ToString
+public class AbsoluteLifeMovement implements LifeMovement {
 
-    public Point getPixelsPerSecond() {
-        return pixelsPerSecond;
-    }
+	private byte type;
+	private int x, y;
+	private int vx, vy;
+	private int fh;
+	private byte state;
+	private short duration;
+	
+	public AbsoluteLifeMovement(byte type, ByteBuf buf) {
+		this.type = type;
+		
+		x = buf.readShort();
+		y = buf.readShort();
+		vx = buf.readShort();
+		vy = buf.readShort();
+		fh = buf.readShort();
+		state = buf.readByte();
+		duration = buf.readShort();
+	}
+	
+	public AbsoluteLifeMovement(Point position) {
+		x = (int) position.getX();
+		y = (int) position.getY();
+		vx = 0;
+		vy = 0;
+		type = 0;
+		duration = 10;
+	}
 
-    public void setPixelsPerSecond(Point wobble) {
-        this.pixelsPerSecond = wobble;
-    }
+	@Override
+	public void translateLife(AbstractAnimatedMapleMapObject life) {
+		life.setPosition(new Point(x, y));
+		life.setStance(state);
+		
+		if(life instanceof AbstractLoadedMapleLife){
+			((AbstractLoadedMapleLife) life).setFh(fh);
+		}
+	}
+	
+	@Override
+	public void encode(MaplePacketWriter buf) {
+		buf.write(type);
+		buf.writeShort(x);
+		buf.writeShort(y);
+		buf.writeShort(vx);
+		buf.writeShort(vy);
+		buf.writeShort(fh);
+		buf.write(state);
+		buf.writeShort(duration);
+	}
+	
+	@Override
+	public MoveType getType() {
+		return MoveType.ABSOLUTE;
+	}
 
-    public int getUnk() {
-        return unk;
-    }
-
-    public void setUnk(int unk) {
-        this.unk = unk;
-    }
-
-    @Override
-    public void serialize(LittleEndianWriter lew) {
-        lew.write(getType());
-        lew.writeShort(getPosition().x);
-        lew.writeShort(getPosition().y);
-        lew.writeShort(pixelsPerSecond.x);
-        lew.writeShort(pixelsPerSecond.y);
-        lew.writeShort(unk);
-        lew.write(getNewstate());
-        lew.writeShort(getDuration());
-    }
 }

@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package maplestory.life;
 
+import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -266,4 +267,5 @@ public class MapleLifeFactory {
             return removeAfter;
         }
     }
+
 }

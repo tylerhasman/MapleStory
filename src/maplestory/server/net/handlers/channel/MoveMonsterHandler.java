@@ -8,7 +8,7 @@ import maplestory.client.MapleClient;
 import maplestory.life.MapleMonster;
 import maplestory.life.MobSkill;
 import maplestory.life.MobSkillFactory;
-import maplestory.life.movement.LifeMovementFragment;
+import maplestory.life.movement.MovementPath;
 import maplestory.map.MapleMapObject;
 import maplestory.map.MapleMapObjectType;
 import maplestory.server.net.PacketFactory;
@@ -29,7 +29,7 @@ public class MoveMonsterHandler extends MovementPacketHandler {
         if(!monster.isAlive()){
         	return;
         }
-        List<LifeMovementFragment> res;
+        MovementPath res;
         byte skillByte = buf.readByte();
         byte skill = buf.readByte();
         int skill_1 = buf.readByte() & 0xFF;
@@ -80,7 +80,7 @@ public class MoveMonsterHandler extends MovementPacketHandler {
         }*/
         if (res != null) {
             client.getCharacter().getMap().broadcastPacket(client.getCharacter(), PacketFactory.getMoveMonsterPacket(skillByte, skill, skill_1, skill_2, skill_3, skill_4, objectid, startPos, res), monster.getPosition());
-            updatePosition(res, monster, -1);
+            res.translateLife(monster);
             mmo.setPosition(monster.getPosition());
         }
 	}

@@ -1,24 +1,31 @@
 package maplestory.life.movement;
 
+import java.awt.Point;
+
 import tools.data.output.MaplePacketWriter;
 import io.netty.buffer.ByteBuf;
 import lombok.ToString;
 import maplestory.map.AbstractAnimatedMapleMapObject;
 
 @ToString
-public class RelativeLifeMovement implements LifeMovement {
+public class TeleportLifeMovement implements LifeMovement {
+
+	private int x, y;
+	private int vx, vy;
+	private byte state;
 	
 	private byte type;
-	private int x, y;
-	private byte state;
-	private short duration;
 	
-	public RelativeLifeMovement(byte type, ByteBuf buf) {
+	public TeleportLifeMovement(byte type, ByteBuf buf) {
 		this.type = type;
+		
 		x = buf.readShort();
 		y = buf.readShort();
+		vx = buf.readShort();
+		vy = buf.readShort();
+		
 		state = buf.readByte();
-		duration = buf.readShort();
+		
 	}
 	
 	@Override
@@ -26,19 +33,20 @@ public class RelativeLifeMovement implements LifeMovement {
 		buf.write(type);
 		buf.writeShort(x);
 		buf.writeShort(y);
+		buf.writeShort(vx);
+		buf.writeShort(vy);
 		buf.write(state);
-		buf.writeShort(duration);
 	}
 
 	@Override
 	public void translateLife(AbstractAnimatedMapleMapObject life) {
-		life.getPosition().translate(x, y);
+		life.setPosition(new Point(x, y));
 		life.setStance(state);
 	}
-	
+
 	@Override
 	public MoveType getType() {
-		return MoveType.RELATIVE;
+		return MoveType.TELEPORT;
 	}
 
 }

@@ -25,17 +25,21 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.List;
 
+import constants.LoginStatus;
 import maplestory.client.MapleClient;
-import maplestory.life.movement.LifeMovementFragment;
+import maplestory.life.movement.MovementPath;
 import maplestory.server.net.PacketFactory;
 
 public final class MovePlayerHandler extends MovementPacketHandler {
 	
     public final void handle(ByteBuf buf, MapleClient client) {
+    	if(client.getLoginStatus() != LoginStatus.IN_GAME){
+    		return;
+    	}
         buf.skipBytes(9);
-        final List<LifeMovementFragment> res = parseMovement(buf);
+        MovementPath res = parseMovement(buf);
         if (res != null) {
-            updatePosition(res, client.getCharacter(), 0);
+        	res.translateLife(client.getCharacter());
             client.getCharacter().getMap().broadcastPacket(PacketFactory.movePlayer(client.getCharacter().getId(), res), client.getCharacter().getId());
         }
     }

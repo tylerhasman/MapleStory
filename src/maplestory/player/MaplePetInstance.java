@@ -5,10 +5,13 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
+import maplestory.client.MapleClient;
 import maplestory.inventory.item.PetItem;
 import maplestory.life.movement.AbsoluteLifeMovement;
 import maplestory.life.movement.LifeMovement;
-import maplestory.life.movement.LifeMovementFragment;
+import maplestory.life.movement.MovementPath;
+import maplestory.map.AbstractLoadedMapleLife;
+import maplestory.map.MapleMapObjectType;
 import maplestory.server.MapleServer;
 
 public class MaplePetInstance {
@@ -37,16 +40,39 @@ public class MaplePetInstance {
 		return MapleServer.getWorld(world).getPlayerStorage().getById(owner);
 	}
 	
-	public void move(List<LifeMovementFragment> frags){
-		for(LifeMovementFragment frag : frags){
-			if(frag instanceof LifeMovement){
-				if(frag instanceof AbsoluteLifeMovement){
-					position = frag.getPosition();
-				}
-				
-				stance = ((LifeMovement)frag).getNewstate();
-			}
+	public void move(MovementPath path){
+		FakePetLife fpl = new FakePetLife(position, stance);
+		
+		path.translateLife(fpl);
+		
+		position = fpl.getPosition();
+		stance = fpl.getStance();
+		foothold = fpl.getFh();
+	}
+	
+	private static class FakePetLife extends AbstractLoadedMapleLife {
+
+		public FakePetLife(Point position, int stance) {
+			super(0);
+			setPosition(position);
+			setStance(stance);
 		}
+
+		@Override
+		public void sendSpawnData(MapleClient client) {
+			
+		}
+
+		@Override
+		public void sendDestroyData(MapleClient client) {
+			
+		}
+
+		@Override
+		public MapleMapObjectType getType() {
+			return null;
+		}
+		
 	}
 	
 }

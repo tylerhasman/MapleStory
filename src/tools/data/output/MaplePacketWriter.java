@@ -33,6 +33,7 @@ import maplestory.inventory.item.EquipItem;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.inventory.item.PetItem;
+import maplestory.life.movement.MovementPath;
 import maplestory.map.MapleMagicDoor;
 import maplestory.party.MapleParty;
 import maplestory.party.MapleParty.PartyEntry;
@@ -312,6 +313,10 @@ public class MaplePacketWriter extends GenericLittleEndianWriter {
 		writeLong(0);
 	}
 
+	public void writeMovementPath(MovementPath path){
+		write(path.serialize());
+	}
+	
 	public void writePetInfo(MaplePetInstance instance, boolean showpet) {
 		PetItem source = instance.getSource();
 		write(1);

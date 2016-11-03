@@ -1,12 +1,9 @@
 package maplestory.server.net.handlers.channel;
 
-import java.util.List;
-
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
-import maplestory.life.movement.LifeMovementFragment;
+import maplestory.life.movement.MovementPath;
 import maplestory.player.MapleCharacter;
-import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
 
 public class MovePetHandler extends MovementPacketHandler {
@@ -16,7 +13,7 @@ public class MovePetHandler extends MovementPacketHandler {
 		int petId = buf.readInt();
 		buf.skipBytes(8);
 		
-		List<LifeMovementFragment> moves = parseMovement(buf);
+		MovementPath moves = parseMovement(buf);
 		
 		MapleCharacter chr = client.getCharacter();
 		int slot = chr.getPetSlot(petId);

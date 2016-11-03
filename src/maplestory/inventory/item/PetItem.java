@@ -3,7 +3,6 @@ package maplestory.inventory.item;
 import java.util.HashMap;
 import java.util.Map;
 
-import sun.nio.cs.ext.ISCII91;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import maplestory.util.StringUtil;

@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import tools.data.output.MaplePacketWriter;
 import constants.MessageType;
 import database.MapleDatabase;
 import database.QueryResult;

@@ -11,6 +11,7 @@ import java.util.Map;
 import lombok.Getter;
 import maplestory.inventory.InventoryType;
 import maplestory.player.MapleCharacter;
+import maplestory.player.MaplePetInstance;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
 import maplestory.server.MapleStory;
 import me.tyler.mdf.Node;
@@ -187,9 +188,16 @@ public interface MapleQuestRequirement {
 		
 		@Override
 		public boolean isConditionMet(MapleCharacter chr, int npc) {
-			//Pets not implemented...
-			MapleStory.getLogger().warn("Pets not implemented!");
-			return false;
+			
+			int bestCandidate = 0;
+			
+			for(MaplePetInstance pet : chr.getPets()){
+				if(pet != null && pet.getSource().getCloseness() > bestCandidate){
+					bestCandidate = pet.getSource().getCloseness();
+				}
+			}
+			
+			return bestCandidate >= min;
 		}
 
 		@Override

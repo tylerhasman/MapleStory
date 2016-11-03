@@ -14,7 +14,6 @@ import maplestory.player.MapleCharacter;
 import maplestory.quest.MapleQuestInstance;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
 import maplestory.script.ItemScriptManager;
-import maplestory.server.MapleServer;
 import maplestory.server.net.PacketFactory;
 
 public class MapleMapItem extends AbstractMapleMapObject {

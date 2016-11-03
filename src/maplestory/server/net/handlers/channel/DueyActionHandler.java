@@ -17,7 +17,6 @@ import maplestory.inventory.item.Item;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
-import maplestory.util.Hex;
 
 public class DueyActionHandler extends MaplePacketHandler {
 
@@ -29,8 +28,7 @@ public class DueyActionHandler extends MaplePacketHandler {
 			RESPONSE_PACKAGE_SUCCESS = 0x12,
 			RESPONSE_NOT_ENOUGH_MESOS = 0x0A,
 			RESPONSE_NAME_DOES_NOT_EXIST = 0x0C,
-			RESPONSE_SAME_ACCOUNT = 0x0D,
-			RESPONSE_PACKAGE_MSG = 0x1B;//Message to the player who recieved a package, if they are online
+			RESPONSE_SAME_ACCOUNT = 0x0D;
 
 	
 	@Override

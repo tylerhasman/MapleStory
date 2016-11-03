@@ -35,7 +35,6 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
 import maplestory.client.MapleClient;
-import maplestory.server.MapleServer;
 import maplestory.server.net.handlers.DefaultMaplePacketHandler;
 import maplestory.server.net.handlers.NoOpHandler;
 import maplestory.server.net.handlers.PongHandler;
@@ -118,7 +117,6 @@ import maplestory.server.net.handlers.login.ServerListRequestHandler;
 import maplestory.server.net.handlers.login.ServerStatusRequestHandler;
 import maplestory.server.net.handlers.login.ViewAllCharactersHandler;
 import maplestory.server.security.MapleAESOFB;
-import maplestory.world.World;
 
 public class MapleConnectionHandler extends ChannelInboundHandlerAdapter {
 	

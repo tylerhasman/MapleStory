@@ -1,7 +1,5 @@
 package maplestory.inventory.item;
 
-import maplestory.util.Randomizer;
-
 public class MapleEquipItem extends MapleItem implements EquipItem {
 
 	protected EquipItemInfo itemInfo;

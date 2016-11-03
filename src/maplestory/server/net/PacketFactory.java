@@ -43,7 +43,6 @@ import maplestory.life.MapleMount;
 import maplestory.life.MapleNPC;
 import maplestory.life.MapleSummon;
 import maplestory.life.MobSkill;
-import maplestory.life.movement.LifeMovement;
 import maplestory.life.movement.MovementPath;
 import maplestory.map.MapleMagicDoor;
 import maplestory.map.MapleMap;

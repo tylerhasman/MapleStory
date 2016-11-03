@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 import javax.script.Bindings;
 import javax.script.SimpleBindings;
 
-import tools.TimerManager;
 import tools.data.output.MaplePacketWriter;
 import constants.ExpTable;
 import constants.ItemLetterFont;
@@ -57,7 +56,6 @@ import maplestory.server.net.PacketFactory;
 import maplestory.server.net.SendOpcode;
 import maplestory.skill.Skill;
 import maplestory.skill.SkillFactory;
-import maplestory.util.Pair;
 import maplestory.util.StringUtil;
 
 public class GeneralChatHandler extends MaplePacketHandler {

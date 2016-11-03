@@ -23,8 +23,6 @@ package maplestory.server.net.handlers.channel;
 
 import io.netty.buffer.ByteBuf;
 
-import java.util.List;
-
 import constants.LoginStatus;
 import maplestory.client.MapleClient;
 import maplestory.life.movement.MovementPath;

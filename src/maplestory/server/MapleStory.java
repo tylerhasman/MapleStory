@@ -6,8 +6,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

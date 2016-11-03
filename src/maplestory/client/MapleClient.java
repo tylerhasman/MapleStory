@@ -22,10 +22,8 @@ import maplestory.channel.MapleChannel;
 import maplestory.player.MapleCharacter;
 import maplestory.server.MapleServer;
 import maplestory.server.net.PacketFactory;
-import maplestory.server.net.SendOpcode;
 import maplestory.server.security.AccountEncryption;
 import maplestory.server.security.MapleAESOFB;
-import maplestory.util.Hex;
 import maplestory.world.World;
 
 public class MapleClient {

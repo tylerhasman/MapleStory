@@ -13,7 +13,6 @@ import maplestory.guild.MapleGuildEmblem;
 import maplestory.guild.MapleGuildRankLevel;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.MaplePacketHandler;
-import maplestory.server.net.PacketFactory;
 import maplestory.world.World;
 
 public class GuildOperationHandler extends MaplePacketHandler {

@@ -21,14 +21,12 @@
 */
 package maplestory.server.net.handlers.channel;
 
-import tools.TimerManager;
 import maplestory.client.MapleClient;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.PacketFactory;
 import maplestory.skill.MapleStatEffect;
 import maplestory.skill.Skill;
 import maplestory.skill.SkillFactory;
-import maplestory.util.Hex;
 import io.netty.buffer.ByteBuf;
 
 public final class MagicDamageHandler extends AbstractDealDamageHandler {

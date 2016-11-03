@@ -7,7 +7,6 @@ import maplestory.inventory.item.Item;
 import maplestory.inventory.item.PetItem;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.MaplePacketHandler;
-import maplestory.server.net.PacketFactory;
 
 public class SpawnPetHandler extends MaplePacketHandler {
 

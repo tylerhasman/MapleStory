@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.SneakyThrows;
+import maplestory.cashshop.CashShopInventory;
 import maplestory.cashshop.CashShopItemData;
 import maplestory.cashshop.CashShopPackage;
 import maplestory.cashshop.CashShopWallet;
@@ -3640,6 +3641,36 @@ public class PacketFactory {
 		out.writeShort(SendOpcode.SHOW_FOREIGN_EFFECT.getValue());
 		out.writeInt(id);
 		out.write(0x0D);
+		return out.getPacket();
+	}
+
+	public static byte[] showCashShopInventory(MapleCharacter mapleCharacter) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		
+		CashShopInventory inventory = CashShopInventory.getCashInventory(mapleCharacter.getAccountId());
+		
+		out.writeShort(SendOpcode.CASHSHOP_OPERATION.getValue());
+		out.write(0x4B);
+		out.writeShort(inventory.numItems());
+		
+		for(CashItem item : inventory.getItems()){
+			out.writeCashItemInformation(item, mapleCharacter.getAccountId());
+		}
+		
+		out.writeShort(10);//storage slots
+		out.writeShort(3);//chr slots
+		
+		return out.getPacket();
+	}
+
+	public static byte[] cashShopTakeItem(Item item, int position) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.CASHSHOP_OPERATION.getValue());
+		
+		out.write(0x68);
+		out.writeShort(position);
+		out.writeItemInfo(item);
+		
 		return out.getPacket();
 	}
 	

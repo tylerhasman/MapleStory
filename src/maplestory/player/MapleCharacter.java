@@ -2,6 +2,7 @@ package maplestory.player;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.awt.image.PackedColorModel;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -728,6 +729,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			cashShopOpen = true;
 			client.sendPacket(PacketFactory.openCashshop(this));
 			client.sendPacket(PacketFactory.updateCashshopCash(CashShopWallet.getWallet(client.getCharacter())));
+			client.sendPacket(PacketFactory.showCashShopInventory(this));
 		}else{
 			throw new RuntimeException("Cannot open cashshop when we are already inside it");
 		}
@@ -1424,8 +1426,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
     
     public void saveToDatabase(boolean create) throws SQLException{
-    	
-    	getWorld().getLogger().debug("Saving "+getName()+" to database.");
     	
     	if(create){
     		MapleDatabase.getInstance().execute("INSERT INTO `characters` (`name`, `owner`, `world`,`gender`) VALUES (?, ?, ?,?)", name, client.getId(), world, gender);

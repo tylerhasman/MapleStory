@@ -10,6 +10,7 @@ import maplestory.cashshop.CashShopPackage;
 import maplestory.cashshop.CashShopWallet;
 import maplestory.cashshop.CashShopWallet.CashShopCurrency;
 import maplestory.client.MapleClient;
+import maplestory.inventory.Inventory;
 import maplestory.inventory.item.CashItem;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemInfoProvider;
@@ -122,7 +123,7 @@ public class CashShopOperationHandler extends MaplePacketHandler {
 					return;
 				}
 				
-				cashInventory.getItems().add(item);
+				cashInventory.addItem(item);
 				
 				client.sendPacket(PacketFactory.cashShopItemBought((CashItem)item, client.getId()));
 			}else if(action == OperationType.BUY_PACKAGE){
@@ -134,10 +135,8 @@ public class CashShopOperationHandler extends MaplePacketHandler {
 					return;
 				}
 				
-				System.out.println(cashPackage+" "+cashPackage.getItems());
-				
 				for(CashShopItemData data : cashPackage.getItems()){
-					cashInventory.getItems().add(data.createItem());
+					cashInventory.addItem(data.createItem());
 				}
 				
 				client.sendPacket(PacketFactory.cashShopPackageBought(cashPackage, client.getId()));
@@ -151,8 +150,35 @@ public class CashShopOperationHandler extends MaplePacketHandler {
 			
 			int birthday = buf.readInt();
 			
+		}else if(action == OperationType.REMOVE_FROM_CASH_INVENTORY){
+			
+			int itemId = buf.readInt();
+			
+			Item item = cashInventory.findById(itemId);
+			
+			if(item == null){
+				chr.sendMessage(MessageType.POPUP, "Error occured, try again later");
+				client.sendPacket(PacketFactory.updateCashshopCash(wallet));
+				return;
+			}
+			
+			Inventory cashInv = chr.getInventory(item.getItemId());
+			
+			if(cashInv.isFull()){
+				chr.sendMessage(MessageType.POPUP, "Your cash inventory is full!");
+				return;
+			}
+			
+			int slot = cashInv.getFreeSlot();
+			
+			cashInv.addItem(item);
+			cashInventory.removeItem(item);
+			
+			client.sendPacket(PacketFactory.cashShopTakeItem(item, slot));
+			
 		}else{
 			client.getLogger().warn("Unhandled cash shop operation "+action);
+			client.sendPacket(PacketFactory.updateCashshopCash(wallet));
 		}
 		
 	}

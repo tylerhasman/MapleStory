@@ -126,12 +126,14 @@ public class MapleQuest {
 			Node acts = root.readNode("Act.img").readNode(idStr);
 			Node reqs = root.readNode("Check.img").readNode(idStr);
 			
-			MapleQuestInfo questInfo = new MapleQuestInfo(quest, info, acts, reqs);
-			quest = new MapleQuest(id, questInfo);
 			
 			if(info == null || acts == null || reqs == null){
 				MapleStory.getLogger().warn("No data for quest "+id+" "+info+" "+acts+" "+reqs);
+				throw new IllegalArgumentException("No quest with id "+id);
 			}else{
+				MapleQuestInfo questInfo = new MapleQuestInfo(quest, info, acts, reqs);
+				quest = new MapleQuest(id, questInfo);
+				
 				questInfo.loadWzData(acts, reqs, quest);
 			}
 			

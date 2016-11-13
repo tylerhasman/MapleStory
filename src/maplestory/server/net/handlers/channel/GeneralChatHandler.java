@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import javax.script.Bindings;
 import javax.script.SimpleBindings;
 
@@ -20,6 +21,7 @@ import constants.ItemLetterFont;
 import constants.LoginStatus;
 import constants.MessageType;
 import constants.Song;
+import constants.SpecialEffect;
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
 import maplestory.guild.MapleGuild;
@@ -102,7 +104,8 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					int id = Integer.parseInt(args[1]);
 					
 					client.getChannel().getMapFactory().unloadMap(id);
-					
+				}else if(args[0].equalsIgnoreCase("!effect")){
+					client.sendPacket(PacketFactory.showSpecialEffect(SpecialEffect.valueOf(args[1])));
 				}else if(args[0].equalsIgnoreCase("!reloadmapscript")){
 					client.getCharacter().getMap().reloadMapScript();
 				}else if(args[0].equalsIgnoreCase("!textdrop")){

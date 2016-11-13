@@ -85,6 +85,7 @@ import constants.MonsterStatus;
 import constants.ServerConstants;
 import constants.SmegaType;
 import constants.Song;
+import constants.SpecialEffect;
 import constants.skills.Bowmaster;
 import constants.skills.Buccaneer;
 import constants.skills.Corsair;
@@ -3276,15 +3277,15 @@ public class PacketFactory {
 		return out.getPacket();
 	}
 	
-	public static byte[] showSpecialEffect(int effect) {
+	public static byte[] showSpecialEffect(SpecialEffect effect) {
 		final MaplePacketWriter mplew = new MaplePacketWriter();
 		mplew.writeShort(SendOpcode.FIELD_UPDATE.getValue());
-		mplew.write(effect);
+		mplew.write(effect.getPacketId());
 		return mplew.getPacket();
 	}
 
 	public static byte[] playPortalSound() {
-		return showSpecialEffect(7);
+		return showSpecialEffect(SpecialEffect.PORTAL_SOUND);
 	}
 
 	public static byte[] mobDamageMobFriendly(MapleMonster mob, int damage) {
@@ -3578,6 +3579,10 @@ public class PacketFactory {
 		out.writeInt(combo);
 		
 		return out.getPacket();
+	}
+	
+	public static byte[] questCompleteEffect(){
+		return showSpecialEffect(SpecialEffect.QUEST_COMPLETE);
 	}
 	
 	public static byte[] aranGodlyStats() {

@@ -2802,6 +2802,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			client.sendPacket(PacketFactory.updateQuestInfo(quest));
 		}else if(qs == MapleQuestStatus.COMPLETED){
 			client.sendPacket(PacketFactory.completeQuest(quest));
+			client.sendPacket(PacketFactory.questCompleteEffect());
 		}
 	}
 

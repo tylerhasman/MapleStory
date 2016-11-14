@@ -25,7 +25,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import constants.ItemConstants;
 import maplestory.guild.MapleGuildEmblem;
 import maplestory.inventory.item.CashItem;
 import maplestory.inventory.item.EquipItem;

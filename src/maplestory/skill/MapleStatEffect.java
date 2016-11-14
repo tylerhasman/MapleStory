@@ -22,7 +22,6 @@ package maplestory.skill;
  */
 
 import constants.FieldLimit;
-import constants.ItemConstants;
 import constants.MapleBuffStat;
 import constants.MapleDisease;
 import constants.MapleStat;

@@ -1,6 +1,5 @@
 package maplestory.server.net.handlers.channel;
 
-import constants.ItemConstants;
 import constants.MapleBuffStat;
 import constants.skills.DawnWarrior;
 import constants.skills.NightWalker;

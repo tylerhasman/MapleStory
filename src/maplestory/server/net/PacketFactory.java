@@ -77,7 +77,6 @@ import maplestory.util.StringUtil;
 import maplestory.world.World;
 import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketWriter;
-import constants.ItemConstants;
 import constants.MapleBuffStat;
 import constants.MapleDisease;
 import constants.MapleEmote;

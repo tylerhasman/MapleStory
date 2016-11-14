@@ -15,6 +15,7 @@ import maplestory.inventory.InventoryType;
 import maplestory.inventory.MapleWeaponType;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemInfoProvider;
+import maplestory.inventory.item.ItemType;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.PacketFactory;
 import maplestory.skill.MapleStatEffect;
@@ -88,7 +89,7 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
 		
 		if(projectile != 0 || soulArrow || isConsumeException(attack.skill)){
 			int visProjectile = projectile;
-			if(ItemConstants.isThrowingStar(projectile)){
+			if(ItemType.THROWING_STAR.isThis(projectile)){
 				CashInventory cashInventory = (CashInventory) chr.getInventory(InventoryType.CASH);
 				
 				int change = cashInventory.getVisibleProjectile();

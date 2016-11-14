@@ -30,6 +30,7 @@ import maplestory.guild.MapleGuildEmblem;
 import maplestory.inventory.item.CashItem;
 import maplestory.inventory.item.EquipItem;
 import maplestory.inventory.item.Item;
+import maplestory.inventory.item.ItemType;
 import maplestory.inventory.item.PetItem;
 import maplestory.life.movement.MovementPath;
 import maplestory.map.MapleMagicDoor;
@@ -215,7 +216,7 @@ public class MaplePacketWriter extends GenericLittleEndianWriter {
             
             writeShort(item.getFlag()); // flag
 
-            if (ItemConstants.isRechargable(item.getItemId())) {
+            if (item.isA(ItemType.RECHARGABLE)) {
                 writeInt(2);
                 write(new byte[]{(byte) 0x54, 0, 0, (byte) 0x34});
             }

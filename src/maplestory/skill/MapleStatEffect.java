@@ -93,6 +93,7 @@ import lombok.Setter;
 import maplestory.inventory.Inventory;
 import maplestory.inventory.InventoryType;
 import maplestory.inventory.item.Item;
+import maplestory.inventory.item.ItemType;
 import maplestory.life.MapleMonster;
 import maplestory.life.MapleMount;
 import maplestory.life.MapleSummon;
@@ -678,7 +679,7 @@ public class MapleStatEffect {
             for (int i = 0; i < use.getSize(); i++) { // impose order...
                 Item item = use.getItem(i);
                 if (item != null) {
-                    if (ItemConstants.isThrowingStar(item.getItemId()) && item.getAmount() >= 200) {
+                    if (item.isA(ItemType.THROWING_STAR) && item.getAmount() >= 200) {
                         projectile = item.getItemId();
                         break;
                     }

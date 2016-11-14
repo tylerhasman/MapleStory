@@ -36,6 +36,7 @@ import maplestory.inventory.item.CashItem;
 import maplestory.inventory.item.DueyParcel;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemInfoProvider;
+import maplestory.inventory.item.ItemType;
 import maplestory.inventory.item.ScrollResult;
 import maplestory.inventory.storage.MapleStorageBox;
 import maplestory.inventory.storage.MapleStorageBox.StoragePacketType;
@@ -2642,7 +2643,7 @@ public class PacketFactory {
 			buf.writeInt(item.getPitchPrice());
 			buf.writeInt(0);//Can be used x minutes after purchase
 			buf.writeInt(0);
-			if(!ItemConstants.isRechargable(item.getItemId())){
+			if(!ItemType.RECHARGABLE.isThis(item.getItemId())){
 				buf.writeShort(1);//Stack size?
 				buf.writeShort(item.getQuantity());
 			}else{

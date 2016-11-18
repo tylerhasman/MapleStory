@@ -7,17 +7,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import maplestory.server.MapleStory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import constants.ServerConstants;
+import config.MapleServerConfiguration;
 
 public class Database {
-	
-	//private ReentrantLock dbLock = new ReentrantLock(true);
 
 	private HikariDataSource ds;
 	
@@ -75,7 +76,7 @@ public class Database {
 			log.error("Issue with script '"+script+"'");
 			throw e;
 		}finally{
-			if(ServerConstants.VERBOSE_DATABASE)
+			if(MapleStory.getServerConfig().isVerboseDatabaseEnabled())
 				log.debug(script+" executed in "+(System.currentTimeMillis() - start)+" ms");
 		}
 	}
@@ -95,7 +96,7 @@ public class Database {
 			}
 			
 		}finally{
-			if(ServerConstants.VERBOSE_DATABASE)
+			if(MapleStory.getServerConfig().isVerboseDatabaseEnabled())
 				log.debug(script+" query executed in "+(System.currentTimeMillis() - start)+" ms");
 		}
 		

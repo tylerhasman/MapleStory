@@ -22,7 +22,6 @@ import javax.script.SimpleBindings;
 
 import constants.ItemLetterFont;
 import constants.MessageType;
-import constants.ServerConstants;
 import tools.TimerManager;
 import tools.TimerManager.MapleTask;
 import lombok.Getter;
@@ -41,6 +40,7 @@ import maplestory.script.MapScriptManager;
 import maplestory.script.MapleScript;
 import maplestory.script.MapleScriptInstance;
 import maplestory.server.MapleServer;
+import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
 import maplestory.skill.MonsterStatusEffect;
 
@@ -220,7 +220,7 @@ public class MapleMap {
 			return false;
 		}
 		
-		return countLoadedNeighborsWithPlayers() <= ServerConstants.MAP_NEIGHBOR_UNLOAD_THRESHHOLD && (System.currentTimeMillis() - lastPlayerEnter) > ServerConstants.EMPTY_MAP_UNLOAD_TIME;
+		return countLoadedNeighborsWithPlayers() <= MapleStory.getServerConfig().getMapNeighborThreshold() && (System.currentTimeMillis() - lastPlayerEnter) > MapleStory.getServerConfig().getMapUnloadTime();
 	}
 	
 	public void setMonsterSpawnsEnabled(boolean flag) {
@@ -483,7 +483,7 @@ public class MapleMap {
 					return;
 				}
 			}else{
-				if(ServerConstants.CACHE_SCRIPTS)
+				if(MapleStory.getServerConfig().isScriptCachingEnabled())
 					scriptDisabled = true;
 				return;
 			}

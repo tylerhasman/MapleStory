@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import constants.ServerConstants;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 import maplestory.client.MapleClient;
 import maplestory.player.MapleCharacter;
+import maplestory.server.MapleStory;
 import database.MapleDatabase;
 import database.QueryResult;
 
@@ -126,7 +126,7 @@ public class CashShopWallet {
 				
 				wallet = new CashShopWallet(accountId, nxCash, maplePoints, prepaidCash);
 			
-				if(ServerConstants.CACHE_CASH_SHOP_WALLETS){
+				if(MapleStory.getServerConfig().isCacheCashShopWalletsEnabled()){
 					walletCache.put(accountId, wallet);
 				}
 			}

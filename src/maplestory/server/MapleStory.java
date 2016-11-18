@@ -9,11 +9,11 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import config.MapleServerConfiguration;
 import lombok.Getter;
 import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.skill.SkillFactory;
 import me.tyler.mdf.MapleFile;
-import constants.ServerConstants;
 import database.MapleDatabase;
 import database.MonsterDropManager;
 
@@ -25,6 +25,13 @@ public class MapleStory {
 	private static final File dataSourceFolder = new File("wz/");
 	
 	private static final Map<String, MapleFile> dataFiles = new HashMap<>();
+	
+	@Getter
+	private static MapleServerConfiguration serverConfig = null;
+	
+	public static void reloadConfig() throws IOException{
+		serverConfig = new MapleServerConfiguration(new File("config.yml"));
+	}
 	
 	private static void loadMapleData(){
 
@@ -39,11 +46,16 @@ public class MapleStory {
 		loadMapleFile("Quest.mdf");
 		loadMapleFile("Reactor.mdf");
 		
-
 	}
 	
-	public static void main(String[] args) {
-
+	public static void main(String[] args) throws IOException {
+		
+		logger.info("Loading configuration...");
+		
+		reloadConfig();
+		
+		logger.info("Config loaded, maplestory version "+serverConfig.getMapleVersion());
+		
 		long timeToTake = System.currentTimeMillis();
 		
 		loadMapleData();	
@@ -63,7 +75,7 @@ public class MapleStory {
         logger.info("Creating database connection pool.");
 		
 		try{
-			MapleDatabase.createInstance(ServerConstants.JDBC, ServerConstants.DB_USER, ServerConstants.DB_PASS);
+			MapleDatabase.createInstance(serverConfig.getJdbc(), serverConfig.getDbUser(), serverConfig.getDbPassword());
 			MapleDatabase.getInstance().execute("UPDATE `accounts` SET `loggedin`=?", 0);
 			logger.info("Database connection successful!");
 		}catch(RuntimeException e){

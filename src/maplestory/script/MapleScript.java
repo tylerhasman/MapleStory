@@ -14,8 +14,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import constants.ServerConstants;
 import lombok.Getter;
+import maplestory.server.MapleStory;
 
 public class MapleScript {
 
@@ -61,7 +61,7 @@ public class MapleScript {
 	
 	public MapleScriptInstance execute(Bindings engineBindings) throws ScriptException, IOException {
 		
-		if(ServerConstants.CACHE_SCRIPTS){
+		if(MapleStory.getServerConfig().isScriptCachingEnabled()){
 			MapleScript cachedCopy = getCachedCopy(file);
 			
 			if(cachedCopy != null){
@@ -84,7 +84,7 @@ public class MapleScript {
 		
 		Invocable inv = (Invocable) engine;
 		
-		if(ServerConstants.CACHE_SCRIPTS){
+		if(MapleStory.getServerConfig().isScriptCachingEnabled()){
 			cache.put(file.getPath().toLowerCase(), this);
 		}
 		

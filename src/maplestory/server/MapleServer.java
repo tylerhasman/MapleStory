@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 
 import tools.TimerManager;
 import constants.MessageType;
-import constants.ServerConstants;
 import lombok.Getter;
 import maplestory.channel.MapleChannel;
 import maplestory.player.MapleCharacter;
@@ -45,7 +44,7 @@ public class MapleServer implements Runnable{
 		for(int i = 0; i < numWorlds;i++){
 			worlds.add(new World(i, 2, eventLoopGroupBoss, eventLoopGroupWorker));
 		}
-		if(ServerConstants.ENABLE_AUTO_SAVE){
+		if(MapleStory.getServerConfig().isAutoSaveEnabled()){
 			TimerManager.scheduleRepeatingTask(new Runnable() {
 				
 				@Override
@@ -63,7 +62,7 @@ public class MapleServer implements Runnable{
 					}
 				}
 				
-			}, ServerConstants.AUTO_SAVE_INTERVAL, ServerConstants.AUTO_SAVE_INTERVAL, TimeUnit.MILLISECONDS);
+			}, MapleStory.getServerConfig().getAutoSaveInterval(), MapleStory.getServerConfig().getAutoSaveInterval(), TimeUnit.MILLISECONDS);
 		}
 	}
 	
@@ -116,7 +115,7 @@ public class MapleServer implements Runnable{
 		.childOption(ChannelOption.SO_KEEPALIVE, true);
 		
 		try {
-			serverChannel = b.bind(ServerConstants.LOGIN_PORT).sync();
+			serverChannel = b.bind(MapleStory.getServerConfig().getLoginPort()).sync();
 			
 			serverChannel.channel().closeFuture().sync();
 			

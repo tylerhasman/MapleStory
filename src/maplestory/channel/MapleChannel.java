@@ -16,11 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import constants.MessageType;
-import constants.ServerConstants;
+
 import tools.TimerManager;
 import lombok.Getter;
 import maplestory.map.MapleMapFactory;
 import maplestory.player.MapleCharacter;
+import maplestory.server.MapleStory;
 import maplestory.server.net.MapleConnectionHandler;
 import maplestory.server.net.PacketFactory;
 import maplestory.world.World;
@@ -71,7 +72,7 @@ public class MapleChannel {
 			logger.error("Failed to bind to port "+port);
 		}
 		
-		if(ServerConstants.ENABLE_MAP_UNLOADING){
+		if(MapleStory.getServerConfig().isMapUnloadingEnabled()){
 			TimerManager.scheduleRepeatingTask(new Runnable() {
 				
 				@Override
@@ -79,7 +80,7 @@ public class MapleChannel {
 					mapFactory.unloadDeadMaps();
 				}
 				
-			}, 1000, ServerConstants.EMPTY_MAP_UNLOAD_TIME + 5000, TimeUnit.MILLISECONDS);
+			}, 1000, MapleStory.getServerConfig().getMapUnloadTime() + 5000, TimeUnit.MILLISECONDS);
 		}
 		
 

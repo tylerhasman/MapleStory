@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import constants.MessageType;
-import constants.ServerConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import maplestory.inventory.InventoryType;
@@ -16,6 +15,7 @@ import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.player.MapleCharacter;
 import maplestory.player.MapleJob;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
+import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
 import maplestory.skill.MapleStatEffect;
 import maplestory.skill.Skill;
@@ -400,7 +400,7 @@ public interface MapleQuestAction {
 
 		@Override
 		public void run(MapleCharacter chr, int selection) {
-			chr.giveExp(amount * ServerConstants.QUEST_EXP_RATE);
+			chr.giveExp(amount * MapleStory.getServerConfig().getQuestExpRate());
 		}
 		
 	}

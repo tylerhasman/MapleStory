@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 
 import constants.LoginStatus;
-import constants.ServerConstants;
+import constants.MessageType;
 import database.MapleDatabase;
 import database.QueryResult;
 import io.netty.channel.Channel;
@@ -21,6 +21,7 @@ import lombok.Setter;
 import maplestory.channel.MapleChannel;
 import maplestory.player.MapleCharacter;
 import maplestory.server.MapleServer;
+import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
 import maplestory.server.security.AccountEncryption;
 import maplestory.server.security.MapleAESOFB;
@@ -179,7 +180,7 @@ public class MapleClient {
 		}
 		
 		try {
-			sendPacket(PacketFactory.getChannelChange(InetAddress.getByName(ServerConstants.CHANNEL_SERVER_IP), channel.getPort()));
+			sendPacket(PacketFactory.getChannelChange(InetAddress.getByName(MapleStory.getServerConfig().getChannelServerIp()), channel.getPort()));
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}

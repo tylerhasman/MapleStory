@@ -61,6 +61,7 @@ import maplestory.player.MaplePetInstance;
 import maplestory.player.monsterbook.MonsterCard;
 import maplestory.quest.MapleQuestInstance;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
+import maplestory.server.MapleStory;
 import maplestory.server.net.handlers.channel.AbstractDealDamageHandler.AttackInfo;
 import maplestory.server.net.handlers.channel.GroupChatHandler.GroupChatType;
 import maplestory.server.net.handlers.channel.SummonAttackHandler.SummonAttack;
@@ -83,7 +84,6 @@ import constants.MapleEmote;
 import constants.MapleStat;
 import constants.MessageType;
 import constants.MonsterStatus;
-import constants.ServerConstants;
 import constants.SmegaType;
 import constants.Song;
 import constants.SpecialEffect;
@@ -447,7 +447,7 @@ public class PacketFactory {
         mplew.write(world.getChannelCount());
         for (MapleChannel ch : world.getChannels()) {
             mplew.writeMapleAsciiString(serverName + "-" + ch.getId());
-            mplew.writeInt((ch.getConnectedPlayerCount() * 1200) / ServerConstants.CHANNEL_LOAD);
+            mplew.writeInt((ch.getConnectedPlayerCount() * 1200) / MapleStory.getServerConfig().getChannelLoad());
             mplew.write(1);
             mplew.writeShort(ch.getId());
         }
@@ -471,13 +471,13 @@ public class PacketFactory {
         for (MapleCharacter chr : chars) {
             addCharEntry(mplew, chr, false);
         }
-        if (ServerConstants.ENABLE_PIC) {
+        if (MapleStory.getServerConfig().isPicEnabled()) {
             mplew.write(c.isPicCreated() ? 1 : 0);
         } else {
             mplew.write(2);
         }
        
-        mplew.writeInt(ServerConstants.CHARACTER_SLOTS);
+        mplew.writeInt(MapleStory.getServerConfig().getCharacterSlots());
         
         return mplew.getPacket();
     }
@@ -1475,7 +1475,7 @@ public class PacketFactory {
         mplew.write(mod);
         mplew.writeInt(item.getObjectId());
         mplew.writeBool(item.isMesoDrop()); // 1 mesos, 0 item, 2 and above all item meso bag,
-        mplew.writeInt(item.isMesoDrop() ? item.getItemId() / ServerConstants.MESO_RATE : item.getItemId()); // drop object ID
+        mplew.writeInt(item.isMesoDrop() ? item.getItemId() / MapleStory.getServerConfig().getMesoRate() : item.getItemId()); // drop object ID
         mplew.writeInt(item.getOwner()); // owner charid/paryid :)
         mplew.write(item.getDropType().getId()); // 0 = timeout for non-owner, 1 = timeout for non-owner's party, 2 = FFA, 3 = explosive/FFA
         mplew.writePos(to);

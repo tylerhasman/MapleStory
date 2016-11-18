@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import constants.MonsterStatus;
-import constants.ServerConstants;
 import tools.TimerManager;
 import tools.TimerManager.MapleTask;
 import database.MonsterDropManager;
@@ -32,6 +31,7 @@ import maplestory.player.MapleCharacter;
 import maplestory.quest.MapleQuestInstance;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
 import maplestory.server.MapleServer;
+import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
 import maplestory.skill.MapleStatEffect;
 import maplestory.skill.MonsterStatusEffect;
@@ -233,7 +233,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 			if(stats.getExp() > 0){
 				
 				if(source.getParty() != null){
-					int exp = stats.getExp() * ServerConstants.EXP_RATE;
+					int exp = stats.getExp() * MapleStory.getServerConfig().getExpRate();
 					
 					double bonus = source.getParty().getExpBonus(source);
 					
@@ -250,7 +250,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 					}
 					
 				}else{
-					source.giveExp(stats.getExp() * ServerConstants.EXP_RATE);
+					source.giveExp(stats.getExp() * MapleStory.getServerConfig().getExpRate());
 				}
 				
 			}
@@ -318,7 +318,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 			Point real = (Point) getPosition().clone();
 			real.translate(startX, 0);
 			if(drop.getItemId() == 0){
-				getMap().dropMesos(drop.getAmount() * ServerConstants.MESO_RATE, real, chr, this);
+				getMap().dropMesos(drop.getAmount() * MapleStory.getServerConfig().getMesoRate(), real, chr, this);
 			}else{
 				getMap().dropItem(drop.getItem(), real, chr, this);
 			}

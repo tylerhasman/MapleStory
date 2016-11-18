@@ -70,6 +70,7 @@ import maplestory.script.MapleScriptInstance;
 import maplestory.script.NpcConversationManager;
 import maplestory.script.QuestScriptManager;
 import maplestory.server.MapleServer;
+import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
 import maplestory.server.net.handlers.channel.GroupChatHandler.GroupChatType;
 import maplestory.shop.MapleShop;
@@ -91,7 +92,6 @@ import constants.MapleEmote;
 import constants.MapleStat;
 import constants.MessageType;
 import constants.PopupInfo;
-import constants.ServerConstants;
 import constants.skills.Assassin;
 import constants.skills.Bishop;
 import constants.skills.BlazeWizard;
@@ -796,7 +796,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			client.sendPacket(PacketFactory.partyStatus(PartyOperationType.ALREADY_IN_PARTY));
 			return false;
 		}
-		if(getLevel() < 10 && !ServerConstants.ALLOW_BEGINNER_PARTIES){
+		if(getLevel() < 10 && !MapleStory.getServerConfig().isBeginnerPartiesAllowed()){
 			getClient().sendPacket(PacketFactory.partyStatus(PartyOperationType.CANT_CREATE_BEGINNER));
 			return false;
 		}

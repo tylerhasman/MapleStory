@@ -3,8 +3,9 @@ package maplestory.inventory.item;
 import maplestory.inventory.InventoryType;
 import maplestory.inventory.item.ItemInfoProvider.SkillBookData;
 import maplestory.inventory.item.PetItem.PetDataSnapshot;
+import maplestory.server.MapleStory;
 import maplestory.util.Randomizer;
-import constants.ServerConstants;
+
 import database.QueryResult;
 
 public class ItemFactory {
@@ -75,7 +76,7 @@ public class ItemFactory {
 	}
 	
 	public static Item getItem(int itemId, int amount, String owner){
-		return getItem(itemId, amount, owner, ServerConstants.DEFAULT_CASH_ITEM_EXPIRE_TIME);
+		return getItem(itemId, amount, owner, MapleStory.getServerConfig().getDefaultCashItemExpireTime());
 	}
 	
 	public static Item getItem(int itemId, int amount){

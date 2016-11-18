@@ -7,115 +7,21 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import tools.TimerManager;
 import tools.TimerManager.MapleTask;
 import constants.LoginStatus;
 import constants.MessageType;
-import constants.ServerConstants;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
 import maplestory.client.MapleClient;
+import maplestory.server.MapleStory;
 import maplestory.server.net.handlers.DefaultMaplePacketHandler;
 import maplestory.server.net.handlers.NoOpHandler;
 import maplestory.server.net.handlers.PongHandler;
-import maplestory.server.net.handlers.channel.AranComboHandler;
-import maplestory.server.net.handlers.channel.AutoAggroHandler;
-import maplestory.server.net.handlers.channel.AutoAssignAPHandler;
-import maplestory.server.net.handlers.channel.CancelBuffHandler;
-import maplestory.server.net.handlers.channel.CashShopCouponHandler;
-import maplestory.server.net.handlers.channel.CashShopOperationHandler;
-import maplestory.server.net.handlers.channel.ChairSitRequestHandler;
-import maplestory.server.net.handlers.channel.ChangeChannelHandler;
-import maplestory.server.net.handlers.channel.ChangeFameHandler;
-import maplestory.server.net.handlers.channel.ChangeMapHandler;
-import maplestory.server.net.handlers.channel.ChangeMapSpecialHandler;
-import maplestory.server.net.handlers.channel.ChangeMonsterBookCoverHandler;
-import maplestory.server.net.handlers.channel.CharInfoRequestHandler;
-import maplestory.server.net.handlers.channel.ClickGuideHandler;
-import maplestory.server.net.handlers.channel.CloseRangeDamageHandler;
-import maplestory.server.net.handlers.channel.DamageReactorHandler;
-import maplestory.server.net.handlers.channel.DamageSummonHandler;
-import maplestory.server.net.handlers.channel.DenyPartyInviteHandler;
-import maplestory.server.net.handlers.channel.DistributeApHandler;
-import maplestory.server.net.handlers.channel.DistributeSpHandler;
-import maplestory.server.net.handlers.channel.DueyActionHandler;
-import maplestory.server.net.handlers.channel.EnterCashshopHandler;
-import maplestory.server.net.handlers.channel.EnterMTSHandler;
-import maplestory.server.net.handlers.channel.FaceExpressionHandler;
-import maplestory.server.net.handlers.channel.GeneralChatHandler;
-import maplestory.server.net.handlers.channel.GroupChatHandler;
-import maplestory.server.net.handlers.channel.GuildOperationHandler;
-import maplestory.server.net.handlers.channel.HealOverTimeHandler;
-import maplestory.server.net.handlers.channel.CancelItemEffectHandler;
-import maplestory.server.net.handlers.channel.ItemMoveHandler;
-import maplestory.server.net.handlers.channel.ItemPickupHandler;
-import maplestory.server.net.handlers.channel.KeymapChangeHandler;
-import maplestory.server.net.handlers.channel.MagicDamageHandler;
-import maplestory.server.net.handlers.channel.MesoDropHandler;
-import maplestory.server.net.handlers.channel.MessengerHandler;
-import maplestory.server.net.handlers.channel.MonsterBombHandler;
-import maplestory.server.net.handlers.channel.MonsterDamageMonsterHandler;
-import maplestory.server.net.handlers.channel.MoveMonsterHandler;
-import maplestory.server.net.handlers.channel.MovePetHandler;
-import maplestory.server.net.handlers.channel.MovePlayerHandler;
-import maplestory.server.net.handlers.channel.MoveSummonHandler;
-import maplestory.server.net.handlers.channel.NpcAnimationHandler;
-import maplestory.server.net.handlers.channel.NpcMoreTalkHandler;
-import maplestory.server.net.handlers.channel.NpcShopHandler;
-import maplestory.server.net.handlers.channel.NpcTalkHandler;
-import maplestory.server.net.handlers.channel.PartyOperationHandler;
-import maplestory.server.net.handlers.channel.PetLootHandler;
-import maplestory.server.net.handlers.channel.PlayerLoggedInHandler;
-import maplestory.server.net.handlers.channel.QuestActionHandler;
-import maplestory.server.net.handlers.channel.RangedAttackHandler;
-import maplestory.server.net.handlers.channel.SitRequestHandler;
-import maplestory.server.net.handlers.channel.SkillEffectHandler;
-import maplestory.server.net.handlers.channel.SpawnPetHandler;
-import maplestory.server.net.handlers.channel.SpecialMoveHandler;
-import maplestory.server.net.handlers.channel.StorageHandler;
-import maplestory.server.net.handlers.channel.SummonAttackHandler;
-import maplestory.server.net.handlers.channel.TakeDamageHandler;
-import maplestory.server.net.handlers.channel.UpdateCashShopCurrencyHandler;
-import maplestory.server.net.handlers.channel.UseCashItemHandler;
-import maplestory.server.net.handlers.channel.UseInnerPortalHandler;
-import maplestory.server.net.handlers.channel.UseItemHandler;
-import maplestory.server.net.handlers.channel.UseMagicDoorHandler;
-import maplestory.server.net.handlers.channel.UseMountFoodHandler;
-import maplestory.server.net.handlers.channel.UseScrollHandler;
-import maplestory.server.net.handlers.channel.UseSkillBookHandler;
-import maplestory.server.net.handlers.channel.UseSummonBagHandler;
-import maplestory.server.net.handlers.channel.WhisperHandler;
-import maplestory.server.net.handlers.login.CharListRequestHandler;
-import maplestory.server.net.handlers.login.CharSelectWithPicHandler;
-import maplestory.server.net.handlers.login.CheckCharNameHandler;
-import maplestory.server.net.handlers.login.ClientStartErrorHandler;
-import maplestory.server.net.handlers.login.CreateCharHandler;
-import maplestory.server.net.handlers.login.DeleteCharHandler;
-import maplestory.server.net.handlers.login.LoginPasswordHandler;
-import maplestory.server.net.handlers.login.RegisterPicHandler;
-import maplestory.server.net.handlers.login.ServerListRequestHandler;
-import maplestory.server.net.handlers.login.ServerStatusRequestHandler;
-import maplestory.server.net.handlers.login.ViewAllCharactersHandler;
+import maplestory.server.net.handlers.channel.*;
+import maplestory.server.net.handlers.login.*;
 import maplestory.server.security.MapleAESOFB;
 
 public class MapleConnectionHandler extends ChannelInboundHandlerAdapter {
@@ -235,12 +141,12 @@ public class MapleConnectionHandler extends ChannelInboundHandlerAdapter {
         ivRecv[3] = (byte) (Math.random() * 255);
         ivSend[3] = (byte) (Math.random() * 255);
         
-        MapleAESOFB sendCypher = new MapleAESOFB(key, ivSend, (short) (0xFFFF - ServerConstants.MAPLE_VERSION));
-        MapleAESOFB recvCypher = new MapleAESOFB(key, ivRecv, (short) ServerConstants.MAPLE_VERSION);
+        MapleAESOFB sendCypher = new MapleAESOFB(key, ivSend, (short) (0xFFFF - MapleStory.getServerConfig().getMapleVersion()));
+        MapleAESOFB recvCypher = new MapleAESOFB(key, ivRecv, (short) MapleStory.getServerConfig().getMapleVersion());
 		
 		ctx.pipeline().addFirst(new MaplePacketDecoder(this), new MaplePacketEncoder(this), new SendPingOnIdle(5, 1, 5, this));
 		
-		ctx.channel().writeAndFlush(PacketFactory.getHandshakePacket(ServerConstants.MAPLE_VERSION, ivRecv, ivSend, 8));
+		ctx.channel().writeAndFlush(PacketFactory.getHandshakePacket(MapleStory.getServerConfig().getMapleVersion(), ivRecv, ivSend, 8));
 
 		logger = LoggerFactory.getLogger("["+ctx.channel().remoteAddress()+"]");
 		
@@ -295,7 +201,7 @@ public class MapleConnectionHandler extends ChannelInboundHandlerAdapter {
 		
 
 		
-		if(ServerConstants.KICK_ON_ERROR){
+		if(MapleStory.getServerConfig().isPlayerKickedOnError()){
 			ctx.channel().close();
 		}else{
 			if(getClient() != null){

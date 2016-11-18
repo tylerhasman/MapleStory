@@ -5,25 +5,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-
-import com.mysql.fabric.Server;
-
-import constants.ServerConstants;
 import database.MapleDatabase;
 import database.QueryResult;
-import lombok.Getter;
 import lombok.ToString;
 import maplestory.inventory.InventoryType;
 import maplestory.inventory.item.CashItem;
-import maplestory.inventory.item.EquipItem;
 import maplestory.inventory.item.Item;
-import maplestory.inventory.item.ItemFactory;
 import maplestory.inventory.item.ItemInfoProvider;
-import maplestory.inventory.item.ItemType;
 import maplestory.inventory.item.MapleCashItem;
 import maplestory.inventory.item.MapleEquipCashItem;
-import maplestory.inventory.item.PetItem;
+import maplestory.server.MapleStory;
 
 @ToString
 public class CashShopInventory {
@@ -98,9 +89,9 @@ public class CashShopInventory {
 				long uniqueId = result.get("unique_id");
 				
 				if(InventoryType.getByItemId(itemId) != InventoryType.EQUIP){
-					item = new MapleCashItem(itemId, 1, null, ServerConstants.DEFAULT_CASH_ITEM_EXPIRE_TIME, uniqueId);
+					item = new MapleCashItem(itemId, 1, null, MapleStory.getServerConfig().getDefaultCashItemExpireTime() + System.currentTimeMillis(), uniqueId);
 				}else{
-					item = new MapleEquipCashItem(itemId, 1, ServerConstants.DEFAULT_CASH_ITEM_EXPIRE_TIME, uniqueId, ItemInfoProvider.getEquipInfo(itemId));
+					item = new MapleEquipCashItem(itemId, 1, MapleStory.getServerConfig().getDefaultCashItemExpireTime() + System.currentTimeMillis(), uniqueId, ItemInfoProvider.getEquipInfo(itemId));
 				}
 				
 				inv.items.add(item);

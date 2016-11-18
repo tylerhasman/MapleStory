@@ -2,10 +2,10 @@ package maplestory.server.net.handlers.login;
 
 import java.net.InetAddress;
 
-import constants.ServerConstants;
 import io.netty.buffer.ByteBuf;
 import lombok.SneakyThrows;
 import maplestory.client.MapleClient;
+import maplestory.server.MapleStory;
 import maplestory.server.net.MaplePacketHandler;
 
 public class RegisterPicHandler extends MaplePacketHandler {
@@ -25,7 +25,7 @@ public class RegisterPicHandler extends MaplePacketHandler {
 			client.closeConnection();
 		}else{
 			client.registerPic(pic);
-			InetAddress ip = InetAddress.getByName(ServerConstants.CHANNEL_SERVER_IP);
+			InetAddress ip = InetAddress.getByName(MapleStory.getServerConfig().getChannelServerIp());
 			int port = client.getChannel().getPort();
 			client.sendChannelAddress(ip, port, charId);
 		}

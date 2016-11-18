@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import constants.MessageType;
-import constants.ServerConstants;
 import database.MapleDatabase;
 import database.QueryResult;
 import lombok.Getter;
@@ -27,6 +26,7 @@ import maplestory.guild.MapleGuild;
 import maplestory.party.MapleParty;
 import maplestory.player.MapleCharacter;
 import maplestory.server.MapleServer;
+import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
 
 public class World {
@@ -54,7 +54,7 @@ public class World {
 		loadAllGuilds();
 		channels = new ArrayList<>(numChannels);
 		for(int i = 0; i < numChannels;i++){
-			channels.add(new MapleChannel(i, ServerConstants.CHANNEL_PORT+i, this, eventLoopGroupBoss, eventLoopGroupWorker));
+			channels.add(new MapleChannel(i, MapleStory.getServerConfig().getChannelPort()+i, this, eventLoopGroupBoss, eventLoopGroupWorker));
 		}
 	}
 	
@@ -143,7 +143,7 @@ public class World {
 	}
 	
 	public int getMaxPlayers(){
-		return ServerConstants.CHANNEL_LOAD * getChannelCount();
+		return MapleStory.getServerConfig().getChannelLoad() * getChannelCount();
 	}
 	
 	public void broadcastPacket(byte[] packet){

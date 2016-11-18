@@ -12,6 +12,7 @@ import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemFactory;
 import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.player.monsterbook.MonsterBook;
+import maplestory.server.MapleStory;
 import maplestory.util.Randomizer;
 
 public class MonsterDropManager {
@@ -118,7 +119,7 @@ public class MonsterDropManager {
 		private final int min, max;
 		
 		public boolean shouldDrop(){
-			return Randomizer.nextInt(1000000) <= chance;
+			return (Randomizer.nextInt(1000000) * MapleStory.getServerConfig().getDropRate()) <= chance;
 		}
 		
 		public int getAmount(){

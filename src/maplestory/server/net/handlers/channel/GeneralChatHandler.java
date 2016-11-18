@@ -66,19 +66,17 @@ public class GeneralChatHandler extends MaplePacketHandler {
 	public void handle(ByteBuf buf, MapleClient client) {
 		String text = readMapleAsciiString(buf);
 		
+	
+		
 		try{
 			if(text.startsWith("!")){
+				if(!client.isGM()){
+					client.getCharacter().sendMessage(MessageType.PINK_TEXT, "Press the trade button for your commands");
+					return;
+				}
 				String[] args = text.split(" ");
 				
-				if(args[0].equalsIgnoreCase("!job")){
-					int id = Integer.parseInt(args[1]);
-					
-					client.getCharacter().setJob(MapleJob.getById(id));
-				}else if(args[0].equalsIgnoreCase("!exp")){
-					int amount = Integer.parseInt(args[1]);
-					
-					client.getCharacter().giveExp(amount);
-				}else if(args[0].equalsIgnoreCase("!ping")){
+				if(args[0].equalsIgnoreCase("!ping")){
 					String name = client.getCharacter().getName();
 					if(args.length > 1){
 						name = args[1];

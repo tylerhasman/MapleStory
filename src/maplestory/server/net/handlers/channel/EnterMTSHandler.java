@@ -5,6 +5,7 @@ import maplestory.client.MapleClient;
 import maplestory.life.MapleLifeFactory;
 import maplestory.life.MapleNPC;
 import maplestory.player.MapleCharacter;
+import maplestory.script.MapleScript;
 import maplestory.server.net.MaplePacketHandler;
 
 public class EnterMTSHandler extends MaplePacketHandler {
@@ -22,9 +23,8 @@ public class EnterMTSHandler extends MaplePacketHandler {
 			return;
 		}*/
 		
-		MapleNPC npc = MapleLifeFactory.getNPC(2080005);
 		
-		chr.openNpc(npc);
+		chr.openNpc(new MapleScript("scripts/npc/trade_button_npc.js"), 2080005);
 		
 		client.sendReallowActions();
 		

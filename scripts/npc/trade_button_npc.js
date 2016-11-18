@@ -3,12 +3,10 @@ var fm_map = 910000000;
 var option = -1;
 var job = null;
 
-var options = ["Warp to the Free Market", "Job Advance", "Change Appearance", "Warp to a Map"];
+var options = ["Warp to the Free Market", "Change Jobs", "Change Appearance", "Warp to a Map", "Item Spawner", "Exp Boost", "Information"];
 
 function start(){
-
 	action(1, 0, 0);
-
 }
 
 function action(mode, type, selection){
@@ -74,11 +72,18 @@ function do_option(selection){
 		}
 	
 	}else if(selection == 1){
-		cm.sendJobAdvance();
+		//cm.sendJobAdvance();
+		cm.openNpc("job_switcher", 2080005);
 	}else if(selection == 2){
 		cm.openNpc("all_hair", 2080005);
 	}else if(selection == 3){
 		cm.openNpc("map_search", 2080005);
+	}else if(selection == 4){
+		cm.openNpc("lookup_item", 2080005);
+	}else if(selection == 5){
+		cm.openNpc("exp_npc", 2080005);
+	}else if(selection == 6){
+		cm.openNpc("information", 2080005);
 	}else{
 		cm.dispose();
 	}

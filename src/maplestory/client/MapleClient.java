@@ -242,7 +242,25 @@ public class MapleClient {
 			List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `id`,`pic`,`loggedin`,`gm`,`password`,`salt`,`login_message` FROM `accounts` WHERE `username`=?", username);
 			
 			if(results.size() == 0){
-				return 5;//No account found
+				
+				if(MapleStory.getServerConfig().isAutoRegisterEnabled()){
+					String salt = AccountEncryption.getRandomSalt();
+					String hashedPassword = AccountEncryption.hash(password, salt);
+					MapleDatabase.getInstance().execute("INSERT INTO `accounts` (`username`, `password`, `salt`) VALUES (?, ?, ?)", username, hashedPassword, salt);
+					
+					results = MapleDatabase.getInstance().query("SELECT `id`,`pic`,`loggedin`,`gm`,`password`,`salt`,`login_message` FROM `accounts` WHERE `username`=?", username);
+					
+					if(results.size() == 0){
+						throw new RuntimeException("Auto-Register failed! "+username);
+					}else{
+						MapleStory.getLogger().info("[Auto Register] Registered account "+username);
+						sendPacket(PacketFactory.getServerMessagePacket(MessageType.POPUP, "Account auto-registered! Press the trade button once in game for commands", 0, false));
+					}
+				}else{
+					return 5;//No account found
+				}
+				
+				
 			}
 			
 			QueryResult first = results.get(0);

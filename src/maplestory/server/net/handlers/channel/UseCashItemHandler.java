@@ -1,5 +1,6 @@
 package maplestory.server.net.handlers.channel;
 
+import java.util.List;
 import java.util.Map.Entry;
 
 import constants.MessageType;
@@ -97,6 +98,21 @@ public class UseCashItemHandler extends MaplePacketHandler {
 			
 			client.getWorld().broadcastPacket(PacketFactory.getAvatarMegaphone(chr, client.getChannelId(), itemId, lines, whisper));
 			
+			
+		}else if(itemId == 5370000){//Chalkboard
+			
+			String message = readMapleAsciiString(buf);
+			
+			
+			chr.openChalkboard(message);
+			
+			
+	/*		byte[] remaining = new byte[buf.readableBytes()];
+			buf.readBytes(remaining);
+			
+			
+			System.out.println(message);
+			System.out.println(Hex.toHex(remaining));*/
 			
 			
 		}else{

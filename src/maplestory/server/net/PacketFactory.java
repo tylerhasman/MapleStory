@@ -309,12 +309,12 @@ public class PacketFactory {
         } else {
             */writer.write(0);/*
         }*/
-        /*if (chr.getChalkboard() != null) {
-            mplew.write(1);
-            mplew.writeMapleAsciiString(chr.getChalkboard());
+        if (chr.getChalkboardText() != null) {
+            writer.write(1);
+            writer.writeMapleAsciiString(chr.getChalkboardText());
         } else {
-            */writer.write(0);/*
-        }*/
+            writer.write(0);
+        }
         addRingLook(writer, chr, true);
         addRingLook(writer, chr, false);
         addMarriageRingLook(writer, chr);
@@ -1702,7 +1702,6 @@ public class PacketFactory {
      * @param speaker
      * @return
      */
-    public static byte[] getNPCTalk(MapleNPC npc, byte msgType, String talk, String endBytes, byte speaker) {
     public static byte[] getNPCTalk(MapleNPC npc, byte msgType, String talk, byte[] endBytes, byte speaker) {
         MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.NPC_TALK.getValue());
@@ -3672,6 +3671,19 @@ public class PacketFactory {
 		out.writeShort(position);
 		out.writeItemInfo(item);
 		
+		return out.getPacket();
+	}
+
+	public static byte[] chalkboard(MapleCharacter chr, String board, boolean open) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.CHALKBOARD.getValue());
+		out.writeInt(chr.getId());
+		if(!open){
+			out.write(0);
+		}else{
+			out.write(1);
+			out.writeMapleAsciiString(board);
+		}
 		return out.getPacket();
 	}
 	

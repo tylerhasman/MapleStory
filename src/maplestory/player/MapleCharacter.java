@@ -275,6 +275,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	@Getter
 	private MonsterBook monsterBook;
 	
+	@Getter
+	private String chalkboardText;
+	
 	public MapleCharacter(MapleClient client) {
 		this.client = client;
 		inventories = new HashMap<>();
@@ -313,6 +316,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         damageNumberGenerator = new CRand32();
         pets = new MaplePetInstance[3];
         messengerId = -1;
+	}
+	
+	public void openChalkboard(String text){
+		
+		this.chalkboardText = text;
+		
+		getMap().broadcastPacket(PacketFactory.chalkboard(this, text, true));
+		
+	}
+	
+	public void closeChalkboard(){
+		getMap().broadcastPacket(PacketFactory.chalkboard(this, null, false));
+		
+		chalkboardText = null;
 	}
 	
 	public void setCombo(int combo){

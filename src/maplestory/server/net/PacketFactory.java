@@ -1703,6 +1703,7 @@ public class PacketFactory {
      * @return
      */
     public static byte[] getNPCTalk(MapleNPC npc, byte msgType, String talk, String endBytes, byte speaker) {
+    public static byte[] getNPCTalk(MapleNPC npc, byte msgType, String talk, byte[] endBytes, byte speaker) {
         MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.NPC_TALK.getValue());
         mplew.write(4); // ?
@@ -1710,7 +1711,7 @@ public class PacketFactory {
         mplew.write(msgType);
         mplew.write(speaker);
         mplew.writeMapleAsciiString(talk);
-        mplew.write(Hex.toByteArray(endBytes));
+        mplew.write(endBytes);
         return mplew.getPacket();
     }
     

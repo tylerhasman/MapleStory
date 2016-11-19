@@ -32,59 +32,59 @@ public class NpcConversationManager extends AbstractScriptManager {
 	}
 	
 	public void sendNext(String text) {
-	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, "00 01", (byte) 0));
+	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, new byte[] {0x00, 0x01}, (byte) 0));
 	}
 	
 	public void sendPrev(String text) {
-	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, "01 00", (byte) 0));
+	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, new byte[] {0x01, 0x00}, (byte) 0));
 	}
 	
 	public void sendNextPrev(String text) {
-	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, "01 01", (byte) 0));
+	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, new byte[] {0x01, 0x01}, (byte) 0));
 	}
 	
 	public void sendOk(String text) {
-	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, "00 00", (byte) 0));
+	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, new byte[] {0x00, 0x00}, (byte) 0));
 	}
 	
 	public void sendYesNo(String text) {
-	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 1, text, "", (byte) 0));
+	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 1, text, new byte[0], (byte) 0));
 	}
 	
 	public void sendAcceptDecline(String text) {
-	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0x0C, text, "", (byte) 0));
+	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0x0C, text, new byte[0], (byte) 0));
 	}
 	
 	public void sendSimple(String text) {
-	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 4, text, "", (byte) 0));
+	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 4, text, new byte[0], (byte) 0));
 	}
 	
 	public void sendNext(String text, byte speaker) {
-	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, "00 01", speaker));
+	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, new byte[] {0x00, 0x01}, speaker));
 	}
 	
 	public void sendPrev(String text, byte speaker) {
-	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, "01 00", speaker));
+	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, new byte[] {0x01, 0x00}, speaker));
 	}
 	
 	public void sendNextPrev(String text, byte speaker) {
-	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, "01 01", speaker));
+	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, new byte[] {0x01, 0x01}, speaker));
 	}
 	
 	public void sendOk(String text, byte speaker) {
-	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, "00 00", speaker));
+	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0, text, new byte[] {0x00, 0x00}, speaker));
 	}
 	
 	public void sendYesNo(String text, byte speaker) {
-	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 1, text, "", speaker));
+	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 1, text, new byte[0], speaker));
 	}
 	
 	public void sendAcceptDecline(String text, byte speaker) {
-	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0x0C, text, "", speaker));
+	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 0x0C, text, new byte[0], speaker));
 	}
 	
 	public void sendSimple(String text, byte speaker) {
-	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 4, text, "", speaker));
+	    getClient().sendPacket(PacketFactory.getNPCTalk(npc, (byte) 4, text, new byte[0], speaker));
 	}
 	
 	public void sendStyle(String text, int[] styles){

@@ -1,6 +1,6 @@
 server_version: 83
 database:
-    jdbc: mysql://127.0.0.1/maplestory?autoReconnect=true&useSSL=false
+    jdbc: jdbc:mysql://127.0.0.1/maplestory?autoReconnect=true&useSSL=false
     user: root
     pass: 1234
     verbose: false

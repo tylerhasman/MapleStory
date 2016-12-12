@@ -129,6 +129,7 @@ public class MapleConnectionHandler extends ChannelInboundHandlerAdapter {
 			handlers.put(RecvOpcode.ARAN_COMBO_COUNTER.getValue(), new AranComboHandler());
 			handlers.put(RecvOpcode.MONSTER_BOOK_COVER.getValue(), new ChangeMonsterBookCoverHandler());
 			handlers.put(RecvOpcode.CLOSE_CHALKBOARD.getValue(), new CloseChalkboardHandler());
+			handlers.put(RecvOpcode.BBS_OPERATION.getValue(), new GuildBBSHandler());
 		}
 	}
 	

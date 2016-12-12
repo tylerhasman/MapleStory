@@ -3062,6 +3062,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		return true;
 	}
 
+	public void sendGuildBulletin(GuildBulletin bulletin){
+		
+		client.sendPacket(PacketFactory.guildBBS(bulletin));
+		
+	}
+	
 	public MaplePetInstance getPetByUniqueId(int petSlot) {
 		
 		for(MaplePetInstance inst : getPets()){

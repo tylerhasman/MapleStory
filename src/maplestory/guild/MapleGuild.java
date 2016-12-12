@@ -16,6 +16,9 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import maplestory.channel.MapleChannel;
+import maplestory.guild.bbs.BulletinPost;
+import maplestory.guild.bbs.GuildBulletin;
+import maplestory.guild.bbs.MapleGuildBulletin;
 import maplestory.player.MapleCharacter;
 import maplestory.player.MapleCharacterSnapshot;
 import maplestory.server.MapleServer;
@@ -56,6 +59,8 @@ public class MapleGuild {
 	
 	private final int worldId;
 	
+	private GuildBulletin bulletin;
+	
 	MapleGuild(int id, int worldId, String name, MapleGuildEmblem emblem, long creationTime, int capacity, String notice) {
 		this.guildId = id;
 		members = new ArrayList<>();
@@ -68,6 +73,10 @@ public class MapleGuild {
 		this.creationTime = creationTime;
 		this.worldId = worldId;
 		invitations = new ArrayList<>();
+	}
+	
+	public GuildBulletin getBulletin() {
+		return bulletin;
 	}
 	
 	public World getWorld(){
@@ -331,6 +340,34 @@ public class MapleGuild {
 	public void saveGuild(){
 		saveGuildData();
 		saveEntries();
+		saveBulletin();
+		
+		
+	}
+
+	private void saveBulletin() {
+		
+		try {
+			MapleDatabase.getInstance().execute("DELETE FROM `guild_bbs` WHERE `guild`=?", guildId);
+			
+			String script = "INSERT INTO `guild_bbs` (`guild`,`post_id`,`title`,`content`,`poster`,`post_time`) VALUES (?, ?, ?, ?, ?, ?)";
+			String scriptNotice = "INSERT INTO `guild_bbs` (`guild`,`post_id`,`title`,`content`,`poster`,`post_time`,`notice`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			
+			for(BulletinPost post : bulletin.getPosts()){
+				
+				MapleDatabase.getInstance().execute(script, guildId, post.getPostId(), post.getSubject(), post.getContent(), post.getAuthor().getId(), post.getPostTime());
+				
+			}
+			
+			if(bulletin.getNotice() != null){
+				BulletinPost notice = bulletin.getNotice();
+				MapleDatabase.getInstance().execute(scriptNotice, guildId, notice.getSubject(), notice.getContent(), notice.getAuthor().getId(), notice.getPostTime(), true);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	public void expel(GuildEntry targetEntry) {
@@ -400,6 +437,8 @@ public class MapleGuild {
 				guild = new MapleGuild(guildId, world, name, emblem, creationTime, capacity, notice);
 				guild.guildRanks = guildRanks;
 				guild.guildPoints = points;
+				
+				guild.bulletin = MapleGuildBulletin.loadBulletin(guild);
 				
 				guild.loadEntries();
 				

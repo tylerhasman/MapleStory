@@ -28,6 +28,9 @@ import maplestory.guild.GuildOperationType;
 import maplestory.guild.MapleGuild.MapleGuildInviteResponse;
 import maplestory.guild.MapleGuildRankLevel;
 import maplestory.guild.MapleGuild;
+import maplestory.guild.bbs.BulletinPost;
+import maplestory.guild.bbs.BulletinReply;
+import maplestory.guild.bbs.GuildBulletin;
 import maplestory.inventory.Inventory;
 import maplestory.inventory.InventoryOperation;
 import maplestory.inventory.InventoryType;
@@ -826,7 +829,7 @@ public class PacketFactory {
         mplew.writeShort(0);
         mplew.writeInt(c.getId()); //user id
         mplew.write(0);//Gender, 0=male 1=female
-        mplew.writeBool(false); //admin byte
+        mplew.writeBool(true); //admin byte
         short toWrite = (short) (0 * 32);
         //toWrite = toWrite |= 0x100; only in higher versions
         mplew.write(toWrite > 0x80 ? 0x80 : toWrite);//0x80 is admin, 0x20 and 0x40 = subgm
@@ -3684,6 +3687,63 @@ public class PacketFactory {
 			out.write(1);
 			out.writeMapleAsciiString(board);
 		}
+		return out.getPacket();
+	}
+
+	public static byte[] guildBBS(GuildBulletin bulletin) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.GUILD_BBS_PACKET.getValue());
+		
+		out.write(0x06);
+		
+		Collection<BulletinPost> posts = bulletin.getPosts();
+		BulletinPost notice = bulletin.getNotice();
+		
+		if(notice != null){
+			out.write(1);
+			out.writeBulletinPost(notice);
+		}else{
+			out.write(0);
+		}
+		
+		int numShown = posts.size();
+		
+		out.writeInt(posts.size());
+		out.writeInt(numShown);
+		
+		for(BulletinPost post : posts){
+			out.writeBulletinPost(post);
+		}
+		
+		
+		return out.getPacket();
+	}
+
+	public static byte[] guildBBSThread(BulletinPost post) {
+		
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.GUILD_BBS_PACKET.getValue());
+		
+		out.write(0x07);
+		
+		out.writeInt(post.getPostId());
+		out.writeInt(post.getAuthor().getId());
+		out.writeLong(getTime(post.getPostTime()));
+		out.writeMapleAsciiString(post.getSubject());
+		out.writeMapleAsciiString(post.getContent());
+		out.writeInt(post.getEmote().getId());
+		
+		List<BulletinReply> replies = post.getReplies();
+		
+		out.writeInt(replies.size());
+		
+		for(BulletinReply reply : replies){
+			out.writeInt(reply.getReplyId());
+			out.writeInt(reply.getAuthor());
+			out.writeLong(getTime(reply.getPostTime()));
+			out.writeMapleAsciiString(reply.getContent());
+		}
+		
 		return out.getPacket();
 	}
 	

@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import maplestory.guild.MapleGuildEmblem;
+import maplestory.guild.bbs.BulletinPost;
 import maplestory.inventory.item.CashItem;
 import maplestory.inventory.item.EquipItem;
 import maplestory.inventory.item.Item;
@@ -328,6 +329,15 @@ public class MaplePacketWriter extends GenericLittleEndianWriter {
 		writePos(instance.getPosition());
 		write(instance.getStance());
 		writeInt(instance.getFoothold());
+	}
+
+	public void writeBulletinPost(BulletinPost notice) {
+		writeInt(notice.getPostId());
+		writeInt(notice.getAuthor().getId());
+		writeMapleAsciiString(notice.getSubject());
+		writeLong(PacketFactory.getTime(notice.getPostTime()));
+		writeInt(notice.getEmote().getId());
+		writeInt(notice.getReplies().size());
 	}
 
 }

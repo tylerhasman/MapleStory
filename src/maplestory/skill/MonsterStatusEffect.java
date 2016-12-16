@@ -41,6 +41,13 @@ public class MonsterStatusEffect {
 		this();
 		this.source = source;
 		this.level = level;
+		
+		MapleStatEffect effect = source.getEffect(level);
+		
+		for(MonsterStatus status : effect.getMonsterStati().keySet()){
+			statusChanges.put(status, effect.getMonsterStati().get(status));
+		}
+		
 	}
 	
 	public MonsterStatusEffect(MobSkill mobSkill){

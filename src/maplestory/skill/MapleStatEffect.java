@@ -631,7 +631,7 @@ public class MapleStatEffect {
             applyto.dispelDebuff(MapleDisease.SEDUCE);
         }
         if (isComboReset()) {
-           // applyto.setCombo((short) 0);
+            applyto.setCombo((short) 0);
         }
         if (hpchange != 0) {
             if (hpchange < 0 && (-hpchange) > applyto.getHp()) {
@@ -649,9 +649,9 @@ public class MapleStatEffect {
             if (mpchange < 0 && -mpchange > applyto.getMp()) {
                 return false;
             }
-
             applyto.setMp(newMp);
             hpmpupdate.add(new Pair<>(MapleStat.MP, Integer.valueOf(applyto.getMp())));
+            
         }
         applyto.getClient().sendPacket(PacketFactory.updatePlayerStats(hpmpupdate, true));
         if (moveTo != -1) {

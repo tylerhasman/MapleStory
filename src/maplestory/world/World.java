@@ -153,11 +153,7 @@ public class World {
 	}
 
 	public String getName() {
-		if(id == 0){
-			return "Scania";
-		}else{
-			return "Unknown "+id;
-		}
+		return MapleStory.getServerConfig().getWorldConfigurations().get(id).getName();
 	}
 
 	public String getEventMessage(MapleClient client) {
@@ -167,7 +163,7 @@ public class World {
 		int minute = cal.get(Calendar.MINUTE);
 		String am_pm = cal.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM";
 		
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("Welcome #b"+client.getUsername()+"\r\n\r\n");
 		buf.append("#kThe time is now "+hour+":"+String.format("%02d", minute)+" "+am_pm+"\r\n");
 		buf.append("There are "+MapleServer.getInstance().getOnlinePlayerCount()+" players online.\r\n");
@@ -218,6 +214,15 @@ public class World {
 		synchronized (messengers) {
 			return messengers.get(messengerId);
 		}
+	}
+	
+	public static enum EventFlag {
+		
+		NONE,
+		EVENT,
+		NEW,
+		HOT;
+		
 	}
 	
 }

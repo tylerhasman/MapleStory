@@ -435,13 +435,14 @@ public class PacketFactory {
      * @param channelLoad Load of the channel - 1200 seems to be max.
      * @return The server info packet.
      */
-    public static byte[] getServerList(int serverId, String serverName, int flag, String eventmsg, World world) {
+    public static byte[] getServerList(String eventMsg, World world) {
+    	//i, world.getName(), world.getEventFlag(), world.getEventMessage(this), 
         MaplePacketWriter mplew = new MaplePacketWriter();
         mplew.writeShort(SendOpcode.SERVERLIST.getValue());
-        mplew.write(serverId);
-        mplew.writeMapleAsciiString(serverName);
-        mplew.write(flag);
-        mplew.writeMapleAsciiString(eventmsg);
+        mplew.write(world.getId());
+        mplew.writeMapleAsciiString(world.getName());
+        mplew.write(world.getEventFlag().ordinal());
+        mplew.writeMapleAsciiString(eventMsg);
         mplew.write(100); // rate modifier, don't ask O.O!
         mplew.write(0); // event xp * 2.6 O.O!
         mplew.write(100); // rate modifier, don't ask O.O!
@@ -449,7 +450,7 @@ public class PacketFactory {
         mplew.write(0);
         mplew.write(world.getChannelCount());
         for (MapleChannel ch : world.getChannels()) {
-            mplew.writeMapleAsciiString(serverName + "-" + ch.getId());
+            mplew.writeMapleAsciiString(world.getName() + "-" + ch.getId());
             mplew.writeInt((ch.getConnectedPlayerCount() * 1200) / MapleStory.getServerConfig().getChannelLoad());
             mplew.write(1);
             mplew.writeShort(ch.getId());

@@ -5,12 +5,13 @@ database:
     pass: '1234'
     verbose: false
 server:
+    worlds: 1
     login_port: 8484
     channel_ports: 8485
     channel_load: 50
     pic_enabled: true
     character_slots: 6
-    channel_server_ip: 127.0.0.1
+    channel_server_ip: 10.0.1.18
     kick_on_error: false
     cache_scripts: false
     auto_register: true
@@ -30,4 +31,80 @@ game:
         meso: 10
         quest: 10
         drop: 5
-    
+world:
+    0:
+        name: Scania
+        channels: 10
+        flag: none
+    1:
+        name: Bera
+        channels: 2
+        flag: none
+    2:
+        name: Windia
+        channels: 2
+        flag: none
+    3:
+        name: Khaini
+        channels: 2
+        flag: none
+    4:
+        name: Bellocan
+        channels: 2
+        flag: none
+    5:
+        name: Mardia
+        channels: 2
+        flag: none
+    6:
+        name: Kradia
+        channels: 2
+        flag: none
+    7:
+        name: Yellonde
+        channels: 2
+        flag: none
+    8:
+        name: Demothos
+        channels: 2
+        flag: none
+    9:
+        name: Galicia
+        channels: 2
+        flag: none
+    10:
+        name: Kastia
+        channels: 2
+        flag: none
+    11:
+        name: Judis
+        channels: 2
+        flag: none
+    12:
+        name: Arkenia
+        channels: 2
+        flag: none
+    13:
+        name: Plana
+        channels: 2
+        flag: none
+    14:
+        name: Elnido
+        channels: 2
+        flag: none
+    15:
+        name: Kalluna
+        channels: 2
+        flag: none
+    16:
+        name: Stius
+        channels: 2
+        flag: none
+    17:
+        name: Croa
+        channels: 2
+        flag: none
+    18:
+        name: Zenith
+        channels: 2
+        flag: none

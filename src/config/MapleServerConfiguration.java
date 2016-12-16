@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
@@ -19,6 +22,8 @@ public class MapleServerConfiguration {
 	private int channelLoad;
 	
 	private int characterSlots;
+	
+	private int worlds;
 	
 	private String channelServerIp;
 	
@@ -49,9 +54,10 @@ public class MapleServerConfiguration {
 	
 	private boolean autoRegisterEnabled;
 	
+	private Map<Integer, WorldConfiguration> worldConfigurations;
+	
 	public MapleServerConfiguration(File file) throws IOException {
 		Configuration config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
-		
 		
 		mapleVersion = config.getInt("server_version");
 		
@@ -59,6 +65,8 @@ public class MapleServerConfiguration {
 		dbUser = config.getString("database.user");
 		dbPassword = config.getString("database.pass");
 		verboseDatabaseEnabled = config.getBoolean("database.verbose");
+		
+		worlds = config.getInt("server.worlds");
 		
 		loginPort = config.getInt("server.login_port");
 		channelPort = config.getInt("server.channel_ports");
@@ -89,6 +97,30 @@ public class MapleServerConfiguration {
 		mesoRate = config.getInt("game.rates.meso");
 		questExpRate = config.getInt("game.rates.quest");
 		dropRate = config.getInt("game.rates.drop");
+		
+		worldConfigurations = new HashMap<>();
+		
+		for(int i = 0; i < worlds;i++){
+			
+			String name = config.getString("world."+i+".name");
+			int channels = config.getInt("world."+i+".channels");
+			
+			worldConfigurations.put(i, new WorldConfiguration(name, channels));
+			
+		}
+		
+	}
+	
+	public MapleServerConfiguration() {
+		
+	}
+
+	@Getter
+	@AllArgsConstructor
+	public static class WorldConfiguration {
+		
+		private final String name;
+		private final int channels;
 		
 	}
 	

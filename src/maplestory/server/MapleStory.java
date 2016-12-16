@@ -27,7 +27,9 @@ public class MapleStory {
 	private static final Map<String, MapleFile> dataFiles = new HashMap<>();
 	
 	@Getter
-	private static MapleServerConfiguration serverConfig = null;
+	private static MapleServerConfiguration serverConfig = new MapleServerConfiguration();
+	
+	private static int nextChannelPort = 0;
 	
 	public static void reloadConfig() throws IOException{
 		serverConfig = new MapleServerConfiguration(new File("config.yml"));
@@ -86,7 +88,7 @@ public class MapleStory {
 			return;
 		}
 		
-		MapleServer server = new MapleServer(1);
+		MapleServer server = new MapleServer(serverConfig.getWorlds());
 		
 		logger.info("Server started in "+((System.currentTimeMillis() - timeToTake) / 1000.0)+" seconds");
 		
@@ -119,6 +121,10 @@ public class MapleStory {
 		}
 		
 		return loadMapleFile(fileName);
+	}
+
+	public static int getNextChannelPort() {
+		return serverConfig.getChannelPort() + (nextChannelPort++);
 	}
 
 }

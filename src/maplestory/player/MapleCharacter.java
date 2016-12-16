@@ -33,6 +33,7 @@ import maplestory.client.MapleClient;
 import maplestory.client.MapleMessenger;
 import maplestory.guild.MapleGuild;
 import maplestory.guild.MapleGuildRankLevel;
+import maplestory.guild.bbs.GuildBulletin;
 import maplestory.inventory.Inventory;
 import maplestory.inventory.InventoryType;
 import maplestory.inventory.MapleCashInventory;
@@ -609,8 +610,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		stats[DEX] += getBaseDex() * getBuffedValue(MapleBuffStat.MAPLE_WARRIOR) / 100;
 		stats[LUK] += getBaseLuk() * getBuffedValue(MapleBuffStat.MAPLE_WARRIOR) / 100;
 		stats[INT] += getBaseInt() * getBuffedValue(MapleBuffStat.MAPLE_WARRIOR) / 100;
-		
-		
 		
 		if(job.isA(MapleJob.BOWMAN)){
 			Skill expert = null;
@@ -1569,9 +1568,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         
     }
     
-	public static boolean checkNameTaken(String name) throws SQLException {
+	public static boolean checkNameTaken(String name, World world) throws SQLException {
 		
-		List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `id` FROM `characters` WHERE `name`=?", name);
+		List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `id` FROM `characters` WHERE `name`=? AND `world`=?", name, world.getId());
 		
 		if(results.size() > 0){
 			return true;
@@ -2139,10 +2138,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			throw new IllegalArgumentException("level cannot be less than 0");
 		}
 		
-		/*if(masterLevel < 0){
-			throw new IllegalArgumentException("masterLevel cannot be less than 0");
-		}*/
-		
 		if(level > skill.getMaxLevel()){
 			throw new IllegalArgumentException("level cannot be greater than "+skill.getMaxLevel()+" (SKILL "+SkillFactory.getSkillName(skill.getId()));
 		}
@@ -2625,6 +2620,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		target.gainFame(amount);
 		
 		return 0;
+	}
+	
+	public void openSimpleTextNpc(String text){
+		
+		SimpleBindings sb = new SimpleBindings();
+		sb.put("text", text);
+		
+		openNpc(new MapleScript("scripts/npc/simple_talk.js"), sb, MapleLifeFactory.getNPC(2080005));
+		
 	}
 	
 	public void reviveAtClosestTown(){

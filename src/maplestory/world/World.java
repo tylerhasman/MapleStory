@@ -3,10 +3,14 @@ package maplestory.world;
 import io.netty.channel.EventLoopGroup;
 
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalField;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +48,9 @@ public class World {
 	
 	private Logger logger;
 	
+	@Getter
+	private EventFlag eventFlag;
+	
 	public World(int id, int numChannels, EventLoopGroup eventLoopGroupBoss, EventLoopGroup eventLoopGroupWorker) {
 		this.id = id;
 		logger = LoggerFactory.getLogger("["+getName()+"]");
@@ -54,8 +61,9 @@ public class World {
 		loadAllGuilds();
 		channels = new ArrayList<>(numChannels);
 		for(int i = 0; i < numChannels;i++){
-			channels.add(new MapleChannel(i, MapleStory.getServerConfig().getChannelPort()+i, this, eventLoopGroupBoss, eventLoopGroupWorker));
+			channels.add(new MapleChannel(i, MapleStory.getNextChannelPort(), this, eventLoopGroupBoss, eventLoopGroupWorker));
 		}
+		eventFlag = EventFlag.NONE;
 	}
 	
 	public Logger getLogger() {
@@ -64,7 +72,7 @@ public class World {
 	
 	private void loadAllGuilds() {
 		try {
-			List<QueryResult> guildIds = MapleDatabase.getInstance().query("SELECT `id` FROM `guilds`");
+			List<QueryResult> guildIds = MapleDatabase.getInstance().query("SELECT `id` FROM `guilds` WHERE `world`=?", id);
 			
 			for(QueryResult result : guildIds){
 				int id = result.get("id");
@@ -167,6 +175,7 @@ public class World {
 		buf.append("Welcome #b"+client.getUsername()+"\r\n\r\n");
 		buf.append("#kThe time is now "+hour+":"+String.format("%02d", minute)+" "+am_pm+"\r\n");
 		buf.append("There are "+MapleServer.getInstance().getOnlinePlayerCount()+" players online.\r\n");
+
 		buf.append("#rHappy Mapling");
 		
 		return buf.toString();

@@ -34,7 +34,7 @@ public class CreateCharHandler extends MaplePacketHandler {
 		int guideBook = 0;
 		
 		try {
-			if(MapleCharacter.checkNameTaken(name)){
+			if(MapleCharacter.checkNameTaken(name, client.getWorld())){
 				return;
 			}
 		} catch (SQLException e) {

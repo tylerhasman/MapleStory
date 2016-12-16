@@ -42,7 +42,10 @@ public class MapleServer implements Runnable{
 		instance = this;
 		worlds = new ArrayList<>(numWorlds);
 		for(int i = 0; i < numWorlds;i++){
-			worlds.add(new World(i, 2, eventLoopGroupBoss, eventLoopGroupWorker));
+			
+			int channels = MapleStory.getServerConfig().getWorldConfigurations().get(i).getChannels();
+			
+			worlds.add(new World(i, channels, eventLoopGroupBoss, eventLoopGroupWorker));
 		}
 		if(MapleStory.getServerConfig().isAutoSaveEnabled()){
 			TimerManager.scheduleRepeatingTask(new Runnable() {

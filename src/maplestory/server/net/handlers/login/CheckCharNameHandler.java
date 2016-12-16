@@ -16,7 +16,7 @@ public class CheckCharNameHandler extends MaplePacketHandler {
 		String name = readMapleAsciiString(buf);
 		
 		try {
-			boolean inUse = MapleCharacter.checkNameTaken(name);
+			boolean inUse = MapleCharacter.checkNameTaken(name, client.getWorld());
 			client.sendPacket(PacketFactory.getNameCheckResponse(name, inUse));
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -2,6 +2,7 @@ package maplestory.server.net.handlers.channel;
 
 import java.awt.Point;
 
+import tools.TimerManager;
 import constants.MessageType;
 import constants.skills.Brawler;
 import constants.skills.Buccaneer;
@@ -16,6 +17,7 @@ import maplestory.player.MapleCharacter;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
 import maplestory.skill.MapleStatEffect;
+import maplestory.skill.MonsterStatusEffect;
 import maplestory.skill.Skill;
 import maplestory.skill.SkillFactory;
 
@@ -80,6 +82,7 @@ public class SpecialMoveHandler extends MaplePacketHandler {
 			chr.restoreMp(gain);
 		}else if(skillid % 10000000 == 1004){
 			buf.readShort();
+			
 		}else{
 			chr.getMap().broadcastPacket(PacketFactory.showBuffEffect(chr.getId(), skillid, 1), chr.getId());
 		}
@@ -88,17 +91,27 @@ public class SpecialMoveHandler extends MaplePacketHandler {
 			pos = readPosition(buf);
 		}
 		
-		if(chr.isAlive()){
-			if(skillid != Priest.MYSTIC_DOOR){
-				effect.applyTo(chr, pos);
-				client.sendReallowActions();
-			}else if(client.getCharacter().canCreateMagicDoor()){
-				chr.sendMessage(MessageType.PINK_TEXT, "Please wait 5 seconds before casting mystic door again.");
-				client.sendReallowActions();
+		final Point f_pos = pos;
+		
+		TimerManager.schedule(new Runnable() {
+			
+			@Override
+			public void run() {
+				if(chr.isAlive()){
+					if(skillid != Priest.MYSTIC_DOOR){
+						effect.applyTo(chr, f_pos);
+						client.sendReallowActions();
+					}else if(client.getCharacter().canCreateMagicDoor()){
+						chr.sendMessage(MessageType.PINK_TEXT, "Please wait 5 seconds before casting mystic door again.");
+						client.sendReallowActions();
+					}
+				}else{
+					client.sendReallowActions();
+				}
 			}
-		}else{
-			client.sendReallowActions();
-		}
+		}, skill.getAnimationTime());
+		
+
 		
 	}
 

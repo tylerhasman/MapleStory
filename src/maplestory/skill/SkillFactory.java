@@ -80,7 +80,6 @@ public class SkillFactory {
 		for(Node job : source.getRootNode().getChildren()){
 			String name = job.getName();
 			
-			
 			if(name.replace(".img", "").matches(REGEX)){
 				
 				Node skillsNode = job.getChild("skill");
@@ -89,7 +88,13 @@ public class SkillFactory {
 					
 					int skillId = Integer.parseInt(skill.getName());
 					
-					skills.put(skillId, loadFromNode(skillId, skill));
+					Skill loadedSkill = loadFromNode(skillId, skill);
+					
+					int jobId = Integer.parseInt(name.replace(".img", ""));
+					
+					loadedSkill.job = jobId;
+					
+					skills.put(skillId, loadedSkill);
 					
 				}
 				

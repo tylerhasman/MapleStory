@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Setter;
+import maplestory.player.MapleJob;
 import constants.MapleElement;
 import constants.skills.Bishop;
 import constants.skills.Bowmaster;
@@ -58,8 +59,14 @@ public class Skill {
     @Setter
     private boolean action;
 
+    protected int job;
+    
     public Skill(int id) {
         this.id = id;
+    }
+    
+    public MapleJob getJob(){
+    	return MapleJob.getById(job);
     }
 
     public int getId() {

@@ -140,7 +140,7 @@ public class MapleGuildBulletin implements GuildBulletin {
 		MapleGuildBulletin bulletin = new MapleGuildBulletin();
 		
 		bulletin.owner = guild.getGuildId();
-		bulletin.world = guild.getWorld().getId();
+		bulletin.world = guild.getWorldId();
 		
 		bulletin.posts = new HashMap<>();
 		

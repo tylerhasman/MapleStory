@@ -57,6 +57,7 @@ public class MapleGuild {
 	@Getter
 	private final long creationTime;
 	
+	@Getter
 	private final int worldId;
 	
 	private GuildBulletin bulletin;

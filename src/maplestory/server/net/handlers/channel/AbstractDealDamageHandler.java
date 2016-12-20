@@ -22,6 +22,7 @@
 package maplestory.server.net.handlers.channel;
 
 import constants.GameConstants;
+import constants.MonsterStatus;
 import io.netty.buffer.ByteBuf;
 
 import java.util.ArrayList;
@@ -29,10 +30,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.ToString;
 import maplestory.life.MapleMonster;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.skill.MapleStatEffect;
+import maplestory.skill.MonsterStatusEffect;
 import maplestory.skill.Skill;
 import maplestory.skill.SkillFactory;
 import constants.skills.*;
@@ -95,7 +98,21 @@ public abstract class AbstractDealDamageHandler extends MaplePacketHandler {
             			if(monster.getController() != null)
             				monster.getController().uncontrolMonster(monster);
             			player.controlMonster(monster);
-            		}	
+            		}
+            		
+            		if(attack.skill != 0){
+            			Skill skill = SkillFactory.getSkill(attack.skill);
+
+                		MapleStatEffect effect = skill.getEffect(attack.skilllevel);
+                		
+                		
+                		if(effect.getMonsterStati().size() > 0){
+                			if(effect.makeChanceResult()){
+                				monster.applyStatusEffect(player, new MonsterStatusEffect(skill, attack.skilllevel), effect.getDuration());
+                			}
+                		}
+            		}
+            		
         		}
     		}
     		
@@ -106,14 +123,15 @@ public abstract class AbstractDealDamageHandler extends MaplePacketHandler {
         	Skill skill = SkillFactory.getSkill(attack.skill);
         	
         	if(!player.isSkillCoolingDown(skill)){
+
         		MapleStatEffect effect = skill.getEffect(attack.skilllevel);
-            	
             	if(effect != null){
             		effect.applyTo(player);
             	}
         	}
         		
     	}
+    	
     	
         /*Skill theSkill = null;
         MapleStatEffect attackEffect = null;

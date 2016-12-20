@@ -1,6 +1,7 @@
 package maplestory.shop;
 
 import maplestory.inventory.item.ItemInfoProvider;
+import maplestory.shop.MapleShop.CurrencyType;
 
 public class MapleShopItem {
 

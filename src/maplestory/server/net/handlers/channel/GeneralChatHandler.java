@@ -53,6 +53,7 @@ import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
 import maplestory.script.MapleScript;
 import maplestory.script.NpcConversationManager;
 import maplestory.server.MapleServer;
+import maplestory.server.MapleStory;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
 import maplestory.server.net.SendOpcode;
@@ -70,10 +71,10 @@ public class GeneralChatHandler extends MaplePacketHandler {
 		
 		try{
 			if(text.startsWith("!")){
-				if(!client.isGM()){
+				/*if(!client.isGM()){
 					client.getCharacter().sendMessage(MessageType.PINK_TEXT, "Press the trade button for your commands");
 					return;
-				}
+				}*/
 				String[] args = text.split(" ");
 				
 				if(args[0].equalsIgnoreCase("!ping")){
@@ -89,6 +90,8 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					}else{
 						client.getCharacter().sendMessage(MessageType.POPUP, "No player named "+args[1]);
 					}
+				}else if(args[0].equalsIgnoreCase("!reloadskills")){
+					SkillFactory.loadAllSkills();
 				}else if(args[0].equalsIgnoreCase("!purgemaps")){
 					
 					for(MapleMap map : client.getChannel().getMapFactory().getLoadedMaps()){
@@ -102,6 +105,11 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					int id = Integer.parseInt(args[1]);
 					
 					client.getChannel().getMapFactory().unloadMap(id);
+				}else if(args[0].equalsIgnoreCase("!maxhpmp")){
+					client.getCharacter().setMaxHp(30000);
+					client.getCharacter().setMaxMp(30000);
+					client.getCharacter().setHp(30000);
+					client.getCharacter().setMp(30000);
 				}else if(args[0].equalsIgnoreCase("!effect")){
 					client.sendPacket(PacketFactory.showSpecialEffect(SpecialEffect.valueOf(args[1])));
 				}else if(args[0].equalsIgnoreCase("!reloadmapscript")){
@@ -141,6 +149,10 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					}
 				}else if(args[0].equalsIgnoreCase("!fame")){
 					client.getCharacter().gainFame(200);
+				}else if(args[0].equalsIgnoreCase("!reloadconfig")){
+					MapleStory.reloadConfig();
+					
+					client.getCharacter().sendMessage(MessageType.POPUP, "Config reloaded");
 				}else if(args[0].equalsIgnoreCase("!vacmonstersto")){
 					String name = args[1];
 					
@@ -415,14 +427,26 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					}
 					
 				}else if(args[0].equalsIgnoreCase("!maxall")){
+					List<Integer> maxed = new ArrayList<>();
 					for(Skill skill : SkillFactory.getAllSkills()){
 						if(client.getCharacter().getSkillLevel(skill) == skill.getMaxLevel()){
 							continue;
 						}
+						if(!client.getCharacter().getJob().isA(skill.getJob())){
+							continue;
+						}
 						
 						client.getCharacter().changeSkillLevel(skill, skill.getMaxLevel(), skill.getMaxLevel());
-						client.getCharacter().sendMessage(MessageType.LIGHT_BLUE_TEXT, "Maxed "+SkillFactory.getSkillName(skill.getId()));
+						maxed.add(skill.getId());
 					}
+					StringBuilder builder = new StringBuilder();
+					builder.append("Maxed "+maxed.size()+" skills...\r\n\r\n");
+					for(int skillId : maxed){
+						builder.append(/*SkillFactory.getSkillName(skillId)+*/"#s"+skillId+"# maxed to "+client.getCharacter().getSkillLevel(skillId));
+					}
+					
+					client.getCharacter().openSimpleTextNpc(builder.toString());
+					
 				}else if(args[0].equalsIgnoreCase("!reactors")){
 					
 					MapleCharacter chr = client.getCharacter();
@@ -437,51 +461,6 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					MapleCharacter chr = client.getCharacter();
 					
 					chr.sendMessage(MessageType.NOTICE, chr.getPosition().x+" / "+chr.getPosition().y);
-				}else if(args[0].equalsIgnoreCase("!lookup")){
-					String term = "";
-					
-					for(int i = 1; i < args.length;i++){
-						term += args[i] + " ";
-					}
-					
-					term = term.substring(0, term.length() - 1).toLowerCase();
-					
-					List<Integer> itemIds = ItemInfoProvider.getAllItemIds();
-					
-					Map<Integer, String> items = new HashMap<>();
-					
-					for(int id : itemIds){
-						items.put(id, ItemInfoProvider.getItemName(id));
-					}
-					
-					Map<Integer, String> matches = new HashMap<>();
-					
-					for(Entry<Integer, String> item : items.entrySet()){
-						if(item.getValue() == null){
-							continue;
-						}
-						if(item.getValue().toLowerCase().contains(term)){
-							if(ItemInfoProvider.getSlotMax(item.getKey()) == 0){
-								continue;
-							}
-							
-							matches.put(item.getKey(), item.getValue());
-						}
-					}
-					
-					MapleNPC npc = MapleLifeFactory.getNPC(2080005);
-					
-					NpcConversationManager cm = new NpcConversationManager(client.getCharacter(), npc);
-					
-					MapleScript script = new MapleScript("scripts/npc/lookup_command_npc.js", "scripts/npc/error.js");
-					
-					Bindings bindings = new SimpleBindings();
-					bindings.put("search_term", term);
-					bindings.put("results", matches);
-					bindings.put("cm", cm);
-					
-					client.getCharacter().openNpc(script, bindings, npc);
-					
 				}else if(args[0].equalsIgnoreCase("!level")){
 					client.getCharacter().setExp(0);
 					client.getCharacter().setLevel(Integer.parseInt(args[1]));

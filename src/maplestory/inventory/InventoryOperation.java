@@ -13,11 +13,11 @@ public class InventoryOperation {
 	private Item item;
 	private int mode;
 	
-	public InventoryOperation(OperationType type, Item item, int position) {
+	InventoryOperation(OperationType type, Item item, int position) {
 		this(type, item, 0, position);
 	}
 	
-	public InventoryOperation(OperationType type, Item item, int oldPosition, int newPosition) {
+	InventoryOperation(OperationType type, Item item, int oldPosition, int newPosition) {
 		mode = type.getId();
 		this.item = item;
 		this.oldPosition = oldPosition;

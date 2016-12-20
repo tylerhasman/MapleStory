@@ -8,6 +8,7 @@ import java.util.Map;
 
 import database.MapleDatabase;
 import database.QueryResult;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import maplestory.inventory.Inventory;
 import maplestory.inventory.InventoryType;
@@ -168,7 +169,49 @@ public class MapleShop {
 	public void recharge(MapleCharacter mapleCharacter, short slot) {
 		
 		Inventory inv = mapleCharacter.getInventory(InventoryType.USE);
+	
+		Item item = inv.getItem(slot);
+		
+		if(item == null || !item.isA(ItemType.RECHARGABLE)){
+			return;
+		}
+		
+		if(item.getAmount() < 0){
+			return;
+		}
+		
+		int slotMax = ItemInfoProvider.getSlotMax(item.getItemId());
+		
+		if(item.getAmount() < slotMax){
+			
+			double unitPrice = ItemInfoProvider.getUnitPrice(item.getItemId());
+			
+			int cost = (int) Math.round(unitPrice * (slotMax - item.getAmount()));
+			
+			if(mapleCharacter.getMeso() >= cost){
+				item.setAmount(slotMax);
+				inv.updateSlot(slot);
+				mapleCharacter.giveMesos(-cost);
+				mapleCharacter.getClient().sendPacket(PacketFactory.shopTransactionResult(0x8));
+			}else{
+				mapleCharacter.getClient().sendPacket(PacketFactory.shopTransactionResult(0x2));
+				mapleCharacter.getClient().sendReallowActions();
+			}
+			
+		}
 		
 	}
+	
+	@AllArgsConstructor
+	public static enum CurrencyType {
+
+		MESOS((byte) 0),
+		PITCH((byte) 1);
+		
+		@Getter
+		private final byte id;
+		
+	}
+
 	
 }

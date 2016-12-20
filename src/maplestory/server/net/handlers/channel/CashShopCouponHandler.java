@@ -51,7 +51,7 @@ public class CashShopCouponHandler extends MaplePacketHandler {
 					client.getCharacter().sendMessage(MessageType.POPUP, "That coupon has already been redeemed!");
 				}else{
 					MapleDatabase.getInstance().execute("UPDATE `cashshop_codes` SET `used`=? WHERE `id`=?", 1, id);
-					StringBuffer message = new StringBuffer("You have been credited the following:\r\n");
+					StringBuilder message = new StringBuilder("You have been credited the following:\r\n");
 					
 					if(nxCash > 0 || maplePoints > 0 || nxPrepaid > 0){
 						

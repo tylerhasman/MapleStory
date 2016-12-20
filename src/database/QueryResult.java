@@ -48,11 +48,7 @@ public class QueryResult {
 	@Override
 	public String toString() {
 		
-		String s = "";
-		
-		for(String key : objects.keySet()){
-			s += key + "="+objects.get(s)+" ## ";
-		}
+		String s = objects.toString();
 		
 		return s;
 	}

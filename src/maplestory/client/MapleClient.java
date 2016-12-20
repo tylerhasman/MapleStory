@@ -32,6 +32,7 @@ public class MapleClient {
 	private static final Map<Integer, String> accountNames = new HashMap<>();
 	
 	private ReentrantLock connectionLock = new ReentrantLock(true);
+	
 	@Getter
 	private Channel connection;
 	
@@ -70,6 +71,9 @@ public class MapleClient {
 	
 	@Getter
 	private long ping = 0;
+	
+	@Getter
+	private long lastLogin;
 	
 	private long pingTracker = 0;
 	
@@ -131,34 +135,6 @@ public class MapleClient {
 			return;//We don't want to bother netty
 		}
 		
-		/*try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		
-/*		ByteBuf buf = Unpooled.wrappedBuffer(packet).order(ByteOrder.LITTLE_ENDIAN);
-
-		short s = buf.readShort();
-		
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
-		if(getCharacter() != null && (getCharacter().getName().equalsIgnoreCase("Duey") || getCharacter().getName().equalsIgnoreCase("FilthyMan"))){
-			for(SendOpcode op : SendOpcode.values()){
-				if(op == SendOpcode.MOVE_MONSTER_RESPONSE || op == SendOpcode.NPC_ACTION){
-					continue;
-				}
-				if(op.getValue() == s){
-					System.out.println(op.name()+" >> "+getCharacter().getName());
-				}
-			}
-		}*/
-		
 		connectionLock.lock();
 		
 		try{
@@ -203,11 +179,9 @@ public class MapleClient {
 	}
 	
 	public void sendWorldList(){
-		int i = 0;
-		
+
 		for(World world : MapleServer.getWorlds()){
-			sendPacket(PacketFactory.getServerList(i, "World "+i, 3, world.getEventMessage(this), world));
-			i++;
+			sendPacket(PacketFactory.getServerList(world.getEventMessage(this), world));
 		}
 		
 		sendPacket(PacketFactory.getEndOfServerList());
@@ -240,7 +214,7 @@ public class MapleClient {
 	public int login(String username, String password){
 		
 		try {
-			List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `id`,`pic`,`loggedin`,`gm`,`password`,`salt`,`login_message` FROM `accounts` WHERE `username`=?", username);
+			List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `id`,`pic`,`loggedin`,`gm`,`password`,`salt`,`login_message`,`last_login` FROM `accounts` WHERE `username`=?", username);
 			
 			if(results.size() == 0){
 				
@@ -277,6 +251,9 @@ public class MapleClient {
 				loginStatus = LoginStatus.byId(first.get("loggedin"));
 				this.gmLevel = first.get("gm");
 				this.loginMessage = first.get("login_message");
+				this.lastLogin = first.get("last_login");
+				
+				MapleDatabase.getInstance().execute("UPDATE `accounts` SET `last_login`=? WHERE `id`=?", System.currentTimeMillis(), id);
 				
 				return 0;
 			}else{

@@ -53,17 +53,27 @@ import constants.skills.ThunderBreaker;
 import constants.skills.WhiteKnight;
 import constants.skills.WindArcher;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
+import maplestory.player.MapleJob;
 import maplestory.server.MapleStory;
 import me.tyler.mdf.MapleFile;
 import me.tyler.mdf.Node;
 
 public class SkillFactory {
+	
+	private static boolean loaded = false;
+	
 	private static Map<Integer, Skill> skills = new HashMap<>();
 
+	private static Map<MapleJob, List<Skill>> jobSkills = new HashMap<>();
+	
 	private static final String REGEX = "^[0-9]*$";//Matches digits, aka jobs
 	
 	public static Skill getSkill(int id) {
@@ -72,8 +82,42 @@ public class SkillFactory {
 		}
 		return null;
 	}
+	
+	private static void createJobSkillEntry(MapleJob job, Skill skill){
+		if(!jobSkills.containsKey(job)){
+			jobSkills.put(job, new LinkedList<>());
+		}
+		
+		List<Skill> skills = jobSkills.get(job);
+		
+		skills.add(skill);
+	}
+	
+	public static List<Skill> getJobsSkills(MapleJob job){
+		return Collections.unmodifiableList(jobSkills.getOrDefault(job, new ArrayList<>()));
+	}
+	
+	public static List<Skill> getAllSkillsAtJob(MapleJob job){
+		
+		List<Skill> skills = new LinkedList<>();
+		
+		MapleJob checked = job;
+		
+		do{
+			
+			skills.addAll(getJobsSkills(checked));
+			
+		}while((checked = job.getPrevious()) != null);
+		
+		
+		return Collections.unmodifiableList(skills);
+	}
 
 	public static void loadAllSkills() {
+		
+		if(loaded){
+			throw new IllegalStateException("Skills already loaded.");
+		}
 		
 		MapleFile source = MapleStory.getDataFile("Skill.mdf");
 		
@@ -94,6 +138,8 @@ public class SkillFactory {
 					
 					loadedSkill.job = jobId;
 					
+					createJobSkillEntry(loadedSkill.getJob(), loadedSkill);
+					
 					skills.put(skillId, loadedSkill);
 					
 				}
@@ -102,10 +148,12 @@ public class SkillFactory {
 			}
 			
 		}
+		
+		loaded = true;
 
 	}
 
-	public static Skill loadFromNode(int id, Node data) {
+	private static Skill loadFromNode(int id, Node data) {
 		Skill ret = new Skill(id);
 		boolean isBuff = false;
 		int skillType = data.readInt("skillType", -1);

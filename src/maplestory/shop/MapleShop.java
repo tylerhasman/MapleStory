@@ -190,7 +190,7 @@ public class MapleShop {
 			
 			if(mapleCharacter.getMeso() >= cost){
 				item.setAmount(slotMax);
-				inv.updateSlot(slot);
+				inv.refreshItem(slot);
 				mapleCharacter.giveMesos(-cost);
 				mapleCharacter.getClient().sendPacket(PacketFactory.shopTransactionResult(0x8));
 			}else{

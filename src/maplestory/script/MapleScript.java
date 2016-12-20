@@ -32,6 +32,9 @@ public class MapleScript {
 	@Getter
 	private boolean disabled;
 	
+	@Getter
+	private long loadTime;
+	
 	public MapleScript(String filePath){
 		this(filePath, null);
 	}
@@ -77,7 +80,9 @@ public class MapleScript {
 		engine.setBindings(engineBindings, ScriptContext.ENGINE_SCOPE);
 		
 		if(fileContents == null){
+			long time = System.currentTimeMillis();
 			fileContents = parseFile();
+			loadTime = System.currentTimeMillis()  - time;
 		}
 		
 		engine.eval(fileContents);

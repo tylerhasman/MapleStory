@@ -18,6 +18,8 @@ function start(){
 	str += "#rWeapon ATK: "+chr.getWeaponAttack()+"\r\n";
 	str += "#bMagic ATK: "+chr.getMagicAttack()+"\r\n\r\n";
 	
+	str += "#bMana: "+chr.getMp()+" / "+chr.getMaxMp()+"\r\n";
+	
 	str += "#b Displayed Damage Range: "+chr.getMinDamage()+" - "+chr.getMaxDamage()+"\r\n\r\n";
 	
 	

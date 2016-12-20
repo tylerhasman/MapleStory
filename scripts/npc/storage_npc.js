@@ -1,4 +1,5 @@
 function start(){
-	cm.openStorage();
+	//cm.openStorage();
+	cm.sendOk("Storage is currently disabled");
 	cm.dispose();
 }

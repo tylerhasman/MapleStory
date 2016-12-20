@@ -67,7 +67,6 @@ function action(mode, type, selection){
 function query_item(){
 	query = cm.getInputText();
 	
-	
 	itemIds = ItemInfo.getAllItemIds();
 		
 	names = new HashMap();
@@ -83,7 +82,7 @@ function query_item(){
 			continue;
 		}
 		
-		if(item.getValue().toLowerCase().contains(query)){
+		if(item.getValue().toLowerCase().contains(query.toLowerCase())){
 			if(ItemInfo.getSlotMax(item.getKey()) > 0){
 				matches.put(item.getKey(), item.getValue());
 			}

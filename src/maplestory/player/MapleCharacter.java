@@ -313,7 +313,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         partyInvites = new ArrayList<>();
         guildId = -1;
         name = "";
-        notes = new ArrayList<>();
         damageNumberGenerator = new CRand32();
         pets = new MaplePetInstance[3];
         messengerId = -1;
@@ -722,10 +721,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		
 	}
 	
-	public void sendNote(MapleNote note){
-		notes.add(note);
+	public void sendNote(String from, String content, int fame){
+		notes.add(MapleNote.createNote(this, from, content, fame));
 		
 		client.sendPacket(PacketFactory.showNotes(notes));
+		
+		gainFame(fame);
 	}
 	
 	public void openDuey(){
@@ -789,7 +790,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		}
 		
 	}
-	
 	
 	public boolean leaveGuild(){
 		MapleGuild guild = getGuild();
@@ -1722,6 +1722,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		chr.loadKeybindings();
 		chr.loadCooldowns();
 		chr.loadQuests();
+		
+		chr.notes = new ArrayList<>();
+		
+		chr.notes.addAll(MapleNote.loadNotes(chr.id));
 		
 		chr.searchForExistingParty();
 		chr.searchForExistingGuild();

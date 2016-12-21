@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import constants.MessageType;
 import database.MapleDatabase;
 import database.QueryResult;
 import lombok.AllArgsConstructor;
@@ -105,27 +106,43 @@ public class MapleShop {
 			return;
 		}
 		
+		boolean canPurchase = false;
+		
 		if(item.getMesoPrice() > 0){
 			if(character.getMeso() >= item.getMesoPrice() * quantity){
-				Inventory inv = character.getInventory(item.getItemId());
-				if(inv.hasSpace(itemId, quantity)){
-					
-					Item purchased = ItemFactory.getItem(item.getItemId(), quantity);
-					
-					if(purchased.isA(ItemType.RECHARGABLE)){
-						purchased.setAmount(ItemInfoProvider.getSlotMax(purchased.getItemId()));
-					}
-					
-					inv.addItem(purchased);
-
-					character.getClient().sendPacket(PacketFactory.shopTransactionResult(0));
-				}else{
-					character.getClient().sendPacket(PacketFactory.shopTransactionResult(3));
-				}
+				canPurchase = true;
+				character.giveMesos(item.getMesoPrice() * -quantity);
 			}else{
 				character.getClient().sendPacket(PacketFactory.shopTransactionResult(2));
 			}
+		}else if(item.getPitchPrice() > 0){
+			if(character.getPerfectPitch() >= item.getPitchPrice() * quantity){
+				canPurchase = true;
+				character.takePitch(item.getPitchPrice() * quantity);
+			}else{
+				character.sendMessage(MessageType.POPUP, "You need more perfect pitch");
+			}
 		}
+		
+		if(canPurchase){
+			Inventory inv = character.getInventory(item.getItemId());
+			if(inv.hasSpace(itemId, quantity)){
+				
+				Item purchased = ItemFactory.getItem(item.getItemId(), quantity);
+				
+				if(purchased.isA(ItemType.RECHARGABLE)){
+					purchased.setAmount(ItemInfoProvider.getSlotMax(purchased.getItemId()));
+				}
+				
+				inv.addItem(purchased);
+
+				character.getClient().sendPacket(PacketFactory.shopTransactionResult(0));
+			}else{
+				character.getClient().sendPacket(PacketFactory.shopTransactionResult(3));
+			}
+		}
+		
+
 	}
 
 	// c.announce(MaplePacketCreator.shopTransaction((byte) 0x8)); Sell Success

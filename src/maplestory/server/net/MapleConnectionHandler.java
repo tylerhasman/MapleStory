@@ -130,6 +130,7 @@ public class MapleConnectionHandler extends ChannelInboundHandlerAdapter {
 			handlers.put(RecvOpcode.MONSTER_BOOK_COVER.getValue(), new ChangeMonsterBookCoverHandler());
 			handlers.put(RecvOpcode.CLOSE_CHALKBOARD.getValue(), new CloseChalkboardHandler());
 			handlers.put(RecvOpcode.BBS_OPERATION.getValue(), new GuildBBSHandler());
+			handlers.put(RecvOpcode.NOTE_ACTION.getValue(), new NoteActionHandler());
 		}
 	}
 	

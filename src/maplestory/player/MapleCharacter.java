@@ -85,6 +85,7 @@ import maplestory.world.World;
 import tools.CRand32;
 import tools.TimerManager;
 import tools.TimerManager.MapleTask;
+import constants.EquipSlot;
 import constants.ExpTable;
 import constants.LoginStatus;
 import constants.MapleBuffStat;
@@ -118,6 +119,7 @@ import constants.skills.Swordsman;
 import constants.skills.ThunderBreaker;
 import database.MapleDatabase;
 import database.QueryResult;
+import io.netty.util.concurrent.ScheduledFuture;
 
 @ToString(includeFieldNames=true)
 public class MapleCharacter extends AbstractAnimatedMapleMapObject {
@@ -279,6 +281,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	@Getter
 	private String chalkboardText;
 	
+	private MapleTask pendantTimer;
+	
+	private int pendantExpBonus;
+	
 	public MapleCharacter(MapleClient client) {
 		this.client = client;
 		inventories = new HashMap<>();
@@ -316,6 +322,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         damageNumberGenerator = new CRand32();
         pets = new MaplePetInstance[3];
         messengerId = -1;
+        pendantTimer = null;
+        pendantExpBonus = 0;
 	}
 	
 	public void openChalkboard(String text){
@@ -725,8 +733,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		notes.add(MapleNote.createNote(this, from, content, fame));
 		
 		client.sendPacket(PacketFactory.showNotes(notes));
-		
-		gainFame(fame);
 	}
 	
 	public void openDuey(){
@@ -1927,8 +1933,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		if(level == getMaxLevel()){
 			return;
 		}
-		client.sendPacket(PacketFactory.getShowExpGain(amount, partyBonus, 0, false, true));
-		giveExpInternal(amount);
+		
+		int total = amount + partyBonus;
+		
+		int equip = (int) (total * (((float) pendantExpBonus) / 10F));
+		total += equip;
+		
+		client.sendPacket(PacketFactory.getShowExpGain(amount, partyBonus, equip, false, true));
+		giveExpInternal(total);
 	}
 	
 	public void giveExp(int amount) {
@@ -2218,6 +2230,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			MapleMessenger messenger = getMessenger();
 			messenger.updatePlayer(this);
 		}
+		updatePendantOfSpirit();
 	}
 
 	public void addSummon(int sourceid, MapleSummon tosummon) {
@@ -3120,5 +3133,49 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		getInventory(InventoryType.ETC).removeItem(4310000, amount);
 	}
 	
+	public void updatePendantOfSpirit() {
+		Item necklace = getInventory(InventoryType.EQUIPPED).getItem(EquipSlot.PENDANT.getSlot());
+		
+		boolean cancel = false;
+		
+		if(necklace != null){
+			if(necklace.getItemId() == 1122017){
+				pendantTimer = TimerManager.scheduleRepeatingTask(new Runnable() {
+					
+					@Override
+					public void run() {
+						if(pendantExpBonus < 3){
+							pendantExpBonus++;
+							
+							if(pendantExpBonus > 1){
+								sendMessage(MessageType.PINK_TEXT, "Pendant of the Spirit has been equipped for " + pendantExpBonus + " hour(s), you will now receive " + pendantExpBonus + "0% bonus exp.");
+							}else{
+								sendMessage(MessageType.PINK_TEXT, "Pendant of the Spirit has been equipped, you will now receive 10% bonus exp.");
+							}
+						}else{
+							pendantTimer.cancel(false);
+							pendantTimer = null;
+						}
+						
+					}
+					
+				}, 0, 1, TimeUnit.HOURS);
+			}else{
+				cancel = true;
+			}
+		}else{
+			cancel = true;
+		}
+		
+		if(cancel){
+			if(pendantTimer != null){
+				pendantTimer.cancel(false);
+				pendantTimer = null;
+				pendantExpBonus = 0;
+			}
+			pendantExpBonus = 0;
+		}
+	}
+
 	
 }

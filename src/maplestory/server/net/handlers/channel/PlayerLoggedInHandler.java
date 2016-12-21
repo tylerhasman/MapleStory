@@ -61,13 +61,15 @@ public class PlayerLoggedInHandler extends MaplePacketHandler {
 		chr.getMap().addPlayer(chr);
 		
 		if(chr.getGuild() != null){
-			//client.sendPacket(PacketFactory.guildUpdateInfo(chr, chr.getGuild()));
 			chr.getGuild().updateGuild();
 		}
 		
 		if(chr.getParty() != null){
 			chr.getParty().updateMember(chr);
 		}
+		
+		chr.updateNotes();
+		chr.updatePendantOfSpirit();
 	}
 
 }

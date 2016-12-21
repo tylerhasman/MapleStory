@@ -3089,5 +3089,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		return null;
 	}
 
+	public int getPerfectPitch() {
+		return getInventory(InventoryType.ETC).countById(4310000);
+	}
+
+	public void takePitch(int amount) {
+		getInventory(InventoryType.ETC).removeItem(4310000, amount);
+	}
+	
 	
 }

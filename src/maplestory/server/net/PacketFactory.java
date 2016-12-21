@@ -450,7 +450,7 @@ public class PacketFactory {
         mplew.write(0);
         mplew.write(world.getChannelCount());
         for (MapleChannel ch : world.getChannels()) {
-            mplew.writeMapleAsciiString(world.getName() + "-" + ch.getId());
+            mplew.writeMapleAsciiString(world.getName() + "-" + (ch.getId() + 1));
             mplew.writeInt((ch.getConnectedPlayerCount() * 1200) / MapleStory.getServerConfig().getChannelLoad());
             mplew.write(1);
             mplew.writeShort(ch.getId());

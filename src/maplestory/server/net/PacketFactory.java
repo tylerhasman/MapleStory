@@ -3320,6 +3320,16 @@ public class PacketFactory {
 		return out.getPacket();
 	}
 
+	public static byte[] showFameGain(int gain){
+		MaplePacketWriter out = new MaplePacketWriter(7);
+		
+		out.writeShort(SendOpcode.SHOW_STATUS_INFO.getValue());
+		out.write(4);
+		out.writeInt(gain);
+		
+		return out.getPacket();
+	}
+	
 	public static byte[] scrollEffect(MapleCharacter character, ScrollResult result, boolean legendarySpirit) {
 		
 		MaplePacketWriter out = new MaplePacketWriter();

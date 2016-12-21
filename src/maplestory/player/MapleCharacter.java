@@ -3089,6 +3089,29 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		return null;
 	}
 
+	public void clearNotes(){
+		
+		try {
+			MapleDatabase.getInstance().execute("DELETE FROM `notes` WHERE `character`=?", id);
+			notes.clear();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public MapleNote getNote(int id) {
+		for(MapleNote note : notes){
+			if(note.getId() == id){
+				return note;
+			}
+		}
+		return null;
+	}
+
+	public void updateNotes() {
+		client.sendPacket(PacketFactory.showNotes(notes));
+	}
+
 	public int getPerfectPitch() {
 		return getInventory(InventoryType.ETC).countById(4310000);
 	}

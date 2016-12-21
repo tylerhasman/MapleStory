@@ -22,7 +22,6 @@ public class MapleItem implements Item {
 		this.owner = owner;
 	}
 	
-	
 	@Override
 	public ItemMeta getItemMeta() {
 		if (itemMeta == null) {

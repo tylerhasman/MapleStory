@@ -46,6 +46,7 @@ import maplestory.inventory.item.EquipItem;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemFactory;
 import maplestory.inventory.item.ItemInfoProvider;
+import maplestory.inventory.item.ItemType;
 import maplestory.inventory.item.PetItem;
 import maplestory.inventory.storage.MapleStorageBox;
 import maplestory.life.MapleLifeFactory;
@@ -2575,6 +2576,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		for(MapleDisease disease : MapleDisease.values()){
 			dispelDebuff(disease);
 		}
+		pendantTimer.cancel(false);
 	}
 
 	public MaplePortal getInitialSpawnpoint() {
@@ -3139,7 +3141,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		boolean cancel = false;
 		
 		if(necklace != null){
-			if(necklace.getItemId() == 1122017){
+			if(necklace.isA(ItemType.PENDANT_OF_SPIRIT)){
+				if(pendantTimer != null){
+					return;
+				}
 				pendantTimer = TimerManager.scheduleRepeatingTask(new Runnable() {
 					
 					@Override

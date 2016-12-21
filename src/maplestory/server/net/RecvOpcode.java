@@ -113,7 +113,7 @@ public enum RecvOpcode {
     //lolno
     SKILL_MACRO(0x6E),
     SPOUSE_CHAT(0x6F),
-    USE_ITEM_REWARD(0x70),
+    USE_BOX_ITEM(0x70),
     MAKER_SKILL(0x71),
     USE_REMOTE(0x74),
     ADMIN_CHAT(0x76),

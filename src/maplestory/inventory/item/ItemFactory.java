@@ -66,6 +66,8 @@ public class ItemFactory {
 				throw new NullPointerException("data is null with itemId "+itemId);
 			}
 			item = new MapleSkillBook(itemId, amount, data.getMasterLevel(), data.getRequiredLevel(), data.getSkills(), data.getSuccessRate());
+		}else if(ItemType.BOX_ITEM.isThis(itemId)){
+			item = new MapleBoxItem(itemId, amount, owner);
 		}else{
 			item = new MapleItem(itemId, amount, owner);
 		}

@@ -185,6 +185,20 @@ public enum ItemType {
 		public boolean isThis(int itemId) {
 			return itemId / 10000 == 301;
 		}
+	}, 
+	
+	PENDANT_OF_SPIRIT {
+		@Override
+		public boolean isThis(int itemId) {
+			return itemId == 1122017;
+		}
+	},
+	
+	BOX_ITEM {
+		@Override
+		public boolean isThis(int itemId) {
+			return ItemInfoProvider.isBoxItem(itemId);
+		}
 	}
 	
 	

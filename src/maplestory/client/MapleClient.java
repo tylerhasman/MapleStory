@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import constants.LoginStatus;
 import constants.MessageType;
@@ -98,6 +99,8 @@ public class MapleClient {
 	public void setId(int id) {
 		this.id = id;
 		username = accountNames.get(id);
+		logger = LoggerFactory.getLogger("["+connection.remoteAddress()+"/"+username+"]");
+		logger.info("Identified as "+username);
 	}
 	
 	public void setChannelId(int channel) {
@@ -235,7 +238,6 @@ public class MapleClient {
 					return 5;//No account found
 				}
 				
-				
 			}
 			
 			QueryResult first = results.get(0);
@@ -254,6 +256,8 @@ public class MapleClient {
 				this.lastLogin = first.get("last_login");
 				
 				MapleDatabase.getInstance().execute("UPDATE `accounts` SET `last_login`=? WHERE `id`=?", System.currentTimeMillis(), id);
+				
+				logger = LoggerFactory.getLogger(logger.getName()+"/"+username);
 				
 				return 0;
 			}else{

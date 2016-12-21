@@ -14,6 +14,7 @@ import maplestory.cashshop.CashShopPackage;
 import maplestory.inventory.EquipSlot;
 import maplestory.inventory.InventoryType;
 import maplestory.inventory.MapleWeaponType;
+import maplestory.inventory.item.BoxItem.Reward;
 import maplestory.inventory.item.EquipItemInfo.EquipStat;
 import maplestory.inventory.item.ItemStatInfo.ItemStat;
 import maplestory.inventory.item.SummoningBag.SummoningEntry;
@@ -42,6 +43,9 @@ public class ItemInfoProvider {
     
     private List<Integer> allItemIdCache;
     private Map<Integer, String> itemNames;
+    
+    private static Map<Integer, List<Reward>> rewardCache;
+    private static Map<Integer, Integer> totalChanceCache;
 	
 	public ItemInfoProvider() {
 		 itemData = MapleStory.getDataFile("Item.mdf");
@@ -59,6 +63,8 @@ public class ItemInfoProvider {
 	     cashShopItemCache = new HashMap<>();
 	     cashShopItemCacheByItemId = new HashMap<>();
 	     cashShopPackages = new HashMap<>();
+	     rewardCache = new HashMap<>();
+	     totalChanceCache = new HashMap<>();
 	}
 	
 	public static void loadCashShop(){
@@ -248,6 +254,62 @@ public class ItemInfoProvider {
 		}else{
 			return data.getChild(category + "/" + itemId);
 		}
+	}
+	
+	public static int getBoxItemTotalProbability(int itemId){
+		if(totalChanceCache.containsKey(itemId)){
+			return totalChanceCache.get(itemId);
+		}
+		if(!isBoxItem(itemId)){
+			throw new IllegalArgumentException(itemId+" is not a box item.");
+		}
+		
+		int prob = 0;
+		
+		for(Node child : getItemData(itemId).getChild("reward").getChildren()){
+			
+			int chance = child.readInt("prob", 0);
+			
+			prob += chance;
+			
+		}
+		
+		totalChanceCache.put(itemId, prob);
+		
+		return prob;
+	}
+	
+	public static boolean isBoxItem(int itemId){
+		return getItemData(itemId).getChild("reward") != null;
+	}
+	
+	public static List<Reward> getItemRewards(int itemId){
+		
+		if(rewardCache.containsKey(itemId)){
+			return rewardCache.get(itemId);
+		}
+		
+		if(!isBoxItem(itemId)){
+			throw new IllegalArgumentException(itemId+" is not a box item.");
+		}
+		
+		List<Reward> rewards = new ArrayList<>();
+		
+		for(Node child : getItemData(itemId).getChild("reward").getChildren()){
+			int item = child.readInt("item", 0);
+			int amount = child.readInt("count", 0);
+			int chance = child.readInt("prob", 0);
+			int period = child.readInt("period", -1);
+			String effect = child.readString("Effect");
+			String worldMsg = child.readString("worldMsg", null);
+			
+			Reward reward = new Reward(item, period, getBoxItemTotalProbability(itemId), chance, amount, effect, worldMsg);
+			rewards.add(reward);
+		}
+		
+		rewardCache.put(itemId, rewards);
+		
+		return rewards;
 	}
 	
 	public static int getSlotMax(int itemId){

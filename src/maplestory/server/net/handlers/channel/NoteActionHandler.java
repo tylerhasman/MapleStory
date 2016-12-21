@@ -26,10 +26,16 @@ public class NoteActionHandler extends MaplePacketHandler {
 			
 			for(int i = 0; i < num;i++){
 				int id = buf.readInt();
+				int clientFame = buf.readByte();//Fame, but we don't trust the sneaky client
 				
 				MapleNote note = chr.getNote(id);
 				
 				if(note != null){
+					
+					if(clientFame != note.getFame()){
+						client.getLogger().warn("client fame ("+clientFame+") is different than server fame ("+note.getFame()+")");
+					}
+					
 					fame += note.getFame();
 				}
 				

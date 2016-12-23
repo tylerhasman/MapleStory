@@ -1,6 +1,5 @@
 *.class
 *.xml
-*.jar
 .settings/org.eclipse.jdt.core.prefs
 bin/simplelogger.properties
 /bin/

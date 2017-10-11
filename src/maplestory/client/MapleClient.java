@@ -224,7 +224,7 @@ public class MapleClient {
 				if(MapleStory.getServerConfig().isAutoRegisterEnabled()){
 					String salt = AccountEncryption.getRandomSalt();
 					String hashedPassword = AccountEncryption.hash(password, salt);
-					MapleDatabase.getInstance().execute("INSERT INTO `accounts` (`username`, `password`, `salt`) VALUES (?, ?, ?)", username, hashedPassword, salt);
+					MapleDatabase.getInstance().execute("INSERT INTO `accounts` (`username`, `password`, `salt`, `last_login`) VALUES (?, ?, ?, ?)", username, hashedPassword, salt, System.currentTimeMillis());
 					
 					results = MapleDatabase.getInstance().query("SELECT `id`,`pic`,`loggedin`,`gm`,`password`,`salt`,`login_message` FROM `accounts` WHERE `username`=?", username);
 					

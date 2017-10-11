@@ -17,39 +17,46 @@ public class LoginPasswordHandler extends MaplePacketHandler {
 	@Override
 	public void handle(ByteBuf buf, MapleClient client) {
 		
-		String username = readMapleAsciiString(buf);
-		String password = readMapleAsciiString(buf);
-		
-		int result = client.login(username, password);
-		
-		if(result == 0){
-			if(client.getLoginStatus() == LoginStatus.IN_GAME){
-				
-				for(World world : MapleServer.getWorlds()){
-					MapleCharacter chr = world.getPlayerStorage().getByAccountId(client.getId());
-					if(chr == null){
-						client.setLoggedInStatus(LoginStatus.OFFLINE);
-					}else if(chr.getClient() == null){
-						client.setLoggedInStatus(LoginStatus.OFFLINE);
-					}else if(!chr.getClient().getConnection().isOpen()){
-						client.setLoggedInStatus(LoginStatus.OFFLINE);
+		try{
+			String username = readMapleAsciiString(buf);
+			String password = readMapleAsciiString(buf);
+			
+			int result = client.login(username, password);
+			
+			if(result == 0){
+				if(client.getLoginStatus() == LoginStatus.IN_GAME){
+					
+					for(World world : MapleServer.getWorlds()){
+						MapleCharacter chr = world.getPlayerStorage().getByAccountId(client.getId());
+						if(chr == null){
+							client.setLoggedInStatus(LoginStatus.OFFLINE);
+						}else if(chr.getClient() == null){
+							client.setLoggedInStatus(LoginStatus.OFFLINE);
+						}else if(!chr.getClient().getConnection().isOpen()){
+							client.setLoggedInStatus(LoginStatus.OFFLINE);
+						}
 					}
+					
 				}
-				
-			}
-			if(client.getLoginStatus() == LoginStatus.OFFLINE){
-				if(!client.getLoginMessage().isEmpty()){
-					client.sendPacket(PacketFactory.getServerMessagePacket(MessageType.POPUP, client.getLoginMessage(), 1, false));
-					client.setLoginMessage("");
+				if(client.getLoginStatus() == LoginStatus.OFFLINE){
+					if(!client.getLoginMessage().isEmpty()){
+						client.sendPacket(PacketFactory.getServerMessagePacket(MessageType.POPUP, client.getLoginMessage(), 1, false));
+						client.setLoginMessage("");
+					}
+					client.sendPacket(PacketFactory.getAuthSuccess(client));
+					client.setLoggedInStatus(LoginStatus.LOGGED_IN);
+				}else{
+					client.sendPacket(PacketFactory.getLoginFailed(7));
 				}
-				client.sendPacket(PacketFactory.getAuthSuccess(client));
-				client.setLoggedInStatus(LoginStatus.LOGGED_IN);
 			}else{
-				client.sendPacket(PacketFactory.getLoginFailed(7));
+				client.sendPacket(PacketFactory.getLoginFailed(result));
 			}
-		}else{
-			client.sendPacket(PacketFactory.getLoginFailed(result));
+		}catch(Exception e){
+			e.printStackTrace();
+			client.sendPacket(PacketFactory.getLoginFailed(7));
 		}
+		
+
 	
 		
 	}

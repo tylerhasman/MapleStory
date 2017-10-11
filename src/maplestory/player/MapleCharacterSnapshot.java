@@ -2,6 +2,7 @@ package maplestory.player;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.function.Consumer;
 
 import constants.LoginStatus;
 import database.MapleDatabase;
@@ -40,6 +41,14 @@ public class MapleCharacterSnapshot {
 		this.world = world;
 		this.mapId = mapId;
 		channel = -1;
+	}
+	
+	public void ifOnline(Consumer<MapleCharacter> con){
+		MapleCharacter chr = getLiveCharacter();
+		
+		if(chr != null){
+			con.accept(getLiveCharacter());
+		}
 	}
 	
 	
@@ -90,7 +99,7 @@ public class MapleCharacterSnapshot {
 			List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `name`,`job`,`level`,`map`,`world` FROM `characters` WHERE `id`=?", characterId);
 		
 			if(results.size() == 0){
-				return null;
+				return new MapleCharacterSnapshot("[Unknown]", -1, -1, -1, -1, -1);
 			}
 			
 			QueryResult result = results.get(0);

@@ -31,6 +31,7 @@ public class LifeMovementFactory {
 				break;
 			case JUMP_DOWN:
 				lm = new JumpDownLifeMovement(buf);
+				lm = EmptyLifeMovement.create();
 				break;
 			case ARAN:
 				buf.skipBytes(3);

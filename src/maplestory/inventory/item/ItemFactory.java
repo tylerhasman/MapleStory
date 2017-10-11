@@ -109,29 +109,6 @@ public class ItemFactory {
 		
 		Item item = getItem(itemid, amount, owner, expiration, uid, itemInfo, flag, petData);
 		
-/*		if(pet_id >= 0){
-			item = new MaplePetItem(itemid, amount, owner, expiration, uid, pet_id);
-		}else if(isCash(itemid)){
-			item = new MapleCashItem(itemid, amount, owner, expiration, uid);
-		}else if(itemInfo != null){
-			if(itemInfo.isCash()){
-				item = new MapleEquipCashItem(itemid, amount, expiration, uid, itemInfo);
-			}else{
-				item = new MapleEquipItem(itemid, amount, owner, itemInfo);	
-			}
-		}else if(ItemType.SUMMONING_BAG.isThis(itemid)){
-			item = new MapleSummoningBag(itemid, amount, ItemInfoProvider.getSummoningBagEntries(itemid));
-		}else if(ItemType.MASTERY_BOOK.isThis(itemid)){
-			SkillBookData data = ItemInfoProvider.getSkillBookData(itemid);
-			if(data == null){
-				throw new NullPointerException("data is null with itemId "+itemid);
-			}
-			item = new MapleSkillBook(itemid, amount, data.getMasterLevel(), data.getRequiredLevel(), data.getSkills(), data.getSuccessRate());
-		}else{
-			item = new MapleItem(itemid, amount, owner);
-		}*/
-		
-		
 		return item;
 	}
 	

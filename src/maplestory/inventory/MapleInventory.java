@@ -6,10 +6,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import constants.LoginStatus;
+import maplestory.cashshop.CashShopInventory;
 import maplestory.inventory.item.CashItem;
 import maplestory.inventory.item.EquipItem;
 import maplestory.inventory.item.Item;
@@ -41,6 +43,53 @@ public class MapleInventory implements Inventory {
 	@Override
 	public boolean hasSpace(int amountOfItems) {
 		return items.size() + amountOfItems <= maxSize;
+	}
+	
+	@Override
+	public void transferToCashInventory(int slot, CashShopInventory cashInventory) {
+		
+		Item item = getItem(slot);
+
+		System.out.println(slot);
+		if(item == null){
+			return;
+		}
+		
+		
+		if(item instanceof CashItem){
+			setItemInternal(slot, null);
+			cashInventory.addItem(item);
+
+			if(getOwner() != null){
+				getOwner().getClient().sendPacket(PacketFactory.cashShopAddItem((CashItem) item, getOwner().getClient().getId()));
+			}
+			
+		}else{
+			throw new IllegalArgumentException("Item at slot "+slot+" is not a cash item. It is a "+item.getClass().getName()+" toString: "+item.toString());
+		}
+		
+	}
+	
+	@Override
+	public Item firstOf(int itemId) {
+		for(Item item : items.values()){
+			if(item.getItemId() == itemId){
+				return item;
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	public int findByCashId(int cashUniqueId) {
+		for(Entry<Integer, Item> item : items.entrySet()){
+			if(item.getValue() instanceof CashItem){
+				if(((CashItem) item.getValue()).getUniqueId() == cashUniqueId){
+					return item.getKey();
+				}
+			}
+		}
+		return -1;
 	}
 	
 	@Override

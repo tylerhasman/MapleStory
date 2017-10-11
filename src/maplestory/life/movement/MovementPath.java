@@ -1,6 +1,10 @@
 package maplestory.life.movement;
 
 import tools.data.output.MaplePacketWriter;
+
+import java.util.LinkedList;
+import java.util.List;
+
 import maplestory.map.AbstractAnimatedMapleMapObject;
 
 public class MovementPath {
@@ -9,6 +13,17 @@ public class MovementPath {
 	
 	protected MovementPath(LifeMovement[] movements) {
 		this.movements = movements;
+	}
+	
+	@Override
+	public String toString() {
+		String s = "";
+		
+		for(LifeMovement move : movements){
+			s += move.toString()+";";
+		}
+		
+		return s;
 	}
 	
 	public void translateLife(AbstractAnimatedMapleMapObject life){
@@ -21,13 +36,27 @@ public class MovementPath {
 		int encodedSize = calculateEncodedSize();
 		MaplePacketWriter buf = new MaplePacketWriter(encodedSize);
 		
-		buf.write(movements.length);
+		List<LifeMovement> valid = getValidMoves();
 		
-		for(LifeMovement lm : movements){
+		buf.write(valid.size());
+		
+		for(LifeMovement lm : valid){
 			lm.encode(buf);
 		}
 		
 		return buf.getPacket();
+	}
+	
+	private List<LifeMovement> getValidMoves(){
+		List<LifeMovement> moves = new LinkedList<>();
+		
+		for(LifeMovement move : movements){
+			if(move.getType() != MoveType.UNKNOWN){
+				moves.add(move);
+			}
+		}
+		
+		return moves;
 	}
 	
 	private int calculateEncodedSize(){

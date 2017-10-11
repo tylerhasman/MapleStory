@@ -33,6 +33,8 @@ import maplestory.life.MapleLifeFactory;
 import maplestory.life.MapleMonster;
 import maplestory.life.MapleNPC;
 import maplestory.life.MapleSummon;
+import maplestory.life.movement.AbsoluteLifeMovement;
+import maplestory.life.movement.MovementPath;
 import maplestory.map.MapleMapItem.DropType;
 import maplestory.player.MapleCharacter;
 import maplestory.player.MaplePetInstance;
@@ -424,6 +426,8 @@ public class MapleMap {
 					continue;
 				mapleCharacter.sendSpawnData(other.getClient());
 				other.sendSpawnData(mapleCharacter.getClient());
+				//MovementPath path = MovementPath.singleton(new AbsoluteLifeMovement(other.getPosition()));
+				//mapleCharacter.getClient().sendPacket(PacketFactory.movePlayer(other.getId(), path));
 			}
 			for(MapleMapObject obj : objects.values()){
 				obj.sendSpawnData(mapleCharacter.getClient());
@@ -560,7 +564,6 @@ public class MapleMap {
 			if(chr.getId() == exclude){
 				continue;
 			}
-			
 			chr.getClient().sendPacket(packet);
 		}
 	}
@@ -593,6 +596,7 @@ public class MapleMap {
 					obj.sendSpawnData(chr.getClient());
 				}	
 			}
+			obj.setMap(this);
 			objects.put(obj.getObjectId(), obj);
 		}finally{
 			objectLock.unlock();
@@ -802,6 +806,14 @@ public class MapleMap {
             for (MapleMapObject l : objects.values()) {
                 if (types.contains(l.getType())) {
                     if (box.contains(l.getPosition())) {
+                        ret.add(l);
+                    }
+                }
+            }
+            
+            if(types.contains(MapleMapObjectType.PLAYER)){
+            	for (MapleMapObject l : getPlayers()) {
+            		if (box.contains(l.getPosition())) {
                         ret.add(l);
                     }
                 }

@@ -20,6 +20,7 @@ import maplestory.inventory.item.ItemStatInfo.ItemStat;
 import maplestory.inventory.item.SummoningBag.SummoningEntry;
 import maplestory.player.MapleCharacter;
 import maplestory.player.MapleJob;
+import maplestory.quest.MapleQuest;
 import maplestory.server.MapleStory;
 import maplestory.skill.MapleStatEffect;
 import me.tyler.mdf.MapleFile;
@@ -679,11 +680,10 @@ public class ItemInfoProvider {
 	}
 
 	public static int getQuestMedalId(int questId) {
-		/*Node questInfo = MapleQuest.getQuestData().getData("QuestInfo.img");
+		Node questInfo = MapleStory.getDataFile("Quest.mdf").getRootNode().getChild("QuestInfo.img");
 		Node questData = questInfo.getChild(String.valueOf(questId));
 		int medal = questData.readInt("viewMedalItem", -1);
-		return medal;*/
-		return 0;
+		return medal;
 	}
 
 	public static int getItemWidth(int id) {

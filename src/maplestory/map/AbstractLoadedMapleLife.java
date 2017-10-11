@@ -22,6 +22,7 @@
 package maplestory.map;
 
 public abstract class AbstractLoadedMapleLife extends AbstractAnimatedMapleMapObject {
+	
     private final int id;
     private int f;
     private boolean hide;

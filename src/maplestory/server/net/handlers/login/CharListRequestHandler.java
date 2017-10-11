@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
+import maplestory.util.Hex;
 
 public class CharListRequestHandler extends MaplePacketHandler {
 

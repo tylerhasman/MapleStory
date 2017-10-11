@@ -23,9 +23,42 @@ package maplestory.map;
 
 import java.awt.Point;
 
+import maplestory.server.MapleServer;
+import maplestory.world.World;
+
 public abstract class AbstractMapleMapObject implements MapleMapObject {
+	
     private Point position = new Point();
     private int objectId;
+    
+    private int world, channel, mapid;
+    
+    public AbstractMapleMapObject(MapleMap map) {
+    	setMap(map);
+	}
+    
+    public AbstractMapleMapObject() {
+    	world = -1;
+    	channel = -1;
+    	mapid = -1;
+	}
+    
+    public MapleMap getMap(){
+    	if(world == -1){
+    		return null;
+    	}
+    	return MapleServer.getChannel(world, channel).getMapFactory().getMap(mapid);
+    }
+    
+    public void setMap(MapleMap map){
+    	world = map.getChannel().getWorld().getId();
+    	channel = map.getChannel().getId();
+    	mapid = map.getMapId();
+    }
+    
+    public void remove(){
+    	getMap().removeObject(getObjectId());
+    }
 
     @Override
     public abstract MapleMapObjectType getType();

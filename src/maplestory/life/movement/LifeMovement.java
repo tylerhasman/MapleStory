@@ -1,6 +1,7 @@
 package maplestory.life.movement;
 
 import tools.data.output.MaplePacketWriter;
+import lombok.ToString;
 import maplestory.map.AbstractAnimatedMapleMapObject;
 
 public interface LifeMovement {

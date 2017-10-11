@@ -43,8 +43,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 	private MapleMonsterStats stats;
 	
 	private WeakReference<MapleCharacter> controller;
-
-	private int mapId, channel, world;
 	
 	@Getter
 	private boolean spawned;
@@ -137,16 +135,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 		setStance(5);
 		hp = stats.getHp();
 		mp = stats.getMp();
-	}
-	
-	public MapleMap getMap(){
-		return MapleServer.getChannel(world, channel).getMapFactory().getMap(mapId);
-	}
-	
-	public void setMap(MapleMap map){
-		mapId = map.getMapId();
-		channel = map.getChannel().getId();
-		world = map.getChannel().getWorld().getId();
 	}
 	
 	public void spawn(){

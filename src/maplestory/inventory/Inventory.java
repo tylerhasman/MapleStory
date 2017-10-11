@@ -3,6 +3,8 @@ package maplestory.inventory;
 import java.util.List;
 import java.util.Map;
 
+import maplestory.cashshop.CashShopInventory;
+import maplestory.inventory.item.CashItem;
 import maplestory.inventory.item.Item;
 import maplestory.player.MapleCharacter;
 
@@ -61,6 +63,12 @@ public interface Inventory {
 	public boolean hasSpace(int itemId, int quantity);
 
 	public void refreshItem(int slot);
+
+	public Item firstOf(int itemId);
+
+	public int findByCashId(int cashUniqueId);
+
+	public void transferToCashInventory(int targetItem, CashShopInventory cashInventory);
 
 	
 }

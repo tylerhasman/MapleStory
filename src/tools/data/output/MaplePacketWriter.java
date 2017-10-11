@@ -31,6 +31,7 @@ import maplestory.inventory.item.CashItem;
 import maplestory.inventory.item.EquipItem;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemType;
+import maplestory.inventory.item.MapleItem;
 import maplestory.inventory.item.PetItem;
 import maplestory.life.movement.MovementPath;
 import maplestory.map.MapleMagicDoor;
@@ -161,6 +162,14 @@ public class MaplePacketWriter extends GenericLittleEndianWriter {
     public void writeItemExpiration(long time){
     	writeLong(time);
     }
+    
+    public static void main(String[] args) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		
+		out.writeItemInfo(new MapleItem(4000000, 255), 32);
+		
+		System.out.println(Hex.toHex(out.getPacket()));
+	}
     
     private void writeItemInfo(Item item, int pos, boolean noPosition){
     	boolean isCash = item instanceof CashItem;

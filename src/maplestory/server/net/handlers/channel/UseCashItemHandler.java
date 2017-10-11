@@ -15,6 +15,7 @@ import maplestory.player.MapleCharacter;
 import maplestory.player.MaplePetInstance;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
+import maplestory.shop.MapleShop;
 import maplestory.util.Hex;
 
 public class UseCashItemHandler extends MaplePacketHandler {
@@ -97,22 +98,24 @@ public class UseCashItemHandler extends MaplePacketHandler {
 			
 			
 			client.getWorld().broadcastPacket(PacketFactory.getAvatarMegaphone(chr, client.getChannelId(), itemId, lines, whisper));
+			client.getCharacter().getInventory(itemId).removeItem(itemId, 1);
 			
-			
-		}else if(itemId == 5370000){//Chalkboard
+		}else if(ItemType.CHALKBOARD.isThis(itemId)){//Chalkboard
 			
 			String message = readMapleAsciiString(buf);
 			
 			
 			chr.openChalkboard(message);
+		}else if(itemId == 5450000){
+			MapleShop shop = MapleShop.getShop(1338);
+			if(client.getCharacter().getOpenShop() == null){
+				client.getCharacter().openShop(shop, 1052014);
+				client.getCharacter().getInventory(InventoryType.CASH).removeItem(5450000, 1);
+			}else{
+				client.sendReallowActions();
+			}
+		}else if(ItemType.WEATHER.isThis(itemId)){
 			
-			
-	/*		byte[] remaining = new byte[buf.readableBytes()];
-			buf.readBytes(remaining);
-			
-			
-			System.out.println(message);
-			System.out.println(Hex.toHex(remaining));*/
 			
 			
 		}else{

@@ -4,6 +4,7 @@ import java.awt.Point;
 
 import tools.TimerManager;
 import constants.MessageType;
+import constants.skills.Bishop;
 import constants.skills.Brawler;
 import constants.skills.Buccaneer;
 import constants.skills.Hero;
@@ -84,7 +85,8 @@ public class SpecialMoveHandler extends MaplePacketHandler {
 			buf.readShort();
 			
 		}else{
-			chr.getMap().broadcastPacket(PacketFactory.showBuffEffect(chr.getId(), skillid, 1), chr.getId());
+			byte direction = buf.readByte();
+			chr.getMap().broadcastPacket(PacketFactory.showBuffEffect(chr.getId(), skillid, chr.getSkillLevel(skill), direction), chr.getId());
 		}
 		
 		if(buf.readableBytes() == 5){

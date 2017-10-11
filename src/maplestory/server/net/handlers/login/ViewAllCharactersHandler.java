@@ -37,8 +37,6 @@ public class ViewAllCharactersHandler extends MaplePacketHandler {
 			List<MapleCharacter> chrs = characters.stream().filter(chr -> chr.getWorldId() == worldId).collect(Collectors.toList());
 			
 			client.sendPacket(PacketFactory.showAllCharacterInfo(i, chrs));
-			
-			client.sendPacket(PacketFactory.getCharList(client, 0));
 		}
 		
 	}

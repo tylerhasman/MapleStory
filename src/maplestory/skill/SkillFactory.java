@@ -417,7 +417,7 @@ public class SkillFactory {
 		if (skillData.getChild(skill.toString()) != null) {
 			for (Node skillStringData : skillData.getChild(skill.toString()).getChildren()) {
 				if (skillStringData.getName().equals("name"))
-					return skillStringData.getName();
+					return skillStringData.getValue().toString();
 			}
 		}
 

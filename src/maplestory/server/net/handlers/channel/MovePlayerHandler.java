@@ -36,6 +36,7 @@ public final class MovePlayerHandler extends MovementPacketHandler {
     	}
         buf.skipBytes(9);
         MovementPath res = parseMovement(buf);
+
         if (res != null) {
         	res.translateLife(client.getCharacter());
             client.getCharacter().getMap().broadcastPacket(PacketFactory.movePlayer(client.getCharacter().getId(), res), client.getCharacter().getId());

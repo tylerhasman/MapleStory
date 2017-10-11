@@ -30,7 +30,7 @@ public class JumpDownLifeMovement implements LifeMovement {
 	
 	@Override
 	public void encode(MaplePacketWriter buf) {
-		buf.write(16);
+		buf.write(15);
 		buf.writeShort(x);
 		buf.writeShort(y);
 		buf.writeShort(vx);

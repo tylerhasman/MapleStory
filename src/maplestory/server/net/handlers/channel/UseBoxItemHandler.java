@@ -58,7 +58,6 @@ public class UseBoxItemHandler extends MaplePacketHandler {
 				if(reward.shouldGive()){
 					rewardInventory.addItem(rewardItem);
 					reward.broadcastWorldMessage(client.getCharacter());
-					System.out.println(rewardItem);
 					break;
 				}
 				

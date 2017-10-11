@@ -2,7 +2,7 @@ var status;
 var discount = false;
 var cost = 3000;
 
-var maps = [100000000, 101000000, 102000000, 103000000];
+var maps = [100000000, 101000000, 102000000, 103000000, 120000000];
 var chosen;
  
 function start() {

@@ -64,6 +64,9 @@ import maplestory.party.MapleParty;
 import maplestory.party.PartyOperationType;
 import maplestory.party.MapleParty.PartyEntry;
 import maplestory.player.monsterbook.MonsterBook;
+import maplestory.player.ui.MapleTradeInterface;
+import maplestory.player.ui.TradeInterface;
+import maplestory.player.ui.UserInterface;
 import maplestory.quest.MapleQuest;
 import maplestory.quest.MapleQuestInstance;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
@@ -258,8 +261,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	
 	private List<DueyParcel> parcels;
 	
-	private MapleTrade openTrade;
-	
 	private PartyQuestProgress pqProgress;
 	
 	@Getter
@@ -285,6 +286,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	private MapleTask pendantTimer;
 	
 	private int pendantExpBonus;
+	
+	@Getter
+	private UserInterface openInterface;
 	
 	public MapleCharacter(MapleClient client) {
 		this.client = client;
@@ -440,38 +444,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		
 	}
 	
-/*	public static void main(String[] args) {
-		for(int level = 0; level < 20;level++){
-
-			double mastery = 0D;
-			
-			do{
-				if(level == 0){
-					break;
-				}
-				
-				mastery += 0.15D;
-				
-				for(int i = 0; i <= level;i++){
-					if(i < 2)
-					{
-						continue;
-					}
-					
-					if(i % 2 == 1){
-						mastery += 0.05D;
-					}
-				}
-			}while(false);
-			
-			System.out.println("Level "+level+" mastery "+(mastery * 100D)+"%");
-		}
-	}*/
-	
-	/*
-	 *  mindmg = ((((matk * matk) / 1000) + matk * (mast / 100) * 0.9) / 30 + int / 200) * basicattack * (amp / 100);
-	 */
-	
 	public int getMinDamage(){
 		
 		int min = 0;
@@ -494,11 +466,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		
 		return min;
 	}
-	
-	/*
-	 *  maxdmg = ((((matk * matk) / 1000) + matk) / 30 + int / 200) * basicattack * (amp / 100);
-           
-	 */
 	
 	public int getMaxDamage(){
 		int max = 0;
@@ -2231,6 +2198,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			MapleMessenger messenger = getMessenger();
 			messenger.updatePlayer(this);
 		}
+		
 		updatePendantOfSpirit();
 	}
 
@@ -2456,7 +2424,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             	}
             }
         }
-        if (!overwrite) {
+        if (!overwrite && client.getLoginStatus() == LoginStatus.IN_GAME) {
             cancelPlayerBuffs(buffstats);
         }
 	}
@@ -2482,7 +2450,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             }
         }*/
     	client.sendPacket(PacketFactory.cancelBuff(buffstats));
-        if (buffstats.size() > 0) {
+    	if (buffstats.size() > 0) {
             getMap().broadcastPacket(PacketFactory.cancelForeignBuff(getId(), buffstats), getId());
         }
     }
@@ -2568,6 +2536,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 
 	public void cleanup() {
+		exitUserInteface();
 		destroyMagicDoors();
 		getControlledMonsters().forEach(monster -> uncontrolMonster(monster));
 		synchronized (cooldowns) {
@@ -2576,7 +2545,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		for(MapleDisease disease : MapleDisease.values()){
 			dispelDebuff(disease);
 		}
-		pendantTimer.cancel(false);
+		if(pendantTimer != null){
+			pendantTimer.cancel(false);
+		}
+		
 	}
 
 	public MaplePortal getInitialSpawnpoint() {
@@ -3003,13 +2975,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		return true;
 	}
 
-	public MapleTrade createTrade() {
-		if(openTrade != null){
-			throw new IllegalStateException("Trade already open");
-		}
-		return (openTrade = new MapleTrade());
-	}
-
 	public boolean isPetSpawned(int itemId) {
 		return getPetSlot(itemId) != -1;
 	}
@@ -3181,6 +3146,23 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			pendantExpBonus = 0;
 		}
 	}
+	
+	public void createTrade(){
+		exitUserInteface();
+		openInterface = new MapleTradeInterface(this);
+	}
 
+	public void exitUserInteface() {
+		if(openInterface != null){
+			openInterface.removePlayer(this);
+			openInterface = null;
+		}
+	}
+
+	public void openInterface(UserInterface ui) {
+		exitUserInteface();
+		ui.addPlayer(this);
+		openInterface = ui;
+	}
 	
 }

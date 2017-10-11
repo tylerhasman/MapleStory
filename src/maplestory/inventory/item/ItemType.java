@@ -199,6 +199,22 @@ public enum ItemType {
 		public boolean isThis(int itemId) {
 			return ItemInfoProvider.isBoxItem(itemId);
 		}
+	},
+	
+	WEATHER {
+
+		@Override
+		public boolean isThis(int itemId) {
+			return itemId / 10000 == 512;
+		}
+		
+	},
+	
+	CHALKBOARD {
+		@Override
+		public boolean isThis(int itemId) {
+			return itemId == 5370000;
+		}
 	}
 	
 	

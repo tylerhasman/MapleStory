@@ -161,7 +161,7 @@ public class World {
 	}
 
 	public String getName() {
-		return MapleStory.getServerConfig().getWorldConfigurations().get(id).getName();
+		return MapleStory.getServerConfig().getWorldConfiguration(id).getName();
 	}
 
 	public String getEventMessage(MapleClient client) {

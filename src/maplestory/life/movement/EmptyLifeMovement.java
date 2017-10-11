@@ -26,6 +26,11 @@ public class EmptyLifeMovement implements LifeMovement {
 	}
 
 	@Override
+	public String toString() {
+		return "EMPTY_MOVE";
+	}
+	
+	@Override
 	public MoveType getType() {
 		return MoveType.UNKNOWN;
 	}

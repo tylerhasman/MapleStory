@@ -26,24 +26,34 @@ import java.awt.Point;
 import maplestory.client.MapleClient;
 
 public interface MapleMapObject {
-    public int getObjectId();
-    public void setObjectId(int id);
-    public MapleMapObjectType getType();
-    public Point getPosition();
-    public void setPosition(Point position);
-    public void sendSpawnData(MapleClient client);
-    public void sendDestroyData(MapleClient client);
-    public void nullifyPosition();
-    
-    public default double distance(MapleMapObject object){
-    	return distance(object.getPosition().x, object.getPosition().y);
-    }
-    
-    public default double distance(double x, double y){
-    	double distanceX = Math.pow(x - getPosition().x, 2);
-    	double distanceY = Math.pow(y - getPosition().y, 2);
-    	
-    	return Math.sqrt(distanceX + distanceY);
-    }
-    
+
+	public int getObjectId();
+
+	public void setObjectId(int id);
+
+	public MapleMapObjectType getType();
+
+	public Point getPosition();
+
+	public void setPosition(Point position);
+
+	public void sendSpawnData(MapleClient client);
+
+	public void sendDestroyData(MapleClient client);
+
+	public void nullifyPosition();
+	
+	public void setMap(MapleMap map);
+
+	public default double distance(MapleMapObject object) {
+		return distance(object.getPosition().x, object.getPosition().y);
+	}
+
+	public default double distance(double x, double y) {
+		double distanceX = Math.pow(x - getPosition().x, 2);
+		double distanceY = Math.pow(y - getPosition().y, 2);
+
+		return Math.sqrt(distanceX + distanceY);
+	}
+
 }

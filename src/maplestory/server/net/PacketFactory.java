@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import lombok.SneakyThrows;
 import maplestory.cashshop.CashShopInventory;
@@ -43,6 +44,7 @@ import maplestory.inventory.item.ItemType;
 import maplestory.inventory.item.ScrollResult;
 import maplestory.inventory.storage.MapleStorageBox;
 import maplestory.inventory.storage.MapleStorageBox.StoragePacketType;
+import maplestory.life.MapleHiredMerchant;
 import maplestory.life.MapleMonster;
 import maplestory.life.MapleMount;
 import maplestory.life.MapleNPC;
@@ -62,9 +64,14 @@ import maplestory.player.MapleCharacterSnapshot;
 import maplestory.player.MapleNote;
 import maplestory.player.MaplePetInstance;
 import maplestory.player.monsterbook.MonsterCard;
+import maplestory.player.ui.HiredMerchantInterface;
+import maplestory.player.ui.HiredMerchantInterface.HiredMerchantItem;
+import maplestory.player.ui.TradeInterface;
+import maplestory.player.ui.UserInterface;
 import maplestory.quest.MapleQuestInstance;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
 import maplestory.server.MapleStory;
+import maplestory.server.net.handlers.channel.PlayerInteractionHandler;
 import maplestory.server.net.handlers.channel.AbstractDealDamageHandler.AttackInfo;
 import maplestory.server.net.handlers.channel.GroupChatHandler.GroupChatType;
 import maplestory.server.net.handlers.channel.SummonAttackHandler.SummonAttack;
@@ -275,7 +282,7 @@ public class PacketFactory {
         addCharLook(writer, chr, false);
         writer.writeInt(chr.getInventory(InventoryType.CASH).countById(5110000));
         writer.writeInt(/*chr.getItemEffect()*/0);
-        writer.writeInt(/*ItemConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : */0);
+        writer.writeInt(ItemType.CHAIR.isThis(chr.getActiveChair()) ? chr.getActiveChair() : 0);
         writer.writePos(chr.getPosition());
         writer.write(chr.getStance());
         writer.writeShort(chr.getFh());//chr.getFh()
@@ -640,6 +647,8 @@ public class PacketFactory {
     }
 
     
+    
+    
     private static void addInventoryInfo(MaplePacketWriter mplew, MapleCharacter chr) {
         for (byte i = 1; i <= 5; i++) {
             mplew.write(chr.getInventory(InventoryType.getById(i)).getSize());
@@ -830,7 +839,7 @@ public class PacketFactory {
         mplew.writeShort(0);
         mplew.writeInt(c.getId()); //user id
         mplew.write(0);//Gender, 0=male 1=female
-        mplew.writeBool(true); //admin byte
+        mplew.writeBool(c.isGM()); //admin byte
         short toWrite = (short) (0 * 32);
         //toWrite = toWrite |= 0x100; only in higher versions
         mplew.write(toWrite > 0x80 ? 0x80 : toWrite);//0x80 is admin, 0x20 and 0x40 = subgm
@@ -1585,10 +1594,10 @@ public class PacketFactory {
 				}
 			}
 			
-			if(addMovement > -1){
-				buf.write(addMovement);
-			}
-			
+		}
+		
+		if(addMovement > -1){
+			buf.write(addMovement);
 		}
 		
 		return buf.getPacket();
@@ -1670,8 +1679,7 @@ public class PacketFactory {
 
 	public static byte[] showBuffEffect(int cid, int skillid, int effectid,
 			byte direction) {
-		MaplePacketWriter mplew = new MaplePacketWriter(
-				12);
+		MaplePacketWriter mplew = new MaplePacketWriter(12);
 		mplew.writeShort(SendOpcode.SHOW_FOREIGN_EFFECT.getValue());
 		mplew.writeInt(cid);
 		mplew.write(effectid); // buff level
@@ -3757,21 +3765,263 @@ public class PacketFactory {
 		
 		return out.getPacket();
 	}
+
+	public static byte[] cashShopAddItem(CashItem targetItem, int id) {
+		
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.CASHSHOP_OPERATION.getValue());
+		
+		out.write(0x6A);
+		out.writeCashItemInformation(targetItem, id);
+		
+		return out.getPacket();
+	}
 	
-/*	public static byte[] showCashInventory(MapleCharacter chr) {
-		MaplePacketWriter writer = new MaplePacketWriter();
-		writer.writeShort(SendOpcode.CASHSHOP_OPERATION.getValue());
+	public static byte[] hiredMerchantSpawn(MapleHiredMerchant merchant){
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.SPAWN_HIRED_MERCHANT.getValue());
 		
-		writer.write(0x4B);
-		writer.writeShort(0);//Cashshop inventory size
+		out.writeInt(merchant.getOwnerId());
+		out.writeInt(merchant.getMerchantType());
+		out.writePos(merchant.getPosition());
+		out.writeShort(0);
+		out.writeMapleAsciiString(merchant.getOwnerName());
+		out.write(0x05);
+		out.writeInt(merchant.getObjectId());
+		out.writeMapleAsciiString(merchant.getDescription());
+		out.write(merchant.getMerchantType() % 10);
+		out.write(1);
+		out.writeBool(merchant.isOpen());
 		
-		 *  for (Item item : c.getPlayer().getCashShop().getInventory()) {
-					   addCashItemInformation(mplew, item, c.getAccID());
+		return out.getPacket();
+	}
+	
+	public static byte[] hiredMerchantRemove(MapleHiredMerchant merchant){
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.DESTROY_HIRED_MERCHANT.getValue());
+		
+		out.writeInt(merchant.getOwnerId());
+		
+		return out.getPacket();
+	}
+	
+	public static byte[] hiredMerchantVisitorAdd(MapleCharacter chr, int slot){
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+		out.write(0x04);
+		out.write(slot);
+		addCharLook(out, chr, false);
+		out.writeMapleAsciiString(chr.getName());
+		
+		return out.getPacket();
+	}
+	
+	public static byte[] hiredMerchantLeave(int slot, int status){
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+		out.write(0xA);
+		out.write(slot);
+		out.write(status);
+		
+		return out.getPacket();
+	}
+
+	public static byte[] createTradeRoom(TradeInterface ui) {
+		
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+		out.write(PlayerInteractionHandler.Action.ROOM.getCode());
+		out.write(3);
+		out.write(2);
+		out.write(ui.getPlayers().size()-1);
+		int id = 0;
+		for(MapleCharacter player : ui.getPlayers()){
+			out.write(id);
+			addCharLook(out, player, false);
+			out.writeMapleAsciiString(player.getName());
+			id++;
+		}
+		out.write(0xFF);
+		
+		
+		return out.getPacket();
+	}
+
+	public static byte[] tradeInvite(String name, int id) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+		out.write(PlayerInteractionHandler.Action.INVITE.getCode());
+		out.write(3);
+		out.writeMapleAsciiString(name);
+		out.writeInt(id);
+		return out.getPacket();
+	}
+
+	public static byte[] tradePartner(MapleCharacter chr) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+		out.write(PlayerInteractionHandler.Action.VISIT.getCode());
+		out.write(1);
+		addCharLook(out, chr, false);
+		out.writeMapleAsciiString(chr.getName());
+		return out.getPacket();
+	}
+
+	public static byte[] tradeChat(String source, String msg, boolean owner) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+		out.write(PlayerInteractionHandler.Action.CHAT.getCode());
+		out.write(PlayerInteractionHandler.Action.CHAT_THING.getCode());
+		out.writeBool(!owner);
+		out.writeMapleAsciiString(source+" : "+msg);
+		
+		return out.getPacket();
+	}
+
+	public static byte[] tradeSetMeso(boolean self, int amount) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+		out.write(PlayerInteractionHandler.Action.SET_MESO.getCode());
+		out.write(self ? 0 : 1);
+		out.writeInt(amount);
+		
+		return out.getPacket();
+	}
+
+	public static byte[] tradeConfirm() {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+		out.write(PlayerInteractionHandler.Action.CONFIRM.getCode());
+		return out.getPacket();
+	}
+
+	public static byte[] tradeCancel(boolean creatorCancelled) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+		out.write(PlayerInteractionHandler.Action.EXIT.getCode());
+		out.write(creatorCancelled ? 0 : 1);
+		out.write(2);
+		
+		return out.getPacket();
+	}
+
+	public static byte[] tradeComplete(boolean creatorPerspective) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+		out.write(PlayerInteractionHandler.Action.EXIT.getCode());
+		out.write(creatorPerspective ? 0 : 1);
+		out.write(6);
+		
+		return out.getPacket();
+	}
+
+	public static byte[] tradeSetItem(Item item, int slot, boolean creatorPerspective) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+		out.write(PlayerInteractionHandler.Action.PUT_ITEM_TRADE.getCode());
+		out.write(creatorPerspective ? 0 : 1);
+		out.write(slot+1);
+		out.writeItemInfo(item);
+		return out.getPacket();
+	}
+
+	public static byte[] hiredMerchantResult(int id) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.ENTRUSTED_SHOP_CHECK_RESULT.getValue());
+		out.write(id);
+		return out.getPacket();
+	}
+
+	public static byte[] hiredMerchantOpen(MapleCharacter chr, HiredMerchantInterface merchant, boolean firstTime) {
+		
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+		out.write(PlayerInteractionHandler.Action.ROOM.getCode());
+		
+		out.write(0x05);
+		out.write(0x04);
+		
+		out.writeShort(merchant.getVisitorSlot(chr) + 1);
+		out.writeInt(merchant.getMerchantItemId());
+		out.writeMapleAsciiString("Merchant");
+		
+		for(MapleCharacter visitor : merchant.getVisitors()){
+			out.write(merchant.getVisitorSlot(visitor) + 1);
+			addCharLook(out, visitor, false);
+			out.writeMapleAsciiString(visitor.getName());
+		}
+		
+		out.write(-1);
+		if(merchant.isOwner(chr)){
+			out.writeShort(0);//Messages?
+		}else{
+			out.writeShort(0);
+		}
+		out.writeMapleAsciiString(merchant.getOwnerName());
+		if(merchant.isOwner(chr)){
+			out.writeInt(0);//Time left?
+			out.writeBool(firstTime);
+			out.write(0);//Sold items
+			out.writeInt(merchant.getMesos());
+		}
+		
+		out.writeMapleAsciiString(merchant.getDescription());
+		out.write(merchant.getCapacity());//Slots in the store (16)
+		out.writeInt(chr.getMeso());
+		out.write(merchant.getItems().size());
+		if(merchant.getItems().isEmpty()){
+			out.write(0);
+		}else{
+			for(HiredMerchantItem item : merchant.getItems()){
+				out.writeShort(item.getAmountLeft());
+				out.writeShort(item.getItem().getAmount());
+				out.writeInt(item.getPrice());
+				out.writeItemInfo(item.getItem());
 			}
-		 
-		writer.writeShort(i);
+		}
 		
-		return writer.getPacket();
+		return out.getPacket();
+	}
+
+	public static byte[] hiredMerchantUpdateForOwner(HiredMerchantInterface merchant, MapleCharacter viewer) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+		out.write(PlayerInteractionHandler.Action.UPDATE_MERCHANT.getCode());
+		out.writeInt(viewer.getMeso());
+		out.write(merchant.getItems().size());
+		for(HiredMerchantItem item : merchant.getItems()){
+			out.writeShort(item.getAmountLeft());
+			out.writeShort(item.getItem().getAmount());
+			out.writeInt(item.getPrice());
+			out.writeItemInfo(item.getItem());
+		}
+		
+		return out.getPacket();
+	}
+
+	public static byte[] hiredMerchantChat(String source, String msg, int visitorSlot) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+		out.write(PlayerInteractionHandler.Action.CHAT.getCode());
+		out.write(PlayerInteractionHandler.Action.CHAT_THING.getCode());
+		out.write(visitorSlot);
+		/*if(visitorSlot > 0){
+			out.writeMapleAsciiString(source+" : "+msg);
+		}else{
+			out.writeMapleAsciiString(source+" (Owner) : "+msg);
+		}*/
+		out.writeMapleAsciiString(source+" : "+msg);
+		
+		return out.getPacket();
+	}
+	
+/*	public static byte[] hiredMerchantOpen(MapleCharacter chr, MapleHiredMerchant merchant, boolean firstTime){
+		MaplePacketWriter out = new MaplePacketWriter();
+		
+		out.writeShort(SendOpcode.PLAYER_INTERACTION.getValue());
+		out.write(0x05);
+		out.write(0x05);
+		out.write(0x04);
 	}*/
 	
 }

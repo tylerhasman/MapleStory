@@ -31,6 +31,7 @@ import maplestory.inventory.InventoryType;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemFactory;
 import maplestory.inventory.item.ItemInfoProvider;
+import maplestory.life.MapleHiredMerchant;
 import maplestory.life.MapleLifeFactory;
 import maplestory.life.MapleMonster;
 import maplestory.life.MapleMount;
@@ -92,6 +93,12 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					}
 				}else if(args[0].equalsIgnoreCase("!reloadskills")){
 					SkillFactory.loadAllSkills();
+				}else if(args[0].equalsIgnoreCase("!clearmerchants")){
+					for(MapleMapObject merchant : client.getCharacter().getMap().getObjects()){
+						if(merchant instanceof MapleHiredMerchant){
+							client.getCharacter().getMap().removeObject(merchant.getObjectId());
+						}
+					}
 				}else if(args[0].equalsIgnoreCase("!purgemaps")){
 					
 					for(MapleMap map : client.getChannel().getMapFactory().getLoadedMaps()){

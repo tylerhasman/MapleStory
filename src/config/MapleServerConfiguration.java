@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import lombok.AllArgsConstructor;
@@ -113,6 +114,13 @@ public class MapleServerConfiguration {
 	
 	public MapleServerConfiguration() {
 		
+	}
+
+	public WorldConfiguration getWorldConfiguration(int id) {
+		if(worldConfigurations.containsKey(id)){
+			return worldConfigurations.get(id);
+		}
+		return new WorldConfiguration("Unknown", 0);
 	}
 
 	@Getter

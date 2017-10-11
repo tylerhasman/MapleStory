@@ -56,7 +56,7 @@ public class CashShopInventory {
 			MapleDatabase.getInstance().execute("DELETE FROM `cash_items` WHERE `account`=?", accountId);
 		
 			for(CashItem item : items){
-				MapleDatabase.getInstance().execute("INSERT INTO `cash_items` (`itemid`, `account`, `unique_id`) VALUES (?, ?, ?)", item.getItemId(), accountId, item.getUniqueId());
+				MapleDatabase.getInstance().execute("INSERT INTO `cash_items` (`itemid`, `account`, `unique_id`, `amount`) VALUES (?, ?, ?, ?)", item.getItemId(), accountId, item.getUniqueId(), item.getAmount());
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -80,18 +80,19 @@ public class CashShopInventory {
 		CashShopInventory inv = new CashShopInventory(accountId);
 		
 		try{
-			List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `itemid`,`unique_id` FROM `cash_items` WHERE `account`=?", accountId);
+			List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `itemid`,`unique_id`,`amount` FROM `cash_items` WHERE `account`=?", accountId);
 		
 			for(QueryResult result : results){
 				CashItem item = null;
 				
 				int itemId = result.get("itemid");
+				int amount = result.get("amount");
 				long uniqueId = result.get("unique_id");
 				
 				if(InventoryType.getByItemId(itemId) != InventoryType.EQUIP){
-					item = new MapleCashItem(itemId, 1, null, MapleStory.getServerConfig().getDefaultCashItemExpireTime() + System.currentTimeMillis(), uniqueId);
+					item = new MapleCashItem(itemId, amount, null, MapleStory.getServerConfig().getDefaultCashItemExpireTime() + System.currentTimeMillis(), uniqueId);
 				}else{
-					item = new MapleEquipCashItem(itemId, 1, MapleStory.getServerConfig().getDefaultCashItemExpireTime() + System.currentTimeMillis(), uniqueId, ItemInfoProvider.getEquipInfo(itemId));
+					item = new MapleEquipCashItem(itemId, amount, MapleStory.getServerConfig().getDefaultCashItemExpireTime() + System.currentTimeMillis(), uniqueId, ItemInfoProvider.getEquipInfo(itemId));
 				}
 				
 				inv.items.add(item);

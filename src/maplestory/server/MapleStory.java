@@ -14,6 +14,7 @@ import lombok.Getter;
 import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.skill.SkillFactory;
 import me.tyler.mdf.MapleFile;
+import me.tyler.mdf.MapleFileFactory;
 import database.MapleDatabase;
 import database.MonsterDropManager;
 
@@ -104,7 +105,7 @@ public class MapleStory {
 		
 		MapleFile file;
 		try {
-			file = new MapleFile(f, false, true);
+			file = MapleFileFactory.getReadWriteMapleFile(f);
 			dataFiles.put(path, file);
 		} catch (IOException e) {
 			logger.error("Failed to load "+f.getAbsolutePath(), e);

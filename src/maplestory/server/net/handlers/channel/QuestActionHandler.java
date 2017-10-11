@@ -87,7 +87,7 @@ public class QuestActionHandler extends MaplePacketHandler {
 		}else if(action == ActionType.END_WITH_SCRIPT){
 			int medal = ItemInfoProvider.getQuestMedalId(questId);
 			
-			if(questId >= 29900 && medal >= 0){
+			if(questId >= 29900 && medal > 0){
 				MapleScript script = new MapleScript("scripts/quest/medal_award.js");
 				
 				SimpleBindings sb = new SimpleBindings();

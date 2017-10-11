@@ -11,12 +11,14 @@ import maplestory.cashshop.CashShopWallet;
 import maplestory.cashshop.CashShopWallet.CashShopCurrency;
 import maplestory.client.MapleClient;
 import maplestory.inventory.Inventory;
+import maplestory.inventory.InventoryType;
 import maplestory.inventory.item.CashItem;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
+import maplestory.util.Hex;
 
 public class CashShopOperationHandler extends MaplePacketHandler {
 
@@ -175,6 +177,26 @@ public class CashShopOperationHandler extends MaplePacketHandler {
 			cashInventory.removeItem(item);
 			
 			client.sendPacket(PacketFactory.cashShopTakeItem(item, slot));
+		}else if(action == OperationType.ADD_TO_CASH_INVENTORY){
+			
+			int cashUniqueId = buf.readInt();
+			
+			buf.skipBytes(4);
+			
+			byte inventory = buf.readByte();
+			
+			Inventory target = chr.getInventory(InventoryType.getById(inventory));
+			
+			int targetItem = target.findByCashId(cashUniqueId);
+			
+			if(targetItem != -1){
+				target.transferToCashInventory(targetItem, cashInventory);
+			}else{
+				client.sendPacket(PacketFactory.updateCashshopCash(wallet));
+			}
+			
+
+			client.sendPacket(PacketFactory.updateCashshopCash(wallet));
 			
 		}else{
 			client.getLogger().warn("Unhandled cash shop operation "+action);

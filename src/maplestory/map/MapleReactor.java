@@ -308,7 +308,7 @@ public class MapleReactor extends AbstractMapleMapObject {
 		
 		id = StringUtil.getLeftPaddedStr(id, '0', 7);
 		
-		Node data = MapleStory.getDataFile("Reactor.mdf").getRootNode().readNode(id+"img");
+		Node data = MapleStory.getDataFile("Reactor.mdf").getRootNode().readNode(id+".img");
 		
 		return data;	
 	}

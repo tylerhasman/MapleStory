@@ -2,10 +2,7 @@ package maplestory.player;
 
 import java.sql.SQLException;
 import java.util.List;
-<<<<<<< HEAD
-=======
 import java.util.Optional;
->>>>>>> origin/master
 import java.util.function.Consumer;
 
 import constants.LoginStatus;
@@ -46,21 +43,6 @@ public class MapleCharacterSnapshot {
 		this.mapId = mapId;
 		channel = -1;
 	}
-	
-<<<<<<< HEAD
-	public void ifOnline(Consumer<MapleCharacter> con){
-		MapleCharacter chr = getLiveCharacter();
-		
-		if(chr != null){
-			con.accept(getLiveCharacter());
-		}
-	}
-	
-=======
-	public void ifOnline(Consumer<MapleCharacter> consumer){
-		getLiveCharacter().ifPresent(consumer);
-	}
->>>>>>> origin/master
 	
 	/**
 	 * Initialize a blank snapshot

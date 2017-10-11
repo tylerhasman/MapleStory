@@ -74,7 +74,7 @@ public class MapleParty {
 				continue;
 			}
 			
-			entry.getSnapshot().ifOnline(chr -> chr.getClient().sendPacket(packet));
+			entry.getSnapshot().getLiveCharacter().ifPresent(chr -> chr.getClient().sendPacket(packet));
 		}
 		
 	}

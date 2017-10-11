@@ -89,7 +89,7 @@ public class MapleMessenger {
 				continue;
 			}
 			
-			snapshot.ifOnline(other -> other.getClient().sendPacket(PacketFactory.messengerAddPlayer(chr.getName(), chr, position(chr), chr.getClient().getChannelId()+1)));
+			snapshot.getLiveCharacter().ifPresent(other -> other.getClient().sendPacket(PacketFactory.messengerAddPlayer(chr.getName(), chr, position(chr), chr.getClient().getChannelId()+1)));
 		}
 		
 		for(MapleCharacterSnapshot snapshot : players){
@@ -113,7 +113,7 @@ public class MapleMessenger {
 		players.removeIf(snapshot -> snapshot.getId() == chr.getId());
 		
 		for(MapleCharacterSnapshot snapshot : players){
-			snapshot.ifOnline(other -> other.getClient().sendPacket(PacketFactory.messengerRemovePlayer(position)));
+			snapshot.getLiveCharacter().ifPresent(other -> other.getClient().sendPacket(PacketFactory.messengerRemovePlayer(position)));
 		}
 		
 	}

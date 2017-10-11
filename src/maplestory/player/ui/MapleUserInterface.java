@@ -35,14 +35,14 @@ public abstract class MapleUserInterface implements UserInterface {
 	@Override
 	public void chat(String msg, MapleCharacter source) {
 		for(MapleCharacterSnapshot snapshot : characters){
-			snapshot.ifOnline(chr -> sendChatPacket(chr, source.getName(), msg));
+			snapshot.getLiveCharacter().ifPresent(chr -> sendChatPacket(chr, source.getName(), msg));
 		}
 	}
 	
 	@Override
 	public void chat(String msg){
 		for(MapleCharacterSnapshot snapshot : characters){
-			snapshot.ifOnline(chr -> sendChatPacket(chr, getDefaultChatSource(), msg));
+			snapshot.getLiveCharacter().ifPresent(chr -> sendChatPacket(chr, getDefaultChatSource(), msg));
 		}
 	}
 
@@ -56,7 +56,7 @@ public abstract class MapleUserInterface implements UserInterface {
 		List<MapleCharacter> online = new ArrayList<>();
 		
 		for(MapleCharacterSnapshot snapshot : characters){
-			MapleCharacter chr = snapshot.getLiveCharacter();
+			MapleCharacter chr = snapshot.getLiveCharacter().orElse(null);
 			if(chr != null){
 				online.add(chr);
 			}

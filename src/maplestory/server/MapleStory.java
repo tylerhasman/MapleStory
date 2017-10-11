@@ -105,7 +105,7 @@ public class MapleStory {
 		
 		MapleFile file;
 		try {
-			file = MapleFileFactory.getReadWriteMapleFile(f);
+			file = MapleFileFactory.getRandomAccessMapleFile(f);
 			dataFiles.put(path, file);
 		} catch (IOException e) {
 			logger.error("Failed to load "+f.getAbsolutePath(), e);

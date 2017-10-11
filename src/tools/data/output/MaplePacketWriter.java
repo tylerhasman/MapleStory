@@ -24,6 +24,7 @@ package tools.data.output;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import maplestory.guild.MapleGuildEmblem;
 import maplestory.guild.bbs.BulletinPost;
@@ -37,6 +38,7 @@ import maplestory.life.movement.MovementPath;
 import maplestory.map.MapleMagicDoor;
 import maplestory.party.MapleParty;
 import maplestory.party.MapleParty.PartyEntry;
+import maplestory.player.MapleCharacter;
 import maplestory.player.MapleCharacterSnapshot;
 import maplestory.player.MaplePetInstance;
 import maplestory.server.net.PacketFactory;
@@ -136,8 +138,8 @@ public class MaplePacketWriter extends GenericLittleEndianWriter {
     	
     	for(MapleCharacterSnapshot snap : members){
     		if(snap.getChannel() == channel){
-    			if(snap.isOnline() && snap.getLiveCharacter().getMagicDoors().size() > 0){
-					for(MapleMagicDoor door : snap.getLiveCharacter().getMagicDoors()){
+    			if(snap.isOnline() && snap.getLiveCharacter().get().getMagicDoors().size() > 0){
+					for(MapleMagicDoor door : snap.getLiveCharacter().get().getMagicDoors()){
 						writeInt(door.getTown().getMapId());
 						writeInt(door.getTarget().getMapId());
 						writeInt(door.getPosition().x);

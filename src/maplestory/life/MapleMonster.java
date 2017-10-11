@@ -228,13 +228,17 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 					source.giveExp(exp, (int) (exp * bonus));
 					
 					for(PartyEntry entry : source.getParty().getMembers()){
-						if(entry.getSnapshot().isOnline()){
-							if(entry.getSnapshot().getId() != source.getId()){
-								if(entry.getSnapshot().getMapId() == source.getMapId()){
-									entry.getSnapshot().getLiveCharacter().giveExp((int) (exp * (1D/3D)));
-								}
-							}
+						
+						if(entry.getSnapshot().getId() == source.getId()){
+							continue;
 						}
+						
+						if(entry.getSnapshot().getMapId() != source.getMapId()){
+							continue;
+						}
+						
+						entry.getSnapshot().getLiveCharacter().ifPresent(chr -> chr.giveExp( (int) (exp * (1D/3D) ) ));
+						
 					}
 					
 				}else{

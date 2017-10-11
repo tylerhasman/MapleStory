@@ -2841,7 +2841,7 @@ public class PacketFactory {
 			writer.writeInt(snap.getLevel());
 			MapleGuildRankLevel rank = guild.getRankLevel(member);
 			writer.writeInt(rank.getPacketId());
-			writer.writeInt(snap.isOnline() ? 1 : 0);
+			writer.writeInt(snap.getLiveCharacter().isPresent() ? 1 : 0);
 			writer.writeInt(0);//GP Contribution from this player. Doesn't do anything pre-big bang
 			writer.writeInt(0 /* Alliance Rank */);
 		}

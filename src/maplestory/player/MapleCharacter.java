@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -305,7 +306,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 b = 96;
                 inventories.put(type, new MapleCashInventory(this, b));
             }else if(type == InventoryType.EQUIPPED){
-            	inventories.put(type, new MapleEquippedInventory(this, b));
+            	inventories.put(type, new MapleEquippedInventory(this));
             }else{
             	inventories.put(type, new MapleInventory(this, b, type));
             }
@@ -1304,8 +1305,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			getParty().broadcastPacket(PacketFactory.updatePartyMemberHp(this), id);
 			for(PartyEntry entry : getParty().getMembers()){
 				if(entry.getSnapshot().getMapId() == getMapId()){
-					if(entry.getSnapshot().isOnline()){
-						client.sendPacket(PacketFactory.updatePartyMemberHp(entry.getSnapshot().getLiveCharacter()));
+					Optional<MapleCharacter> chr = entry.getSnapshot().getLiveCharacter();
+					if(chr.isPresent()){
+						client.sendPacket(PacketFactory.updatePartyMemberHp(chr.get()));
 					}
 				}
 			}

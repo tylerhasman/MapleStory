@@ -2,6 +2,10 @@ package maplestory.player;
 
 import java.sql.SQLException;
 import java.util.List;
+<<<<<<< HEAD
+=======
+import java.util.Optional;
+>>>>>>> origin/master
 import java.util.function.Consumer;
 
 import constants.LoginStatus;
@@ -43,6 +47,7 @@ public class MapleCharacterSnapshot {
 		channel = -1;
 	}
 	
+<<<<<<< HEAD
 	public void ifOnline(Consumer<MapleCharacter> con){
 		MapleCharacter chr = getLiveCharacter();
 		
@@ -51,6 +56,11 @@ public class MapleCharacterSnapshot {
 		}
 	}
 	
+=======
+	public void ifOnline(Consumer<MapleCharacter> consumer){
+		getLiveCharacter().ifPresent(consumer);
+	}
+>>>>>>> origin/master
 	
 	/**
 	 * Initialize a blank snapshot
@@ -69,28 +79,29 @@ public class MapleCharacterSnapshot {
 	 * Not guaranteed to return a character, may return null if they are no longer online
 	 * @return the character
 	 */
-	public MapleCharacter getLiveCharacter(){
+	public Optional<MapleCharacter> getLiveCharacter(){
 		if(world == -1) {
-			return null;
+			return Optional.empty();
 		}
 		World w = MapleServer.getWorld(world);
 		
 		if(w == null){
-			return null;
+			return Optional.empty();
 		}
 		
-		return w.getPlayerStorage().getById(id);
+		return Optional.ofNullable(w.getPlayerStorage().getById(id));
 	}
 	
 	public boolean isOnline(){
-		MapleCharacter live = getLiveCharacter();
+		Optional<MapleCharacter> op = getLiveCharacter();
 		
-		if(live != null){
-			return live.getClient().getLoginStatus() == LoginStatus.IN_GAME;
+		if(!op.isPresent()){
+			return false;
 		}
 		
-		return false;
+		return op.get().getClient().getLoginStatus() == LoginStatus.IN_GAME;
 	}
+
 	
 	public static MapleCharacterSnapshot createDatabaseSnapshot(int characterId){
 		MapleCharacterSnapshot snapshot = null;

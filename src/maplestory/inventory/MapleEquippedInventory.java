@@ -14,7 +14,7 @@ import maplestory.server.net.PacketFactory;
 
 public class MapleEquippedInventory extends MapleInventory {
 	
-	public MapleEquippedInventory(MapleCharacter chr, int maxSize) {
+	public MapleEquippedInventory(MapleCharacter chr) {
 		super(chr, 20, InventoryType.EQUIPPED);
 	}
 	

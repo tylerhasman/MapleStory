@@ -17,7 +17,7 @@ server:
     auto_register: true
 game:
     allow_beginner_parties: false
-    map_unloading:
+    map_unloading: #I recommend this is not turned on. If a map relies on its script not being unloaded then this could potentially break many things.
         enabled: false
         unload_time: 5000
         neighbor_threshold: 1

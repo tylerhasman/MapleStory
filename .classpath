@@ -11,6 +11,6 @@
 	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.7.12.jar"/>
 	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="lib" path="lib/snakeyaml-1.14.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/MapleDataFormat"/>
+	<classpathentry kind="lib" path="lib/MapleDataFormat.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

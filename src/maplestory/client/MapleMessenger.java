@@ -61,9 +61,8 @@ public class MapleMessenger {
 			if(source != null && snapshot.getId() == source.getId()){
 				continue;
 			}
-			if(snapshot.isOnline()){
-				snapshot.getLiveCharacter().getClient().sendPacket(PacketFactory.messengerChat(msg));
-			}
+			snapshot.getLiveCharacter().ifPresent(chr -> chr.getClient().sendPacket(PacketFactory.messengerChat(msg)));
+			
 		}
 	}
 	
@@ -89,20 +88,17 @@ public class MapleMessenger {
 			if(snapshot.getId() == chr.getId()){
 				continue;
 			}
-			if(snapshot.isOnline()){
-				snapshot.getLiveCharacter().getClient().sendPacket(PacketFactory.messengerAddPlayer(chr.getName(), chr, position(chr), chr.getClient().getChannelId()+1));
-			}
+			
+			snapshot.ifOnline(other -> other.getClient().sendPacket(PacketFactory.messengerAddPlayer(chr.getName(), chr, position(chr), chr.getClient().getChannelId()+1)));
 		}
 		
 		for(MapleCharacterSnapshot snapshot : players){
 			if(snapshot.getId() == chr.getId()){
 				continue;
 			}
-			if(snapshot.isOnline()){
-				MapleCharacter other = snapshot.getLiveCharacter();
-				
+			snapshot.getLiveCharacter().ifPresent(other -> {
 				chr.getClient().sendPacket(PacketFactory.messengerAddPlayer(snapshot.getName(), other, position(other), snapshot.getChannel()+1));
-			}
+			});
 		}
 		
 	}
@@ -117,9 +113,7 @@ public class MapleMessenger {
 		players.removeIf(snapshot -> snapshot.getId() == chr.getId());
 		
 		for(MapleCharacterSnapshot snapshot : players){
-			if(snapshot.isOnline()){
-				snapshot.getLiveCharacter().getClient().sendPacket(PacketFactory.messengerRemovePlayer(position));
-			}
+			snapshot.ifOnline(other -> other.getClient().sendPacket(PacketFactory.messengerRemovePlayer(position)));
 		}
 		
 	}
@@ -181,7 +175,7 @@ public class MapleMessenger {
 			}
 			
 			if(snapshot.isOnline()){
-				snapshot.getLiveCharacter().getClient().sendPacket(PacketFactory.messengerUpdatePlayer(chr, position, chr.getClient().getChannelId()+1));
+				snapshot.getLiveCharacter().get().getClient().sendPacket(PacketFactory.messengerUpdatePlayer(chr, position, chr.getClient().getChannelId()+1));
 			}
 		}
 		

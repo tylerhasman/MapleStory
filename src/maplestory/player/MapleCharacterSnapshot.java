@@ -2,6 +2,8 @@ package maplestory.player;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import constants.LoginStatus;
 import database.MapleDatabase;
@@ -42,6 +44,9 @@ public class MapleCharacterSnapshot {
 		channel = -1;
 	}
 	
+	public void ifOnline(Consumer<MapleCharacter> consumer){
+		getLiveCharacter().ifPresent(consumer);
+	}
 	
 	/**
 	 * Initialize a blank snapshot
@@ -60,28 +65,29 @@ public class MapleCharacterSnapshot {
 	 * Not guaranteed to return a character, may return null if they are no longer online
 	 * @return the character
 	 */
-	public MapleCharacter getLiveCharacter(){
+	public Optional<MapleCharacter> getLiveCharacter(){
 		if(world == -1) {
-			return null;
+			return Optional.empty();
 		}
 		World w = MapleServer.getWorld(world);
 		
 		if(w == null){
-			return null;
+			return Optional.empty();
 		}
 		
-		return w.getPlayerStorage().getById(id);
+		return Optional.ofNullable(w.getPlayerStorage().getById(id));
 	}
 	
 	public boolean isOnline(){
-		MapleCharacter live = getLiveCharacter();
+		Optional<MapleCharacter> op = getLiveCharacter();
 		
-		if(live != null){
-			return live.getClient().getLoginStatus() == LoginStatus.IN_GAME;
+		if(!op.isPresent()){
+			return false;
 		}
 		
-		return false;
+		return op.get().getClient().getLoginStatus() == LoginStatus.IN_GAME;
 	}
+
 	
 	public static MapleCharacterSnapshot createDatabaseSnapshot(int characterId){
 		MapleCharacterSnapshot snapshot = null;

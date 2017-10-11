@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.Getter;
@@ -72,9 +73,8 @@ public class MapleParty {
 			if(entry.getSnapshot().getId() == exclude){
 				continue;
 			}
-			if(entry.getSnapshot().isOnline()){
-				entry.getSnapshot().getLiveCharacter().getClient().sendPacket(packet);
-			}
+			
+			entry.getSnapshot().ifOnline(chr -> chr.getClient().sendPacket(packet));
 		}
 		
 	}
@@ -103,14 +103,15 @@ public class MapleParty {
 			players.add(new PartyEntry(chr, partyId));
 			broadcastPacket(PacketFactory.updatePartyMemberHp(chr), chr.getId());
 			for(PartyEntry member : getMembers()){
-				if(member.getSnapshot().isOnline()){
-					MapleCharacter mem = member.getSnapshot().getLiveCharacter();
+				Optional<MapleCharacter> op = member.getSnapshot().getLiveCharacter();
+				if(op.isPresent()){
+					MapleCharacter mem = op.get();
 					
 					mem.getClient().sendPacket(PacketFactory.partyUpdate(chr.getClient().getChannelId(), this, PartyOperationType.JOIN, chr.createSnapshot()));
 					
 					if(member.getSnapshot().getId() != chr.getId()){
-						chr.getClient().sendPacket(PacketFactory.updatePartyMemberHp(member.getSnapshot().getLiveCharacter()));
-						member.getSnapshot().getLiveCharacter().getClient().sendPacket(PacketFactory.updatePartyMemberHp(chr));
+						chr.getClient().sendPacket(PacketFactory.updatePartyMemberHp(mem));
+						mem.getClient().sendPacket(PacketFactory.updatePartyMemberHp(chr));
 					}
 				}
 			}
@@ -145,7 +146,7 @@ public class MapleParty {
 			sendRemovePacket(getLeader(), PartyOperationType.DISBAND);
 			for(PartyEntry entry : getMembers()){
 				players.remove(entry);
-				MapleCharacter chr = entry.getSnapshot().getLiveCharacter();
+				MapleCharacter chr = entry.getSnapshot().getLiveCharacter().get();
 				if(chr != null){
 					chr.leaveParty();
 				}
@@ -163,7 +164,7 @@ public class MapleParty {
 		sendRemovePacket(entry, PartyOperationType.EXPEL);
 		players.remove(entry);
 		
-		MapleCharacter chr = entry.getSnapshot().getLiveCharacter();
+		MapleCharacter chr = entry.getSnapshot().getLiveCharacter().get();
 		
 		if(chr != null){
 			chr.leaveParty();
@@ -174,7 +175,7 @@ public class MapleParty {
 	private void sendRemovePacket(PartyEntry removed, PartyOperationType reason){
 		for(PartyEntry entry : getMembers()){
 			MapleCharacterSnapshot snap = entry.getSnapshot();
-			MapleCharacter member = snap.getLiveCharacter();
+			MapleCharacter member = snap.getLiveCharacter().orElse(null);
 			
 			if(member != null){
 				member.getClient().sendPacket(PacketFactory.partyUpdate(removed.getSnapshot().getChannel(), this, reason, removed.getSnapshot()));
@@ -222,7 +223,7 @@ public class MapleParty {
 		}
 		
 		for(PartyEntry entry : getMembers()){
-			MapleCharacter chr = entry.getSnapshot().getLiveCharacter();
+			MapleCharacter chr = entry.getSnapshot().getLiveCharacter().orElse(null);
 			
 			if(chr == null){
 				continue;
@@ -258,7 +259,7 @@ public class MapleParty {
 	public void changeLeader(PartyEntry to) {
 		leader = to.getSnapshot().getId();
 		for(PartyEntry entry : getMembers()){
-			MapleCharacter chr = entry.getSnapshot().getLiveCharacter();
+			MapleCharacter chr = entry.getSnapshot().getLiveCharacter().orElse(null);
 			
 			if(chr != null){
 				chr.getClient().sendPacket(PacketFactory.partyUpdate(to.getSnapshot().getChannel(), this, PartyOperationType.CHANGE_LEADER, to.getSnapshot()));

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import constants.MessageType;
@@ -171,7 +172,7 @@ public class MapleGuild {
 			}
 			
 			if(entry.getSnapshot().isOnline()){
-				func.accept(entry.getSnapshot().getLiveCharacter());
+				func.accept(entry.getSnapshot().getLiveCharacter().get());
 			}
 		}
 	}
@@ -241,7 +242,7 @@ public class MapleGuild {
 			memberRanks.remove(entry.getSnapshot().getId());
 			broadcastPacket(PacketFactory.guildMemberLeft(entry, expelled));
 			if(entry.isOnline()){
-				entry.getSnapshot().getLiveCharacter().leaveGuild();
+				entry.getSnapshot().getLiveCharacter().get().leaveGuild();
 			}
 			saveEntries();
 		}
@@ -373,9 +374,7 @@ public class MapleGuild {
 
 	public void expel(GuildEntry targetEntry) {
 		removeMember(targetEntry, true);
-		if(targetEntry.isOnline()){
-			targetEntry.getSnapshot().getLiveCharacter().sendMessage(MessageType.POPUP, "You have been expeled from your guild");
-		}
+		targetEntry.getSnapshot().getLiveCharacter().ifPresent(chr -> chr.sendNote(getName(), "You have been expelled from "+getName(), 0));
 	}
 	
 	protected void loadEntries(){
@@ -394,10 +393,10 @@ public class MapleGuild {
 				
 				MapleCharacterSnapshot snapshot = MapleCharacterSnapshot.createDatabaseSnapshot(chrId);
 				
-				MapleCharacter chr = snapshot.getLiveCharacter();
+				Optional<MapleCharacter> chr = snapshot.getLiveCharacter();
 				
-				if(chr != null){
-					members.add(new GuildEntry(guildId, chr));
+				if(chr.isPresent()){
+					members.add(new GuildEntry(guildId, chr.get()));
 				}else{
 					members.add(new GuildEntry(guildId, snapshot));
 				}

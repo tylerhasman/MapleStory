@@ -253,7 +253,9 @@ public class MapleClient {
 				loginStatus = LoginStatus.byId(first.get("loggedin"));
 				this.gmLevel = first.get("gm");
 				this.loginMessage = first.get("login_message");
-				this.lastLogin = first.get("last_login");
+				if(!first.isNull("last_login")){
+					this.lastLogin = first.get("last_login");
+				}
 				
 				MapleDatabase.getInstance().execute("UPDATE `accounts` SET `last_login`=? WHERE `id`=?", System.currentTimeMillis(), id);
 				

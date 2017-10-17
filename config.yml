@@ -11,10 +11,11 @@ server:
     channel_load: 50
     pic_enabled: true
     character_slots: 6
-    channel_server_ip: 10.0.1.18
+    channel_server_ip: 127.0.0.1
     kick_on_error: false
     cache_scripts: false
     auto_register: true
+    virtual_channels: true
 game:
     allow_beginner_parties: false
     map_unloading: #I recommend this is not turned on. If a map relies on its script not being unloaded then this could potentially break many things.

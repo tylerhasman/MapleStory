@@ -106,7 +106,6 @@ public class GeneralChatHandler extends MaplePacketHandler {
 							client.getChannel().getMapFactory().unloadMap(map.getMapId());
 						}
 					}
-					
 				}else if(args[0].equalsIgnoreCase("!unloadmap")){
 					
 					int id = Integer.parseInt(args[1]);
@@ -489,8 +488,8 @@ public class GeneralChatHandler extends MaplePacketHandler {
 						monster.setPosition(client.getCharacter().getPosition());
 						client.getCharacter().getMap().spawnMonster(monster);
 					}
-				}else if(args[0].equalsIgnoreCase("!shutdown")){
-					MapleServer.getInstance().shutdown();
+/*				}else if(args[0].equalsIgnoreCase("!shutdown")){
+					MapleServer.getInstance().shutdown();*/
 				}else if(args[0].equalsIgnoreCase("!damage")){
 					client.getCharacter().damage(Integer.parseInt(args[1]));
 				}else if(args[0].equalsIgnoreCase("!revive")){

@@ -27,6 +27,7 @@ import tools.TimerManager.MapleTask;
 import lombok.Getter;
 import lombok.Setter;
 import maplestory.channel.MapleChannel;
+import maplestory.channel.MapleSocketChannel;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemFactory;
 import maplestory.life.MapleLifeFactory;

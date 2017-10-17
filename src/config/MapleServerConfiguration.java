@@ -57,6 +57,8 @@ public class MapleServerConfiguration {
 	
 	private Map<Integer, WorldConfiguration> worldConfigurations;
 	
+	private boolean virtualChannelsEnabled;
+	
 	public MapleServerConfiguration(File file) throws IOException {
 		Configuration config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
 		
@@ -76,6 +78,8 @@ public class MapleServerConfiguration {
 		picEnabled = config.getBoolean("server.pic_enabled");
 		characterSlots = config.getInt("server.character_slots");
 		channelServerIp = config.getString("server.channel_server_ip");
+		
+		virtualChannelsEnabled = config.getBoolean("server.virtual_channels");
 		
 		playerKickedOnError = config.getBoolean("server.kick_on_error");
 		scriptCachingEnabled = config.getBoolean("server.cache_scripts");

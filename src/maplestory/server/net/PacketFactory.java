@@ -23,6 +23,7 @@ import maplestory.cashshop.CashShopPackage;
 import maplestory.cashshop.CashShopWallet;
 import maplestory.cashshop.CashShopWallet.CashShopCurrency;
 import maplestory.channel.MapleChannel;
+import maplestory.channel.MapleSocketChannel;
 import maplestory.client.MapleClient;
 import maplestory.guild.GuildEntry;
 import maplestory.guild.GuildOperationType;

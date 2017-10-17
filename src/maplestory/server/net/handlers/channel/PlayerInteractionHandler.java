@@ -298,11 +298,15 @@ public class PlayerInteractionHandler extends MaplePacketHandler {
 		
 		byte[] remaining = new byte[buf.readableBytes()];
 		
-		buf.readBytes(remaining);
 		
-		client.getLogger().warn(action+": "+Hex.toHex(remaining));
+		if(remaining.length > 0){
+
+			buf.readBytes(remaining);
+			
+			client.getLogger().warn(action+": "+Hex.toHex(remaining));
+		}
+
 		client.sendReallowActions();
-		
 
 	}
 

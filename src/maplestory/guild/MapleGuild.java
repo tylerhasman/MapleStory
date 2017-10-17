@@ -17,6 +17,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import maplestory.channel.MapleChannel;
+import maplestory.channel.MapleSocketChannel;
 import maplestory.guild.bbs.BulletinPost;
 import maplestory.guild.bbs.GuildBulletin;
 import maplestory.guild.bbs.MapleGuildBulletin;

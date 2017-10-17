@@ -9,6 +9,7 @@ import tools.TimerManager;
 import constants.MessageType;
 import lombok.Getter;
 import maplestory.channel.MapleChannel;
+import maplestory.channel.MapleSocketChannel;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.MapleConnectionHandler;
 import maplestory.world.World;
@@ -46,6 +47,7 @@ public class MapleServer implements Runnable{
 			int channels = MapleStory.getServerConfig().getWorldConfigurations().get(i).getChannels();
 			
 			worlds.add(new World(i, channels, eventLoopGroupBoss, eventLoopGroupWorker));
+			
 		}
 		if(MapleStory.getServerConfig().isAutoSaveEnabled()){
 			TimerManager.scheduleRepeatingTask(new Runnable() {

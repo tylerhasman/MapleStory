@@ -1,6 +1,12 @@
 package maplestory.world;
 
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.sql.SQLException;
 import java.time.Instant;
@@ -23,6 +29,8 @@ import database.MapleDatabase;
 import database.QueryResult;
 import lombok.Getter;
 import maplestory.channel.MapleChannel;
+import maplestory.channel.MapleSocketChannel;
+import maplestory.channel.MapleVirtualChannel;
 import maplestory.client.MapleClient;
 import maplestory.client.MapleMessenger;
 import maplestory.guild.GuildNotFoundException;
@@ -31,6 +39,7 @@ import maplestory.party.MapleParty;
 import maplestory.player.MapleCharacter;
 import maplestory.server.MapleServer;
 import maplestory.server.MapleStory;
+import maplestory.server.net.MapleConnectionHandler;
 import maplestory.server.net.PacketFactory;
 
 public class World {
@@ -51,6 +60,9 @@ public class World {
 	@Getter
 	private EventFlag eventFlag;
 	
+	private Channel virtualChannelSocket;
+	private int virtualPort;
+	
 	public World(int id, int numChannels, EventLoopGroup eventLoopGroupBoss, EventLoopGroup eventLoopGroupWorker) {
 		this.id = id;
 		logger = LoggerFactory.getLogger("["+getName()+"]");
@@ -61,9 +73,52 @@ public class World {
 		loadAllGuilds();
 		channels = new ArrayList<>(numChannels);
 		for(int i = 0; i < numChannels;i++){
-			channels.add(new MapleChannel(i, MapleStory.getNextChannelPort(), this, eventLoopGroupBoss, eventLoopGroupWorker));
+			if(!MapleStory.getServerConfig().isVirtualChannelsEnabled()){
+				channels.add(new MapleSocketChannel(i, MapleStory.getNextChannelPort(), this, eventLoopGroupBoss, eventLoopGroupWorker));
+			}else{
+				channels.add(new MapleVirtualChannel(i, this));
+			}
 		}
 		eventFlag = EventFlag.NONE;
+		
+		if(MapleStory.getServerConfig().isVirtualChannelsEnabled()){
+			ServerBootstrap b = new ServerBootstrap();
+			
+			b.group(eventLoopGroupBoss, eventLoopGroupWorker)
+			.channel(NioServerSocketChannel.class)
+			.childHandler(new ChannelInitializer<SocketChannel>() {
+				
+				protected void initChannel(SocketChannel channel) throws Exception {
+					channel.pipeline().addLast(new MapleConnectionHandler(id, 0));
+				};
+				
+			})
+			.option(ChannelOption.SO_BACKLOG, 128);
+			
+			virtualPort = MapleStory.getNextChannelPort();
+			
+			virtualChannelSocket = b.bind(virtualPort).channel();
+			if(virtualChannelSocket.isOpen()){
+				logger.info("Virtual Channel bound to "+virtualPort);	
+			}else{
+				logger.error("Virtual Channel failed to bind to port "+virtualPort);
+			}
+		}
+		
+	}
+	
+	public Channel getVirtualChannelSocket() {
+		if(!MapleStory.getServerConfig().isVirtualChannelsEnabled()){
+			throw new IllegalStateException("virtual channels are not enabled");
+		}
+		return virtualChannelSocket;
+	}
+	
+	public int getVirtualPort() {
+		if(!MapleStory.getServerConfig().isVirtualChannelsEnabled()){
+			throw new IllegalStateException("virtual channels are not enabled");
+		}
+		return virtualPort;
 	}
 	
 	public Logger getLogger() {

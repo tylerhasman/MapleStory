@@ -25,9 +25,8 @@ public class RegisterPicHandler extends MaplePacketHandler {
 			client.closeConnection();
 		}else{
 			client.registerPic(pic);
-			InetAddress ip = InetAddress.getByName(MapleStory.getServerConfig().getChannelServerIp());
-			int port = client.getChannel().getPort();
-			client.sendChannelAddress(ip, port, charId);
+			
+			client.getChannel().initialConnection(client, charId);
 		}
 
 	}

@@ -20,6 +20,7 @@ import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
 import maplestory.channel.MapleChannel;
+import maplestory.channel.MapleSocketChannel;
 import maplestory.player.MapleCharacter;
 import maplestory.server.MapleServer;
 import maplestory.server.MapleStory;
@@ -158,11 +159,7 @@ public class MapleClient {
 			e1.printStackTrace();
 		}
 		
-		try {
-			sendPacket(PacketFactory.getChannelChange(InetAddress.getByName(MapleStory.getServerConfig().getChannelServerIp()), channel.getPort()));
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+		channel.connect(this);
 		
 	}
 	

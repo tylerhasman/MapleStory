@@ -57,12 +57,9 @@ public class MapleAESOFB {
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
         try {
             cipher = Cipher.getInstance("AES");
-        } catch (GeneralSecurityException e) {
-        	MapleStory.getLogger().error("Encryption exception thrown!", e);
-        }
-        try {
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
-        } catch (InvalidKeyException e) {
+        } catch (Exception e) {
+        	MapleStory.getLogger().error("Encryption exception thrown!", e);
         }
         this.setIv(iv);
         this.mapleVersion = (short) (((mapleVersion >> 8) & 0xFF) | ((mapleVersion << 8) & 0xFF00));

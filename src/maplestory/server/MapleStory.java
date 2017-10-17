@@ -2,6 +2,7 @@ package maplestory.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.CryptoPrimitive;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +16,7 @@ import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.skill.SkillFactory;
 import me.tyler.mdf.MapleFile;
 import me.tyler.mdf.MapleFileFactory;
+import tools.JCESkipUtil;
 import database.MapleDatabase;
 import database.MonsterDropManager;
 
@@ -52,6 +54,10 @@ public class MapleStory {
 	}
 	
 	public static void main(String[] args) throws IOException {
+		
+		logger.info("Attempting to remove JCE restrictions");
+		
+		JCESkipUtil.removeCryptographyRestrictions(logger);
 		
 		logger.info("Loading configuration...");
 		

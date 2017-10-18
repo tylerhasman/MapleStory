@@ -7,6 +7,7 @@ import constants.MessageType;
 import constants.PopupInfo;
 import lombok.Getter;
 import maplestory.client.MapleClient;
+import maplestory.inventory.InventoryType;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemFactory;
 import maplestory.inventory.item.ItemInfoProvider;
@@ -253,7 +254,11 @@ public class AbstractScriptManager {
 	}
 	
 	public int itemAmount(int itemId){
-		return getClient().getCharacter().getInventory(itemId).countById(itemId);
+		int amount = 0;
+		if(InventoryType.getByItemId(itemId) == InventoryType.EQUIP){
+			amount += getClient().getCharacter().getInventory(InventoryType.EQUIPPED).countById(itemId);
+		}
+		return getClient().getCharacter().getInventory(itemId).countById(itemId) + amount;
 	}
 	
 	public boolean isQuestStarted(int quest){

@@ -45,6 +45,8 @@ public class UseBoxItemHandler extends MaplePacketHandler {
 			
 			List<Reward> rewards = box.getRewards();
 			
+			inventory.removeItem(box.getItemId(), 1);
+			
 			for(Reward reward : rewards){
 				
 				Item rewardItem = reward.getItem();

@@ -14,6 +14,7 @@ import maplestory.player.MapleCharacter;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
 import maplestory.skill.MapleStatEffect;
+import maplestory.skill.MonsterStatusEffect;
 import maplestory.skill.Skill;
 import maplestory.skill.SkillFactory;
 
@@ -57,6 +58,8 @@ public class SummonAttackHandler extends MaplePacketHandler {
 		
 		chr.getMap().broadcastPacket(PacketFactory.summonAttack(chr.getId(), summon.getSkill(), direction, attacks), chr.getId());
 		
+		MonsterStatusEffect msEffect = new MonsterStatusEffect(summonSkill, chr.getSkillLevel(summonSkill));
+		
 		for(SummonAttack attack : attacks){
 			
 			int damage = attack.getDamage();
@@ -69,7 +72,7 @@ public class SummonAttackHandler extends MaplePacketHandler {
 				if(damage > 0 && summonEffect.getMonsterStati().size() > 0){
 					
 					if(summonEffect.makeChanceResult()){
-						//Apply special effects like poison here
+						target.applyStatusEffect(chr, msEffect, summonSkill.getEffect(chr.getSkillLevel(summonSkill)).getDuration());
 					}
 					
 				}

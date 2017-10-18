@@ -81,6 +81,7 @@ public class UseScrollHandler extends MaplePacketHandler {
 		}
 		
 		if(scroll.isA(ItemType.CLEAN_SLATE_SCROLL) && !(target.getLevel() + target.getUpgradeSlotsAvailble() < ItemInfoProvider.getEquipInfo(target.getItemId()).getUpgradeSlots())){
+			client.sendReallowActions();
 			return;
 		}
 		

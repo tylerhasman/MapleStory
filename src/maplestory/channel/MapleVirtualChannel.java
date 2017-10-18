@@ -138,12 +138,24 @@ public class MapleVirtualChannel implements MapleChannel {
 	@Override
 	public void connect(MapleClient client) {
 		
-		int currentMapId = client.getCharacter().getMapId();
-		
-		MapleMap map = getMapFactory().getMap(currentMapId);
-		
-		client.setChannelId(id);
-		client.getCharacter().changeMap(map);
+		if(client.getCharacter().isCashShopOpen()){
+			try {
+				int port = world.getVirtualPort();
+				
+				InetAddress address = InetAddress.getByName(MapleStory.getServerConfig().getChannelServerIp());
+				
+				client.sendPacket(PacketFactory.getChannelChange(address, port));
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			}
+		}else{
+			int currentMapId = client.getCharacter().getMapId();
+			
+			MapleMap map = getMapFactory().getMap(currentMapId);
+			
+			client.setChannelId(id);
+			client.getCharacter().changeMap(map);	
+		}
 		
 	}
 

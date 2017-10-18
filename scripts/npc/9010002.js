@@ -23,6 +23,7 @@ function action(mode, type, selection){
 		}
 	}else{
 		cm.giveItem(balloons, 1);
+		cm.dispose();
 	}
 	
 

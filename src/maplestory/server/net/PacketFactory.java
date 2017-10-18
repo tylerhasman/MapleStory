@@ -4016,6 +4016,54 @@ public class PacketFactory {
 		return out.getPacket();
 	}
 	
+	public static byte[] sendTv(MapleCharacter star, List<String> messages, int type, MapleCharacter partner){
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.SEND_TV.getValue());
+		
+		out.write(partner != null ? 3 : 1);
+		out.write(type); //Heart = 2  Star = 1  Normal = 0
+		addCharLook(out, star, false);
+		out.writeMapleAsciiString(star.getName());
+		
+		if(partner == null){
+			out.writeShort(0);
+		}else{
+			out.writeMapleAsciiString(partner.getName());
+		}
+		
+		for (int i = 0; i < messages.size(); i++) {
+			if (i == 4 && messages.get(4).length() > 15) {
+				out.writeMapleAsciiString(messages.get(4).substring(0, 15));
+			} else {
+				out.writeMapleAsciiString(messages.get(i));
+			}
+		}
+		
+		out.writeInt(1337);//Time limit
+		
+		if(partner != null){
+			addCharLook(out, partner, false);
+		}
+		
+		return out.getPacket();
+	}
+	
+	public static byte[] enabledTv(){
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.ENABLE_TV.getValue());
+		
+		out.writeInt(0);
+		out.write(0);
+		
+		return out.getPacket();
+	}
+	
+	public static byte[] removeTv(){
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.REMOVE_TV.getValue());
+		return out.getPacket();
+	}
+	
 /*	public static byte[] hiredMerchantOpen(MapleCharacter chr, MapleHiredMerchant merchant, boolean firstTime){
 		MaplePacketWriter out = new MaplePacketWriter();
 		

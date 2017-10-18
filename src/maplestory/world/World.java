@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalField;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,6 +42,8 @@ import maplestory.server.MapleServer;
 import maplestory.server.MapleStory;
 import maplestory.server.net.MapleConnectionHandler;
 import maplestory.server.net.PacketFactory;
+import tools.TimerManager;
+import tools.TimerManager.MapleTask;
 
 public class World {
 
@@ -272,6 +275,23 @@ public class World {
 		}
 		
 		return ms;
+	}
+	
+	public void createMapleTvEvent(MapleCharacter main, MapleCharacter partner, int type, int duration, String... messages){
+
+		List<String> messageList = new ArrayList<>(Arrays.asList(messages));
+		
+		while(messageList.size() < 5){
+			messageList.add("");
+		}
+		
+		broadcastPacket(PacketFactory.enabledTv());
+		broadcastPacket(PacketFactory.sendTv(main, messageList, type, partner));
+		
+		TimerManager.schedule(() -> {
+			broadcastPacket(PacketFactory.removeTv());
+		}, duration);
+		
 	}
 
 	public MapleMessenger getMessenger(int messengerId) {

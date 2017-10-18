@@ -16,19 +16,6 @@ public class ClickGuideHandler extends MaplePacketHandler {
 		int npcId = client.getCharacter().getJob() == MapleJob.NOBLESSE ? 1101008 : 1202000;
 		
 		client.getCharacter().openNpc(guide, MapleLifeFactory.getNPC(npcId));
-		
-		/*NpcConversationManager cm = new NpcConversationManager(client, MapleLifeFactory.getNPC(1201000));
-		
-		SimpleBindings sb = new SimpleBindings();
-		sb.put("cm", cm);
-		
-		try {
-			guide.execute(sb);
-		} catch (ScriptException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
 	}
 
 }

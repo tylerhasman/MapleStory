@@ -55,8 +55,6 @@ public class MonsterBook {
 		boolean full = nextLevel > 5;
 		nextLevel = Math.min(5, nextLevel);
 		
-		System.out.println(cardId);
-		
 		cards.put(cardId, nextLevel);
 		
 		MapleCharacter owner = this.owner.get();

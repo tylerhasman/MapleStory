@@ -91,6 +91,8 @@ public class SpecialMoveHandler extends MaplePacketHandler {
 		
 		if(buf.readableBytes() == 5){
 			pos = readPosition(buf);
+		}else{
+			pos = client.getCharacter().getPosition();
 		}
 		
 		final Point f_pos = pos;

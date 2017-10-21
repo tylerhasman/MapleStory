@@ -50,6 +50,7 @@ public class MapleStory {
 		loadMapleFile("Item.mdf");
 		loadMapleFile("Quest.mdf");
 		loadMapleFile("Reactor.mdf");
+		loadMapleFile("Gachapon.mdf");
 		
 	}
 	
@@ -72,6 +73,7 @@ public class MapleStory {
 		logger.info("Loading items");
 		
 		ItemInfoProvider.loadCashShop();
+		ItemInfoProvider.loadGachapon();
 		
         logger.info("Loading skills");
         

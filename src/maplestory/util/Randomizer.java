@@ -1,11 +1,16 @@
 package maplestory.util;
 
+import java.util.List;
 import java.util.Random;
 
 public class Randomizer {
 
     private final static Random rand = new Random();
 
+    public static <T> T randomEntry(List<T> list){
+    	return list.get(rand.nextInt(list.size()));
+    }
+    
     public static int nextInt() {
     	return rand.nextInt();
     }

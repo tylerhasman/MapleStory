@@ -2,6 +2,7 @@ package maplestory.inventory.item;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +17,7 @@ import maplestory.inventory.InventoryType;
 import maplestory.inventory.MapleWeaponType;
 import maplestory.inventory.item.BoxItem.Reward;
 import maplestory.inventory.item.EquipItemInfo.EquipStat;
+import maplestory.inventory.item.ItemInfoProvider.GachaponItem.GachaponTier;
 import maplestory.inventory.item.ItemStatInfo.ItemStat;
 import maplestory.inventory.item.SummoningBag.SummoningEntry;
 import maplestory.player.MapleCharacter;
@@ -23,6 +25,7 @@ import maplestory.player.MapleJob;
 import maplestory.quest.MapleQuest;
 import maplestory.server.MapleStory;
 import maplestory.skill.MapleStatEffect;
+import maplestory.util.Randomizer;
 import me.tyler.mdf.MapleFile;
 import me.tyler.mdf.Node;
 
@@ -45,6 +48,8 @@ public class ItemInfoProvider {
     private List<Integer> allItemIdCache;
     private Map<Integer, String> itemNames;
     
+    private Map<String, List<GachaponItem>> gachaponItems;
+    
     private static Map<Integer, List<Reward>> rewardCache;
     private static Map<Integer, Integer> totalChanceCache;
 	
@@ -66,6 +71,7 @@ public class ItemInfoProvider {
 	     cashShopPackages = new HashMap<>();
 	     rewardCache = new HashMap<>();
 	     totalChanceCache = new HashMap<>();
+	     gachaponItems = new HashMap<>();
 	}
 	
 	public static void loadCashShop(){
@@ -716,6 +722,103 @@ public class ItemInfoProvider {
 
 	public static int getMonsterBookItemId(int cardId) {
 		return 2380000 + cardId;
+	}
+	
+	public static Item getRandomGachaponItem(String area){
+		
+		List<GachaponItem> possible = new ArrayList<>();
+		
+		possible.addAll(getInstance().gachaponItems.get("GLOBAL"));
+		possible.addAll(getInstance().gachaponItems.getOrDefault(area, Collections.emptyList()));
+		
+		int randomValue = Randomizer.nextInt(100);
+		
+		GachaponTier tier;
+		
+		if(randomValue < 91){
+			tier = GachaponTier.COMMON;
+		}else if(randomValue < 97 ){
+			tier = GachaponTier.UNCOMMON;
+		}else{
+			tier = GachaponTier.RARE;
+		}
+		
+		possible.removeIf(i -> i.getTier() != tier);
+		
+		GachaponItem item = Randomizer.randomEntry(possible);
+		
+		int amount = 1;
+		
+		if(ItemType.USE.isThis(item.getItemId())){
+			if(!ItemType.SCROLL.isThis(item.getItemId())){
+				amount = 100;	
+			}
+		}
+		
+		return ItemFactory.getItem(item.getItemId(), amount);
+	}
+	
+	public static void loadGachapon(){
+		
+		MapleFile file = MapleStory.getDataFile("Gachapon.mdf");
+		
+		int itemCount = 0;
+		
+		for(Node node : file.getRootNode()){
+			
+			String area = node.getName();
+			
+			List<GachaponItem> items = new ArrayList<>();
+			
+			getInstance().gachaponItems.put(area, items);
+			
+			for(Node rarity : node){
+				
+				GachaponTier tier = GachaponTier.valueOf(rarity.getName().toUpperCase());
+				
+				for(Node item : rarity){
+					
+					GachaponItem gi = new GachaponItem();
+					
+					gi.tier = tier;
+					gi.itemId = item.intValue();
+					
+					itemCount++;
+					
+					items.add(gi);
+					
+				}
+				
+			}
+			
+		}
+		
+		MapleStory.getLogger().info("Loaded "+itemCount+" gachapon items.");
+		
+	}
+	
+	public static class GachaponItem {
+		
+		private int itemId;
+		
+		private GachaponTier tier;
+		
+		public int getItemId() {
+			return itemId;
+		}
+		
+		public GachaponTier getTier() {
+			return tier;
+		}
+	
+		public static enum GachaponTier {
+			
+			COMMON,
+			UNCOMMON,
+			RARE;
+			
+		}
+		
 	}
 	
 }

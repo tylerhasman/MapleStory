@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import database.MonsterDropManager.MonsterDrop;
 import lombok.Data;
 import lombok.ToString;
 import maplestory.inventory.item.Item;
@@ -112,14 +113,17 @@ public class MonsterDropManager {
 	}
 
 	@ToString(includeFieldNames=true)
-	@Data(staticConstructor="create")
+	@Data
 	public static class MonsterDrop {
-		private final int itemId;
+		
+		public static final int MAX_CHANCE = 1000000;
+		
+		private final Item item;
 		private final int chance;
 		private final int min, max;
 		
 		public boolean shouldDrop(){
-			return (Randomizer.nextInt(1000000) * MapleStory.getServerConfig().getDropRate()) <= chance;
+			return (Randomizer.nextInt(MAX_CHANCE) * MapleStory.getServerConfig().getDropRate()) <= chance;
 		}
 		
 		public int getAmount(){
@@ -133,10 +137,28 @@ public class MonsterDropManager {
 		}
 		
 		public Item getItem(){
-			
-			Item item = ItemFactory.getItem(itemId, 1);
-			
-			return item;
+			if(item == null){
+				return null;
+			}
+			return item.copy();
+		}
+
+		public int getItemId() {
+			if(item == null){
+				return 0;
+			}
+			return item.getItemId();
+		}
+
+		public static MonsterDrop create(int itemId, int chance, int max, int min){
+			if(itemId == 0){
+				return new MonsterDrop(null, chance, min, max);
+			}
+			return create(ItemFactory.getItem(itemId, 1), chance, max, min);
+		}
+		
+		public static MonsterDrop create(Item item, int chance, int max, int min) {
+			return new MonsterDrop(item, chance, min, max);
 		}
 		
 	}

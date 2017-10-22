@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 import maplestory.client.MapleClient;
 import maplestory.inventory.InventoryType;
+import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.life.movement.AbsoluteLifeMovement;
 import maplestory.life.movement.MovementPath;
@@ -72,6 +73,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 	@Getter
 	private boolean untargetable;
 	
+	private List<Item> customDrops;
+	
 	public MapleMonster(int id, MapleMonsterStats stats) {
 		super(id);
 		this.stats = stats;
@@ -87,6 +90,15 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 			setBossHpBarVisible(true);
 		}
 		spawnEffect = -1;
+	}
+	
+	public void addCustomDrop(Item item){
+		if (customDrops == null) {
+			customDrops = new ArrayList<>();
+			
+		}
+
+		customDrops.add(item);
 	}
 
 	public void teleport(Point point){
@@ -327,7 +339,14 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 		
 		actual.addAll(global);
 		
+		if(customDrops != null){
+			for(Item custom : customDrops){
+				actual.add(MonsterDrop.create(custom, MonsterDrop.MAX_CHANCE, custom.getAmount(), custom.getAmount()));
+			}
+		}
+		
 		dropItems(chr, actual);
+		
 	}
 	
 	private boolean shouldDropQuestItem(MapleCharacter chr, MonsterDrop drop){

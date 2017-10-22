@@ -24,6 +24,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 public class MapleServer implements Runnable{
 
+	private static boolean crashed = true;
+	
 	@Getter
 	private static MapleServer instance;
 
@@ -69,6 +71,33 @@ public class MapleServer implements Runnable{
 				
 			}, MapleStory.getServerConfig().getAutoSaveInterval(), MapleStory.getServerConfig().getAutoSaveInterval(), TimeUnit.MILLISECONDS);
 		}
+		
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				if(crashed){
+					MapleStory.getLogger().info("Crash detected, saving player data");
+					
+					for(World world : worlds){
+						for(MapleCharacter chr : world.getPlayerStorage().getAllPlayers()){
+							try {
+								chr.saveToDatabase(false);
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+						
+				}
+				
+			}
+		}));
+		
+		Thread consoleListener = new Thread(new ConsoleListener());
+		
+		consoleListener.setDaemon(true);
+		consoleListener.start();
 	}
 	
 	public static List<World> getWorlds() {
@@ -96,6 +125,7 @@ public class MapleServer implements Runnable{
 			}
 		}
 		TimerManager.shutdown();
+		crashed = false;
 	}
 	
 	@Override

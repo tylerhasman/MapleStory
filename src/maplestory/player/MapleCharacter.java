@@ -87,6 +87,7 @@ import maplestory.skill.SkillFactory;
 import maplestory.util.Pair;
 import maplestory.util.Randomizer;
 import maplestory.world.World;
+import maplestory.world.RateManager.RateType;
 import tools.CRand32;
 import tools.TimerManager;
 import tools.TimerManager.MapleTask;
@@ -1812,6 +1813,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 	
 	public void uncontrolMonster(MapleMonster monster) {
+		if(monster.getController() != this) {
+			return;
+		}
 		monster.setController(null);
 		synchronized (controlled) {
 			controlled.remove(monster.getId());
@@ -3165,6 +3169,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		exitUserInteface();
 		ui.addPlayer(this);
 		openInterface = ui;
+	}
+	
+	public int getRate(RateType type) {
+		return getWorld().getRates().getCharacterRate(this, type);
 	}
 	
 }

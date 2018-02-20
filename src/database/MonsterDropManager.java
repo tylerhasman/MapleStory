@@ -122,8 +122,8 @@ public class MonsterDropManager {
 		private final int chance;
 		private final int min, max;
 		
-		public boolean shouldDrop(){
-			return (Randomizer.nextInt(MAX_CHANCE) * MapleStory.getServerConfig().getDropRate()) <= chance;
+		public boolean shouldDrop(int dropRate){
+			return (Randomizer.nextInt(MAX_CHANCE) * dropRate) <= chance;
 		}
 		
 		public int getAmount(){

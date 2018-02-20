@@ -37,6 +37,7 @@ import maplestory.server.net.PacketFactory;
 import maplestory.skill.MapleStatEffect;
 import maplestory.skill.MonsterStatusEffect;
 import maplestory.util.Pair;
+import maplestory.world.RateManager.RateType;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
 
@@ -233,7 +234,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 			if(stats.getExp() > 0){
 				
 				if(source.getParty() != null){
-					int exp = stats.getExp() * MapleStory.getServerConfig().getExpRate();
+					int exp = stats.getExp() * source.getRate(RateType.EXP);
 					
 					double bonus = source.getParty().getExpBonus(source);
 					
@@ -254,7 +255,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 					}
 					
 				}else{
-					source.giveExp(stats.getExp() * MapleStory.getServerConfig().getExpRate());
+					source.giveExp(stats.getExp() * source.getRate(RateType.EXP));
 				}
 				
 			}
@@ -322,7 +323,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 			Point real = (Point) getPosition().clone();
 			real.translate(startX, 0);
 			if(drop.getItemId() == 0){
-				getMap().dropMesos(drop.getAmount() * MapleStory.getServerConfig().getMesoRate(), real, chr, this);
+				getMap().dropMesos(drop.getAmount() * chr.getRate(RateType.MESO), real, chr, this);
 			}else{
 				getMap().dropItem(drop.getItem(), real, chr, this);
 			}
@@ -334,8 +335,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 	private void dropItems(MapleCharacter chr){
 		List<MonsterDrop> possible = MonsterDropManager.getInstance().getPossibleDrops(getId());
 		
-		List<MonsterDrop> actual = possible.stream().filter(drop -> drop.shouldDrop()).collect(Collectors.toList());
-		List<MonsterDrop> global = MonsterDropManager.getInstance().getGlobalDrops().stream().filter(drop -> drop.shouldDrop()).collect(Collectors.toList());
+		int dropRate = chr.getRate(RateType.DROP);
+		
+		List<MonsterDrop> actual = possible.stream().filter(drop -> drop.shouldDrop(dropRate)).collect(Collectors.toList());
+		List<MonsterDrop> global = MonsterDropManager.getInstance().getGlobalDrops().stream().filter(drop -> drop.shouldDrop(dropRate)).collect(Collectors.toList());
 		
 		actual.addAll(global);
 		

@@ -12,6 +12,8 @@ import org.yaml.snakeyaml.Yaml;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import maplestory.world.RateManager;
+import maplestory.world.RateManager.Rates;
 
 @Getter
 public class MapleServerConfiguration {
@@ -49,7 +51,7 @@ public class MapleServerConfiguration {
 	private boolean autoSaveEnabled;
 	private long autoSaveInterval;
 	
-	private int expRate, mesoRate, questExpRate, dropRate;
+	private int g_expRate, g_mesoRate, g_questExpRate, g_dropRate;//Global rates
 	
 	private int loginPort, channelPort;
 	
@@ -98,10 +100,10 @@ public class MapleServerConfiguration {
 		autoSaveEnabled = config.getBoolean("game.auto_save.enabled");
 		autoSaveInterval = config.getLong("game.auto_save.interval");
 		
-		expRate = config.getInt("game.rates.exp");
-		mesoRate = config.getInt("game.rates.meso");
-		questExpRate = config.getInt("game.rates.quest");
-		dropRate = config.getInt("game.rates.drop");
+		g_expRate = config.getInt("game.rates.exp");
+		g_mesoRate = config.getInt("game.rates.meso");
+		g_questExpRate = config.getInt("game.rates.quest");
+		g_dropRate = config.getInt("game.rates.drop");
 		
 		worldConfigurations = new HashMap<>();
 		
@@ -109,8 +111,19 @@ public class MapleServerConfiguration {
 			
 			String name = config.getString("world."+i+".name");
 			int channels = config.getInt("world."+i+".channels");
+
+			int expRate = config.getInt("world."+i+".rates.exp", g_expRate);
+			int mesoRate = config.getInt("world."+i+".rates.meso", g_mesoRate);
+			int dropRate = config.getInt("world."+i+".rates.drop", g_dropRate);
+			int questRate = config.getInt("world."+i+".rates.quest", g_questExpRate);
 			
-			worldConfigurations.put(i, new WorldConfiguration(name, channels));
+			worldConfigurations.put(i, new WorldConfiguration(name, channels, 
+					new RateManager(Rates.builder()
+					.exp(expRate)
+					.meso(mesoRate)
+					.drop(dropRate)
+					.quest(questRate)
+					.build())));
 			
 		}
 		
@@ -124,7 +137,7 @@ public class MapleServerConfiguration {
 		if(worldConfigurations.containsKey(id)){
 			return worldConfigurations.get(id);
 		}
-		return new WorldConfiguration("Unknown", 0);
+		return new WorldConfiguration("Unknown", 0, RateManager.STATIC_RATE_MANAGER);
 	}
 
 	@Getter
@@ -133,6 +146,7 @@ public class MapleServerConfiguration {
 		
 		private final String name;
 		private final int channels;
+		private final RateManager rates;
 		
 	}
 	

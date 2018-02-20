@@ -61,6 +61,9 @@ public class World {
 	private Logger logger;
 	
 	@Getter
+	private RateManager rates;
+	
+	@Getter
 	private EventFlag eventFlag;
 	
 	private Channel virtualChannelSocket;

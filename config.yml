@@ -27,7 +27,7 @@ game:
     auto_save:
         enabled: true
         interval: 300000
-    rates:
+    rates: #These are the global rates
         exp: 50
         meso: 10
         quest: 10
@@ -37,6 +37,11 @@ world:
         name: Scania
         channels: 10
         flag: none
+        rates:
+            exp: 10
+            meso: 5
+            quest: 5
+            drop: 2
     1:
         name: Bera
         channels: 2

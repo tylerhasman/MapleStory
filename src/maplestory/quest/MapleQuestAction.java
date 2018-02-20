@@ -21,6 +21,7 @@ import maplestory.skill.MapleStatEffect;
 import maplestory.skill.Skill;
 import maplestory.skill.SkillFactory;
 import maplestory.util.Randomizer;
+import maplestory.world.RateManager.RateType;
 import me.tyler.mdf.Node;
 
 public interface MapleQuestAction {
@@ -400,7 +401,7 @@ public interface MapleQuestAction {
 
 		@Override
 		public void run(MapleCharacter chr, int selection) {
-			chr.giveExp(amount * MapleStory.getServerConfig().getQuestExpRate());
+			chr.giveExp(amount * chr.getRate(RateType.QUEST));
 		}
 		
 	}

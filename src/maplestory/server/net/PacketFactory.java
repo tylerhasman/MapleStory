@@ -86,6 +86,7 @@ import maplestory.util.Hex;
 import maplestory.util.Pair;
 import maplestory.util.Randomizer;
 import maplestory.util.StringUtil;
+import maplestory.world.RateManager.RateType;
 import maplestory.world.World;
 import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketWriter;
@@ -1489,7 +1490,7 @@ public class PacketFactory {
         mplew.write(mod);
         mplew.writeInt(item.getObjectId());
         mplew.writeBool(item.isMesoDrop()); // 1 mesos, 0 item, 2 and above all item meso bag,
-        mplew.writeInt(item.isMesoDrop() ? item.getItemId() / MapleStory.getServerConfig().getMesoRate() : item.getItemId()); // drop object ID
+        mplew.writeInt(item.isMesoDrop() ? item.getItemId() / item.getMap().getChannel().getWorld().getRates().getGlobalRate(RateType.MESO) : item.getItemId()); // drop object ID
         mplew.writeInt(item.getOwner()); // owner charid/paryid :)
         mplew.write(item.getDropType().getId()); // 0 = timeout for non-owner, 1 = timeout for non-owner's party, 2 = FFA, 3 = explosive/FFA
         mplew.writePos(to);

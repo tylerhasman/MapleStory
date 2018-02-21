@@ -11,6 +11,11 @@ function start(){
 function action(mode, type, selection){
 	if(mode == 1){
 		status++;
+	}else if(mode == 0){
+	
+		status = 0;
+		choices = [];
+	
 	}else{
 		cm.dispose();
 		return;
@@ -20,15 +25,19 @@ function action(mode, type, selection){
 	}else if(status == 1){
 		results = query_item();
 		
-		if(results.size() > 75){
-			cm.sendOk("I found #r"+results.size()+"#k results, please try a more precise search term.");
-			cm.dispose();
+		if(!is_valid_query()){
+			cm.sendPrev("Please enter a more specific search term");
 			return;
 		}
 		
-		if(results.size() == 0){
-			cm.sendOk("I found no results for the search term "+cm.getInputText());
+		/*if(results.size() > 75){
+			cm.sendOk("I found #r"+results.size()+"#k results, please try a more precise search term.");
 			cm.dispose();
+			return;
+		}*/
+		
+		if(results.size() == 0){
+			cm.sendPrev("I found no results for the search term "+cm.getInputText());
 			return;
 		}
 		
@@ -42,13 +51,19 @@ function action(mode, type, selection){
 	
 		i = 0;
 		
+		max = 75;
+		
 		while(iter.hasNext()){
+			if(max <= 0){
+				break;
+			}
 			id = iter.next();
 		
 			//message += "#L"+i+"##i"+id+"# "+id+" #l";
 			message += "#L"+i+"##i"+id+"# #l";
 			choices[i] = id;
 			i++;
+			max--;
 		}
 
 		cm.sendSimple(message);
@@ -64,9 +79,15 @@ function action(mode, type, selection){
 	}
 }
 
-function query_item(){
+function is_valid_query(){
 	query = cm.getInputText();
 	
+	return query.length() > 3;
+}
+
+function query_item(){
+	query = cm.getInputText();
+
 	itemIds = ItemInfo.getAllItemIds();
 		
 	names = new HashMap();

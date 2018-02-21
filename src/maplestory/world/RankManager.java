@@ -89,12 +89,6 @@ public class RankManager {
 				Collections.sort(jobRankings.get(job.getId()), RANKER);
 			}
 			
-			for(int i = 0; i < worldRankings.size();i++) {
-				MapleCharacterSnapshot snap = worldRankings.get(i);
-				
-				System.out.println(i+" "+snap.getName()+" "+snap.getLevel());
-			}
-			
 			world.getLogger().info("Finished updating rankings for world "+world.getName());
 			
 		} catch (SQLException e) {

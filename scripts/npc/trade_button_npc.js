@@ -3,7 +3,7 @@ var fm_map = 910000000;
 var option = -1;
 var job = null;
 
-var options = ["Warp to the Free Market", "Change Jobs", "Change Appearance", "Warp to a Map", "Item Spawner", "Exp Boost", "Information"];
+var options = ["Warp to the Free Market", "Change Jobs", "Change Appearance", "Warp to a Map", "Item Spawner", "Exp Boost", "Rate Editor", "Information"];
 
 function start(){
 	action(1, 0, 0);
@@ -83,6 +83,8 @@ function do_option(selection){
 	}else if(selection == 5){
 		cm.openNpc("exp_npc", 2080005);
 	}else if(selection == 6){
+		cm.openNpc("rate_editor", 2080005);
+	}else if(selection == 7){
 		cm.openNpc("information", 2080005);
 	}else{
 		cm.dispose();

@@ -10,7 +10,7 @@ public class LifeMovementFactory {
 		byte typeId = buf.readByte();
 		
 		MoveType type = MoveType.getMoveType(typeId);
-		
+
 		switch(type){
 			case ABSOLUTE:
 				lm = new AbsoluteLifeMovement(typeId, buf);
@@ -19,9 +19,8 @@ public class LifeMovementFactory {
 				lm = new RelativeLifeMovement(typeId, buf);
 				break;
 			case TELEPORT:
-				//lm = new TeleportLifeMovement(typeId, buf);
-				buf.skipBytes(9);
-				lm = EmptyLifeMovement.create();
+				lm = new TeleportLifeMovement(typeId, buf);
+				
 				break;
 			case CHANGE_EQUIP:
 				lm = new ChangeEquipMovement(buf);
@@ -31,13 +30,13 @@ public class LifeMovementFactory {
 				break;
 			case JUMP_DOWN:
 				lm = new JumpDownLifeMovement(buf);
-				lm = EmptyLifeMovement.create();
+				//lm = EmptyLifeMovement.create();
 				break;
 			case ARAN:
 				buf.skipBytes(3);
 			default:
 				lm = EmptyLifeMovement.create();
-				System.out.println("Unknown movement "+type);
+				System.out.println("Unknown movement "+type+" "+typeId);
 				break;
 		}
 		

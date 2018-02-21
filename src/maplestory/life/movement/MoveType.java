@@ -12,7 +12,7 @@ public enum MoveType {
 	TELEPORT(10, 3, 4, 7, 8, 9, 14),
 	CHANGE_EQUIP(2, 10),
 	CHAIR(10, 11),
-	JUMP_DOWN(16, 15),
+	JUMP_DOWN(15, 15),
 	ARAN(9, 21),
 	UNKNOWN(0, -1)
 	;

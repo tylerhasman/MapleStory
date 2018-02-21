@@ -427,8 +427,9 @@ public class MapleMap {
 					continue;
 				mapleCharacter.sendSpawnData(other.getClient());
 				other.sendSpawnData(mapleCharacter.getClient());
-				//MovementPath path = MovementPath.singleton(new AbsoluteLifeMovement(other.getPosition()));
-				//mapleCharacter.getClient().sendPacket(PacketFactory.movePlayer(other.getId(), path));
+				
+				MovementPath path = MovementPath.singleton(new AbsoluteLifeMovement(other.getPosition()));//For some reason we need to do this
+				mapleCharacter.getClient().sendPacket(PacketFactory.movePlayer(other.getId(), path));//     or else the player will spawn in a random corner
 			}
 			for(MapleMapObject obj : objects.values()){
 				obj.sendSpawnData(mapleCharacter.getClient());

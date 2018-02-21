@@ -37,6 +37,7 @@ public class AbsoluteLifeMovement implements LifeMovement {
 		vy = 0;
 		type = 0;
 		duration = 10;
+		state = 4;
 	}
 
 	@Override

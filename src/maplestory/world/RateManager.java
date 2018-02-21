@@ -42,15 +42,19 @@ public class RateManager {
 		}
 	}
 	
-	public void setGlobalRate(RateType type, int val) {
+	public boolean hasModifier(MapleCharacter chr, String modId) {
+		return modifiers.get(chr.getId()).containsKey(modId);
+	}
+	
+	public void setGlobalRate(RateType type, float val) {
 		type.setter.accept(globalRates, val);
 	}
 	
-	public int getGlobalRate(RateType type) {
+	public float getGlobalRate(RateType type) {
 		return type.getter.apply(globalRates);
 	}
 	
-	public void setCharacterRate(MapleCharacter chr, RateType type, int val) {
+	public void setCharacterRate(MapleCharacter chr, RateType type, float val) {
 
 		Rates rates = null;
 		if(byCharacterRates.containsKey(chr.getId())) {
@@ -62,9 +66,21 @@ public class RateManager {
 		type.setter.accept(rates, val);
 	}
 	
-	public int getCharacterRate(MapleCharacter chr, RateType type) {
-
-		int rate;
+	public float getCharacterRate(MapleCharacter chr, RateType type) {
+		return getCharacterRate(chr, type, true);
+	}
+	
+	public float modify(MapleCharacter chr, RateType type, float val) {
+		if(modifiers.containsKey(chr.getId())) {
+			for(RateModifier mod : modifiers.get(chr.getId()).values()) {
+				val = mod.modify(type, val);
+			}
+		}
+		return val;
+	}
+	
+	public float getCharacterRate(MapleCharacter chr, RateType type, boolean applyModifiers) {
+		float rate;
 		
 		if(byCharacterRates.containsKey(chr.getId())) {
 			rate = type.getter.apply(byCharacterRates.get(chr.getId()));
@@ -72,21 +88,22 @@ public class RateManager {
 			rate = getGlobalRate(type);
 		}
 	
-		if(modifiers.containsKey(chr.getId())) {
-			for(RateModifier mod : modifiers.get(chr.getId()).values()) {
-				rate = mod.modify(type, rate);
-			}
+		if(applyModifiers) {
+			if(modifiers.containsKey(chr.getId())) {
+				for(RateModifier mod : modifiers.get(chr.getId()).values()) {
+					rate = mod.modify(type, rate);
+				}
+			}	
 		}
 		
 		return rate;
-		
 	}
 	
 	@Setter
 	@Builder
 	@Getter
 	public static class Rates implements Cloneable {
-		private int exp, meso, drop, quest;
+		private float exp, meso, drop, quest;
 		
 		@Override
 		public Rates clone() {
@@ -103,13 +120,13 @@ public class RateManager {
 		QUEST(rates -> rates.quest, (rates, val) -> rates.quest = val)
 		;
 		
-		private final Function<Rates, Integer> getter;
-		private final BiConsumer<Rates, Integer> setter;
+		private final Function<Rates, Float> getter;
+		private final BiConsumer<Rates, Float> setter;
 	}
 	
 	public static interface RateModifier {
 		
-		public int modify(RateType type, int rate);
+		public float modify(RateType type, float rate);
 		
 	}
 	

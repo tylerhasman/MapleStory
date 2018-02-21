@@ -122,8 +122,8 @@ public class MonsterDropManager {
 		private final int chance;
 		private final int min, max;
 		
-		public boolean shouldDrop(int dropRate){
-			return (Randomizer.nextInt(MAX_CHANCE) * dropRate) <= chance;
+		public boolean shouldDrop(float dropRate){
+			return ((float) Randomizer.nextInt(MAX_CHANCE) / dropRate) <= chance;
 		}
 		
 		public int getAmount(){

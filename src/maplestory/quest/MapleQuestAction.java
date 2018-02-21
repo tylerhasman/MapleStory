@@ -401,7 +401,7 @@ public interface MapleQuestAction {
 
 		@Override
 		public void run(MapleCharacter chr, int selection) {
-			chr.giveExp(amount * chr.getRate(RateType.QUEST));
+			chr.giveExp(amount, 0, true);
 		}
 		
 	}

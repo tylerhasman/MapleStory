@@ -1498,7 +1498,16 @@ public class PacketFactory {
         mplew.write(mod);
         mplew.writeInt(item.getObjectId());
         mplew.writeBool(item.isMesoDrop()); // 1 mesos, 0 item, 2 and above all item meso bag,
-        mplew.writeInt(item.isMesoDrop() ? item.getItemId() / item.getMap().getChannel().getWorld().getRates().getGlobalRate(RateType.MESO) : item.getItemId()); // drop object ID
+        
+        
+        int itemId = item.getItemId();
+        
+        if(item.isMesoDrop()) {
+        	float itemId2 = (float) itemId / item.getMap().getChannel().getWorld().getRates().getGlobalRate(RateType.MESO);
+        	itemId = (int) itemId2;
+        }
+        
+        mplew.writeInt(itemId); // drop object ID
         mplew.writeInt(item.getOwner()); // owner charid/paryid :)
         mplew.write(item.getDropType().getId()); // 0 = timeout for non-owner, 1 = timeout for non-owner's party, 2 = FFA, 3 = explosive/FFA
         mplew.writePos(to);

@@ -56,7 +56,7 @@ public class AbstractScriptManager {
 	}
 	
 	public void giveExp(int amount){
-		character.giveExp(amount);
+		character.giveExp(amount, 0, true);//Default to being a quest :)
 	}
 	
 	public void startQuestScript(int questId, int npcId){

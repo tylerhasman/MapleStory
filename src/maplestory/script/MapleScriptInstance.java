@@ -7,6 +7,7 @@ import javax.script.ScriptException;
 
 import lombok.Getter;
 import lombok.Setter;
+import maplestory.inventory.item.EquipItem;
 import maplestory.map.MapleMapItem;
 import maplestory.player.MapleCharacter;
 
@@ -74,6 +75,14 @@ public class MapleScriptInstance {
 
 	public void itemPickup(MapleCharacter chr, MapleMapItem item) throws NoSuchMethodException, ScriptException {
 		function("onPickup", chr, item);
+	}
+	
+	public void equipItem(MapleCharacter chr, EquipItem item) throws NoSuchMethodException, ScriptException {
+		function("onEquip", chr, item);
+	}
+
+	public void unEquipItem(MapleCharacter chr, EquipItem item) throws NoSuchMethodException, ScriptException {
+		function("onUnEquip", chr, item);
 	}
 
 /*	public void onUserEnter(MapleCharacter mapleCharacter) throws NoSuchMethodException, ScriptException {

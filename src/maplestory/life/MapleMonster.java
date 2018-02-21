@@ -234,11 +234,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 			if(stats.getExp() > 0){
 				
 				if(source.getParty() != null){
-					int exp = stats.getExp() * source.getRate(RateType.EXP);
+					double exp = stats.getExp();
 					
 					double bonus = source.getParty().getExpBonus(source);
 					
-					source.giveExp(exp, (int) (exp * bonus));
+					source.giveExp((int) exp, (int) (exp * bonus), false);
 					
 					for(PartyEntry entry : source.getParty().getMembers()){
 						
@@ -255,7 +255,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 					}
 					
 				}else{
-					source.giveExp(stats.getExp() * source.getRate(RateType.EXP));
+					source.giveExp(stats.getExp());
 				}
 				
 			}
@@ -323,7 +323,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 			Point real = (Point) getPosition().clone();
 			real.translate(startX, 0);
 			if(drop.getItemId() == 0){
-				getMap().dropMesos(drop.getAmount() * chr.getRate(RateType.MESO), real, chr, this);
+				getMap().dropMesos((int) (chr.getRate(RateType.MESO) * drop.getAmount()), real, chr, this);
 			}else{
 				getMap().dropItem(drop.getItem(), real, chr, this);
 			}
@@ -335,7 +335,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 	private void dropItems(MapleCharacter chr){
 		List<MonsterDrop> possible = MonsterDropManager.getInstance().getPossibleDrops(getId());
 		
-		int dropRate = chr.getRate(RateType.DROP);
+		float dropRate = chr.getRate(RateType.DROP);
 		
 		List<MonsterDrop> actual = possible.stream().filter(drop -> drop.shouldDrop(dropRate)).collect(Collectors.toList());
 		List<MonsterDrop> global = MonsterDropManager.getInstance().getGlobalDrops().stream().filter(drop -> drop.shouldDrop(dropRate)).collect(Collectors.toList());
@@ -375,6 +375,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 	}
 	
 	public MapleCharacter getController(){
+		if(controller == null) {
+			return null;
+		}
 		return controller.get();
 	}
 	
@@ -388,6 +391,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 			
 			chr.uncontrolMonster(this);
 			
+		}
+		
+		if(c == null) {
+			controller = null;
+			return;
 		}
 		
 		controller = new WeakReference<MapleCharacter>(c);

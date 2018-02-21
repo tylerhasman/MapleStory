@@ -276,15 +276,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	@Getter
 	private String chalkboardText;
 	
-	private MapleTask pendantTimer;
-	
-	private int pendantExpBonus;
-	
 	@Getter
 	private UserInterface openInterface;
 	
+	private Map<String, Object> scriptVariables;
+	
 	public MapleCharacter(MapleClient client) {
 		this.client = client;
+		scriptVariables = new HashMap<>();
 		inventories = new HashMap<>();
 		keyBindings = new HashMap<>();
 		godModeEnabled = false;
@@ -320,8 +319,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         damageNumberGenerator = new CRand32();
         pets = new MaplePetInstance[3];
         messengerId = -1;
-        pendantTimer = null;
-        pendantExpBonus = 0;
 	}
 	
 	public void openChalkboard(String text){
@@ -1894,14 +1891,22 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		updateStat(MapleStat.MESO, meso);
 	}
 	
-	public void giveExp(int amount, int partyBonus) {
+	public void giveExp(int amount, int partyBonus, boolean quest) {
 		if(level == getMaxLevel()){
 			return;
 		}
 		
+		if(quest) {
+			amount *= getRate(RateType.QUEST);
+		}else {
+			amount *= getRate(RateType.EXP);
+		}
+		
 		int total = amount + partyBonus;
 		
-		int equip = (int) (total * (((float) pendantExpBonus) / 10F));
+		int equip = (int) getWorld().getRates().modify(this, RateType.EXP, total);
+		equip -= total;
+		
 		total += equip;
 		
 		client.sendPacket(PacketFactory.getShowExpGain(amount, partyBonus, equip, false, true));
@@ -1909,7 +1914,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 	
 	public void giveExp(int amount) {
-		giveExp(amount, 0);
+		giveExp(amount, 0, false);
 	}
 	
 	private void giveExpInternal(int amount){
@@ -1920,11 +1925,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			
 			int totalExp = exp + amount;
 			
+			boolean showEffect = true;
+			
 			while(totalExp >= ExpTable.getExpNeededForLevel(level)){
 				
 				totalExp -= ExpTable.getExpNeededForLevel(level);
 				setExp(ExpTable.getExpNeededForLevel(level));
-				levelUp();
+				levelUp(showEffect);
+				showEffect = false;//Only play the level up effect once
 				if(getLevel() == getMaxLevel()){
 					setExp(0);
 					break;
@@ -1947,7 +1955,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		return quests.get(id);
 	}
 	
-	public void levelUp(){
+	public void levelUp(boolean playEffect){
 		
 		Skill improveHpGain = null;
 		Skill improveMpGain = null;
@@ -2044,8 +2052,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         
         client.sendPacket(PacketFactory.updatePlayerStats(statup, false));
 		
-        client.sendPacket(PacketFactory.showOwnBuffEffect(0, 0));
-        getMap().broadcastPacket(PacketFactory.getShowForeignEffect(getId(), 0), getId());
+        if(playEffect) {
+            client.sendPacket(PacketFactory.showOwnBuffEffect(0, 0));
+            getMap().broadcastPacket(PacketFactory.getShowForeignEffect(getId(), 0), getId());
+        }
+
         
 	}
 
@@ -2196,7 +2207,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			messenger.updatePlayer(this);
 		}
 		
-		updatePendantOfSpirit();
 	}
 
 	public void addSummon(int sourceid, MapleSummon tosummon) {
@@ -2542,9 +2552,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		for(MapleDisease disease : MapleDisease.values()){
 			dispelDebuff(disease);
 		}
-		if(pendantTimer != null){
-			pendantTimer.cancel(false);
+		
+		for(String key : scriptVariables.keySet()) {
+			Object obj = scriptVariables.get(key);
+			
+			if(obj instanceof MapleTask) {
+				((MapleTask) obj).cancel(true);
+			}
 		}
+		
+		scriptVariables.clear();
 		
 	}
 
@@ -3097,53 +3114,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		getInventory(InventoryType.ETC).removeItem(4310000, amount);
 	}
 	
-	public void updatePendantOfSpirit() {
-		Item necklace = getInventory(InventoryType.EQUIPPED).getItem(EquipSlot.PENDANT.getSlot());
-		
-		boolean cancel = false;
-		
-		if(necklace != null){
-			if(necklace.isA(ItemType.PENDANT_OF_SPIRIT)){
-				if(pendantTimer != null){
-					return;
-				}
-				pendantTimer = TimerManager.scheduleRepeatingTask(new Runnable() {
-					
-					@Override
-					public void run() {
-						if(pendantExpBonus < 3){
-							pendantExpBonus++;
-							
-							if(pendantExpBonus > 1){
-								sendMessage(MessageType.PINK_TEXT, "Pendant of the Spirit has been equipped for " + pendantExpBonus + " hour(s), you will now receive " + pendantExpBonus + "0% bonus exp.");
-							}else{
-								sendMessage(MessageType.PINK_TEXT, "Pendant of the Spirit has been equipped, you will now receive 10% bonus exp.");
-							}
-						}else{
-							pendantTimer.cancel(false);
-							pendantTimer = null;
-						}
-						
-					}
-					
-				}, 0, 1, TimeUnit.HOURS);
-			}else{
-				cancel = true;
-			}
-		}else{
-			cancel = true;
-		}
-		
-		if(cancel){
-			if(pendantTimer != null){
-				pendantTimer.cancel(false);
-				pendantTimer = null;
-				pendantExpBonus = 0;
-			}
-			pendantExpBonus = 0;
-		}
-	}
-	
 	public void createTrade(){
 		exitUserInteface();
 		openInterface = new MapleTradeInterface(this);
@@ -3162,12 +3132,28 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		openInterface = ui;
 	}
 	
-	public void setRate(RateType type, int rate) {
+	public void setRate(RateType type, float rate) {
 		getWorld().getRates().setCharacterRate(this, type, rate);
 	}
 	
-	public int getRate(RateType type) {
-		return getWorld().getRates().getCharacterRate(this, type);
+	public float getRate(RateType type) {
+		return getWorld().getRates().getCharacterRate(this, type, false);
+	}
+	
+	public Object getScriptVariable(String key) {
+		return scriptVariables.get(key);
+	}
+	
+	public Object getScriptVariable(String key, Object def) {
+		return scriptVariables.getOrDefault(key, def);
+	}
+	
+	public void setScriptVariable(String key, Object val) {
+		if(val == null) {
+			scriptVariables.remove(key);
+		}else {
+			scriptVariables.put(key, val);	
+		}
 	}
 	
 }

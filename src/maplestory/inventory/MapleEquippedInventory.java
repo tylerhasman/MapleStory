@@ -10,6 +10,7 @@ import maplestory.inventory.item.ItemFlag;
 import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.inventory.item.ItemType;
 import maplestory.player.MapleCharacter;
+import maplestory.script.ItemScriptManager;
 import maplestory.server.net.PacketFactory;
 
 public class MapleEquippedInventory extends MapleInventory {
@@ -73,7 +74,6 @@ public class MapleEquippedInventory extends MapleInventory {
 		
 		List<InventoryOperation> ops = new ArrayList<>();
 		
-
 		equipInventory.setItemInternal(source, null);
 		equipInventory.setItemInternal(destination, null);//Clear them both out to remove any confusion
 		
@@ -100,6 +100,7 @@ public class MapleEquippedInventory extends MapleInventory {
 		}
 		
 		owner.updateCharacterLook();
+		ItemScriptManager.onEquipItem(owner, equip);
 		
 	}
 	
@@ -120,6 +121,7 @@ public class MapleEquippedInventory extends MapleInventory {
 		
 		sendPacket(PacketFactory.getInventoryOperationPacket(true, ops));
 		getOwner().updateCharacterLook();
+		ItemScriptManager.onUnEquipItem(getOwner(), equip);
 	}
 	
 }

@@ -64,6 +64,7 @@ import maplestory.map.MaplePortal;
 import maplestory.party.MapleParty;
 import maplestory.party.PartyOperationType;
 import maplestory.party.MapleParty.PartyEntry;
+import maplestory.player.BuddyList.BuddyListEntry;
 import maplestory.player.monsterbook.MonsterBook;
 import maplestory.player.ui.MapleTradeInterface;
 import maplestory.player.ui.TradeInterface;
@@ -281,11 +282,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	
 	private Map<String, Object> scriptVariables;
 	
+	private BuddyList buddyList;
+	
 	public MapleCharacter(MapleClient client) {
 		this.client = client;
 		scriptVariables = new HashMap<>();
 		inventories = new HashMap<>();
 		keyBindings = new HashMap<>();
+		buddyList = new BuddyList(20);
 		godModeEnabled = false;
 		activeChair = 0;
 		quests = new HashMap<>();
@@ -1687,6 +1691,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		chr.loadKeybindings();
 		chr.loadCooldowns();
 		chr.loadQuests();
+		chr.loadBuddies();
 		
 		chr.notes = new ArrayList<>();
 		
@@ -1695,9 +1700,43 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		chr.searchForExistingParty();
 		chr.searchForExistingGuild();
 		
+		
+		
 		return chr;
 	}
 	
+	private void loadBuddies() {
+		
+		try {
+			List<QueryResult> results = MapleDatabase.getInstance().query("SELECT * FROM `buddy_requests` WHERE `from`=? OR `to`=?", getId(), getId());
+			
+			for(QueryResult result : results) {
+				
+				int accepted = result.get("accepted");
+				
+				if(accepted == 1) {
+					
+					int otherId = -1;
+					int from = result.get("from");
+					
+					if(from == getId()) {
+						otherId = result.get("to");
+					}else {
+						otherId = from;
+					}
+					
+					getBuddyList().addBuddy(otherId, "Default Group");
+					
+				}
+				
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
 	@Override
 	public int getObjectId() {
 		return getId();
@@ -1779,6 +1818,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		
 		lastPortalId = pto.getId();
 		updatePartyHp();
+		updateBuddyList();
 	}
 
 	public void chat(String text, byte show) {
@@ -1787,10 +1827,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 
 	public void chat(String text, GroupChatType type){
 		if(type == GroupChatType.BUDDY){
-			//Do nothing yet...
+			getBuddyList().broadcastPacket(PacketFactory.groupChat(getName(), text, type));
 		}else if(type == GroupChatType.GUILD){
 			MapleGuild guild = getGuild();
-			if(guild != null){
+			if(guild != null) {
 				guild.broadcastPacket(PacketFactory.groupChat(getName(), text, type), getId());
 			}
 		}else if(type == GroupChatType.PARTY){
@@ -2562,7 +2602,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		}
 		
 		scriptVariables.clear();
-		
+		for(BuddyListEntry entry : getBuddyList().getEntries()) {
+			entry.getSnapshot().getLiveCharacter().ifPresent(chr -> chr.updateBuddyList());
+		}
 	}
 
 	public MaplePortal getInitialSpawnpoint() {
@@ -3154,6 +3196,44 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		}else {
 			scriptVariables.put(key, val);	
 		}
+	}
+
+	public BuddyList getBuddyList() {
+		return buddyList;
+	}
+
+	public boolean sendBuddyRequest(MapleCharacter sender) {
+		
+		if(!getBuddyList().hasBuddyRequestFrom(sender.getId())) {
+			getBuddyList().addRequest(sender);
+			
+			getClient().sendPacket(PacketFactory.buddyListRequest(sender.getId(), getId(), sender.getName(), "Default Group"));
+			return true;
+		}
+		
+		return false;
+	}
+
+	public void updateBuddyList() {
+		
+		for(BuddyListEntry entry : getBuddyList().getEntries()) {
+			
+			if(entry.getSnapshot().isOnline()) {
+				MapleCharacter other = entry.getSnapshot().getLiveCharacter().get();
+				
+				other.getClient().sendPacket(PacketFactory.buddyListChannelUpdate(getId(), client.getChannelId()));
+				
+				client.sendPacket(PacketFactory.buddyListChannelUpdate(other.getId(), other.getClient().getChannelId()));
+				
+			}else {
+				client.sendPacket(PacketFactory.buddyListChannelUpdate(entry.getSnapshot().getId(), -1));
+			}
+			
+		}
+		
+		client.sendPacket(PacketFactory.buddyListUpdate(getBuddyList()));
+		
+	
 	}
 	
 }

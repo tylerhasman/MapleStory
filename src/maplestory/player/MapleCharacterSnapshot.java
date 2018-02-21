@@ -141,5 +141,25 @@ public class MapleCharacterSnapshot {
 		return snapshots;
 	}
 
+	public static MapleCharacterSnapshot createDatabaseSnapshot(String name) {
+		MapleCharacterSnapshot snapshot = null;
+		
+		try {
+			List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `id`,`name`,`job`,`level`,`map`,`world` FROM `characters` WHERE `name`=?", name);
+		
+			if(results.size() == 0){
+				return new MapleCharacterSnapshot("[Unknown]", -1, -1, -1, -1, -1);
+			}
+			
+			QueryResult result = results.get(0);
+			
+			snapshot = createFromQuery(result.get("id"), result);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return snapshot;
+	}
+
 
 }

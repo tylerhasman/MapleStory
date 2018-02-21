@@ -22,6 +22,7 @@ import lombok.Setter;
 import maplestory.channel.MapleChannel;
 import maplestory.channel.MapleSocketChannel;
 import maplestory.player.MapleCharacter;
+import maplestory.player.BuddyList.BuddyListEntry;
 import maplestory.server.MapleServer;
 import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
@@ -160,6 +161,10 @@ public class MapleClient {
 		}
 		
 		channel.connect(this);
+		
+		if(character != null) {
+			character.updateBuddyList();
+		}
 		
 	}
 	

@@ -60,10 +60,12 @@ import maplestory.map.MapleMapItem.DropType;
 import maplestory.map.MapleMist;
 import maplestory.party.MapleParty;
 import maplestory.party.PartyOperationType;
+import maplestory.player.BuddyList;
 import maplestory.player.MapleCharacter;
 import maplestory.player.MapleCharacterSnapshot;
 import maplestory.player.MapleNote;
 import maplestory.player.MaplePetInstance;
+import maplestory.player.BuddyList.BuddyListEntry;
 import maplestory.player.monsterbook.MonsterCard;
 import maplestory.player.ui.HiredMerchantInterface;
 import maplestory.player.ui.HiredMerchantInterface.HiredMerchantItem;
@@ -554,7 +556,7 @@ public class PacketFactory {
         mplew.writeLong(-1);
         mplew.write(0);
         addCharStats(mplew, chr);
-        mplew.write(/*chr.getBuddylist().getCapacity()*/ 20);
+        mplew.write(chr.getBuddyList().getCapacity());
 
         /*if (chr.getLinkedName() == null) {
             mplew.write(0);
@@ -4079,6 +4081,78 @@ public class PacketFactory {
 	public static byte[] removeTv(){
 		MaplePacketWriter out = new MaplePacketWriter();
 		out.writeShort(SendOpcode.REMOVE_TV.getValue());
+		return out.getPacket();
+	}
+	
+	public static byte[] buddyListUpdate(BuddyList buddies) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		
+		out.writeShort(SendOpcode.BUDDYLIST.getValue());
+		out.write(7);//Update
+		out.write(buddies.getEntries().size());
+		for(BuddyListEntry entry : buddies.getEntries()) {
+			
+			if(entry.isVisible()) {
+				
+				out.writeInt(entry.getSnapshot().getId());
+				out.writeAsciiString(StringUtil.getRightPaddedStr(entry.getSnapshot().getName(), '\0', 13));
+				out.write(0);
+				out.writeInt(entry.getSnapshot().getChannel());
+				out.writeAsciiString(StringUtil.getRightPaddedStr(entry.getGroup(), '\0', 13));
+				out.writeInt(0);
+				
+			}
+			
+		}
+		
+		for(int i = 0; i < buddies.getEntries().size();i++) {
+			out.writeInt(0);
+		}
+		
+		return out.getPacket();
+	}
+	
+	public static byte[] buddyListRequest(int from, int to, String fromName, String group) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		
+		out.writeShort(SendOpcode.BUDDYLIST.getValue());
+		out.write(9);//Request
+		
+		out.writeInt(from);
+		out.writeMapleAsciiString(fromName);
+		out.writeInt(from);
+		out.writeAsciiString(StringUtil.getRightPaddedStr(fromName, '\0', 11));
+		out.write(0x09);
+		out.write(0xf0);
+		out.write(0x01);
+		out.writeInt(0x0f);
+		out.writeNullTerminatedAsciiString(group);
+		out.writeInt(to);
+		
+		return out.getPacket();
+	}
+	
+	public static byte[] buddyListChannelUpdate(int cid, int channel) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		
+		out.writeShort(SendOpcode.BUDDYLIST.getValue());
+		out.write(0x14);
+		
+		out.writeInt(cid);
+		out.write(0);
+		out.writeInt(channel);
+		
+		return out.getPacket();
+	}
+	
+	public static byte[] buddyListCapacity(int capacity) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		
+		out.writeShort(SendOpcode.BUDDYLIST.getValue());
+		out.write(0x15);
+		
+		out.write(capacity);
+		
 		return out.getPacket();
 	}
 	

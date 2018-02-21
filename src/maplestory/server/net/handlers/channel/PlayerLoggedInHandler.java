@@ -70,7 +70,7 @@ public class PlayerLoggedInHandler extends MaplePacketHandler {
 		
 		chr.updateNotes();
 		
-		
+		chr.updateBuddyList();
 		
 	}
 

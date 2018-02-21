@@ -150,8 +150,8 @@ public class MapleServer implements Runnable{
 		.childOption(ChannelOption.SO_KEEPALIVE, true);
 		
 		try {
-			MapleStory.getLogger().info("Login server bound to port "+MapleStory.getServerConfig().getLoginPort());
 			serverChannel = b.bind(MapleStory.getServerConfig().getLoginPort()).sync();
+			MapleStory.getLogger().info("Login server bound to port "+MapleStory.getServerConfig().getLoginPort());
 			
 			serverChannel.channel().closeFuture().sync();
 			

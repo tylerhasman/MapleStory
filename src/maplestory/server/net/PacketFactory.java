@@ -792,11 +792,15 @@ public class PacketFactory {
             mplew.write(0);
             return;
         }
+        
+        RankManager rm = chr.getWorld().getRankManager();
+        
         mplew.write(1); // world rank enabled (next 4 ints are not sent if disabled) Short??
-        mplew.writeInt(chr.getRank()); // world rank
-        mplew.writeInt(chr.getRankMove()); // move (negative is downwards)
-        mplew.writeInt(chr.getJobRank()); // job rank
-        mplew.writeInt(chr.getJobRankMove()); // move (negative is downwards)
+        mplew.writeInt(rm.getWorldRanking(chr)); // world rank
+        mplew.writeInt(rm.getWorldRankingChange(chr)); // move (negative is downwards)
+        mplew.writeInt(rm.getJobRanking(chr)); // job rank
+        mplew.writeInt(rm.getJobRankingChange(chr)); // move (negative is downwards)
+        
     }
 	
     /**

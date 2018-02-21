@@ -1,6 +1,7 @@
 package maplestory.player;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -56,7 +57,7 @@ public class MapleCharacterSnapshot {
 		world = 0;
 		mapId = 0;
 	}
-	
+
 	/**
 	 * Not guaranteed to return a character, may return null if they are no longer online
 	 * @return the character
@@ -84,6 +85,17 @@ public class MapleCharacterSnapshot {
 		return op.get().getClient().getLoginStatus() == LoginStatus.IN_GAME;
 	}
 
+	private static MapleCharacterSnapshot createFromQuery(int characterId, QueryResult result) {
+		String name = result.get("name");
+		int job = result.get("job");
+		int level = result.get("level");
+		int map = result.get("map");
+		int world = result.get("world");
+		
+		MapleCharacterSnapshot snapshot = new MapleCharacterSnapshot(name, job, characterId, level, world, map);
+		
+		return snapshot;
+	}
 	
 	public static MapleCharacterSnapshot createDatabaseSnapshot(int characterId){
 		MapleCharacterSnapshot snapshot = null;
@@ -97,18 +109,36 @@ public class MapleCharacterSnapshot {
 			
 			QueryResult result = results.get(0);
 			
-			String name = result.get("name");
-			int job = result.get("job");
-			int level = result.get("level");
-			int map = result.get("map");
-			int world = result.get("world");
-			
-			snapshot = new MapleCharacterSnapshot(name, job, characterId, level, world, map);
+			snapshot = createFromQuery(characterId, result);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
 		return snapshot;
+	}
+	
+	public static List<MapleCharacterSnapshot> getCharacters(World world) throws SQLException{
+		
+		List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `id`,`name`,`job`,`level`,`map`,`world` FROM `characters` WHERE `world`=?", world.getId());
+		
+		
+		List<MapleCharacterSnapshot> snapshots = new ArrayList<>(results.size());
+		
+		for(QueryResult result : results) {
+			int chrId = result.get("id");
+			
+			MapleCharacter online = world.getPlayerStorage().getById(chrId);
+			
+			if(online != null) {
+				snapshots.add(online.createSnapshot());
+			}else {
+				snapshots.add(createFromQuery(chrId, result));
+			}
+			
+			
+		}
+		
+		return snapshots;
 	}
 
 

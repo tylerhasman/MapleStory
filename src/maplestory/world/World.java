@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +68,9 @@ public class World {
 	@Getter
 	private EventFlag eventFlag;
 	
+	@Getter
+	private RankManager rankManager;
+	
 	private Channel virtualChannelSocket;
 	private int virtualPort;
 	
@@ -112,6 +116,10 @@ public class World {
 			}
 		}
 		rates = MapleStory.getServerConfig().getWorldConfiguration(id).getRates();
+		rankManager = new RankManager(this);
+		rankManager.updateRankings();
+		
+		TimerManager.schedule(() -> rankManager.updateRankings(), 1, TimeUnit.HOURS);//Update every hour
 	}
 	
 	public Channel getVirtualChannelSocket() {

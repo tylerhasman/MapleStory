@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import constants.MessageType;
+import maplestory.world.World;
 
 public class ConsoleListener implements Runnable {
 
@@ -33,6 +34,14 @@ public class ConsoleListener implements Runnable {
 					final String finalMsg = msg;
 					
 					MapleServer.getWorlds().forEach(world -> world.broadcastMessage(MessageType.NOTICE, finalMsg));
+				}else if(args[0].equalsIgnoreCase("refreshranks")) {
+					
+					for(World world : MapleServer.getWorlds()) {
+						world.getRankManager().updateRankings();
+					}
+					
+				}else {
+					System.out.println("Unknown cmd");
 				}
 				
 			}	

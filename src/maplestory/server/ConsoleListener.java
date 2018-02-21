@@ -22,7 +22,7 @@ public class ConsoleListener implements Runnable {
 				
 				if(args[0].equalsIgnoreCase("shutdown")){
 					server.shutdown();
-				}else if(args[1].equalsIgnoreCase("broadcast")){
+				}else if(args[0].equalsIgnoreCase("broadcast")){
 					
 					String msg = "";
 					

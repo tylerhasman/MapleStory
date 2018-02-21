@@ -87,6 +87,7 @@ import maplestory.util.Pair;
 import maplestory.util.Randomizer;
 import maplestory.util.StringUtil;
 import maplestory.world.RateManager.RateType;
+import maplestory.world.RankManager;
 import maplestory.world.World;
 import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketWriter;
@@ -555,12 +556,14 @@ public class PacketFactory {
         addCharStats(mplew, chr);
         mplew.write(/*chr.getBuddylist().getCapacity()*/ 20);
 
-        if (chr.getLinkedName() == null) {
+        /*if (chr.getLinkedName() == null) {
             mplew.write(0);
         } else {
             mplew.write(1);
             mplew.writeMapleAsciiString(chr.getLinkedName());
-        }
+        }*/
+        
+        mplew.write(0);
 
         mplew.writeInt(chr.getMeso());
         addInventoryInfo(mplew, chr);
@@ -788,7 +791,8 @@ public class PacketFactory {
         if (!viewall) {
             mplew.write(0);
         }
-        if (chr.isGm()) {
+        
+        if (chr.getClient().isGM()) {
             mplew.write(0);
             return;
         }

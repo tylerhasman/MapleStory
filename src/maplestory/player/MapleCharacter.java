@@ -170,19 +170,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	@Getter
 	private MapleJob job;
 	
-	@Getter//What is linkedName?, Marriage maybe
-	private String linkedName;
-	
 	@Getter
 	private int meso;
 
 	private Map<InventoryType, Inventory> inventories;
-	
-	@Getter
-	private int rank, rankMove, jobRank, jobRankMove;
-	
-	@Getter
-	private boolean gm;
 	
 	@Getter
 	private int accountId;
@@ -1794,7 +1785,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 
 	public void chat(String text, byte show) {
-		getMap().broadcastPacket(PacketFactory.getGeneralChatPacket(getId(), text, isGm(), show));
+		getMap().broadcastPacket(PacketFactory.getGeneralChatPacket(getId(), text, getClient().isGM(), show));
 	}
 
 	public void chat(String text, GroupChatType type){

@@ -25,6 +25,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import config.MapleServerConfiguration;
 import constants.MessageType;
 import database.MapleDatabase;
 import database.QueryResult;
@@ -110,7 +111,7 @@ public class World {
 				logger.error("Virtual Channel failed to bind to port "+virtualPort);
 			}
 		}
-		
+		rates = MapleStory.getServerConfig().getWorldConfiguration(id).getRates();
 	}
 	
 	public Channel getVirtualChannelSocket() {

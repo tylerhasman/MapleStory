@@ -3171,6 +3171,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		openInterface = ui;
 	}
 	
+	public void setRate(RateType type, int rate) {
+		getWorld().getRates().setCharacterRate(this, type, rate);
+	}
+	
 	public int getRate(RateType type) {
 		return getWorld().getRates().getCharacterRate(this, type);
 	}

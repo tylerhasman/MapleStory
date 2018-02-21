@@ -26,6 +26,7 @@ public class RateManager {
 	public RateManager(Rates globalRates) {
 		this.globalRates = globalRates;
 		modifiers = new HashMap<>();
+		byCharacterRates = new HashMap<>();
 	}
 	
 	public void addModifier(MapleCharacter chr, String modId, RateModifier mod) {
@@ -50,6 +51,7 @@ public class RateManager {
 	}
 	
 	public void setCharacterRate(MapleCharacter chr, RateType type, int val) {
+
 		Rates rates = null;
 		if(byCharacterRates.containsKey(chr.getId())) {
 			rates = byCharacterRates.get(chr.getId());
@@ -61,7 +63,7 @@ public class RateManager {
 	}
 	
 	public int getCharacterRate(MapleCharacter chr, RateType type) {
-		
+
 		int rate;
 		
 		if(byCharacterRates.containsKey(chr.getId())) {
@@ -71,7 +73,7 @@ public class RateManager {
 		}
 	
 		if(modifiers.containsKey(chr.getId())) {
-			for(RateModifier mod : modifiers.get(chr).values()) {
+			for(RateModifier mod : modifiers.get(chr.getId()).values()) {
 				rate = mod.modify(type, rate);
 			}
 		}

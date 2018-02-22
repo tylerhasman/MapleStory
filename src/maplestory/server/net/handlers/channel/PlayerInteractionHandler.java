@@ -100,12 +100,20 @@ public class PlayerInteractionHandler extends MaplePacketHandler {
 				buf.skipBytes(3);
 				int itemId = buf.readInt();
 				
+				MapleHiredMerchant check = client.getCharacter().getWorld().getMerchantByOwner(client.getCharacter().getId());
+				
+				if(check != null) {
+					client.getCharacter().getWorld().unregisterMerchant(check);
+				}
+				
 				if(client.getCharacter().getItemQuantity(itemId, false) == 0){
 					return;
 				}
 				
 				MapleHiredMerchant merchant = new MapleHiredMerchant(client.getCharacter(), itemId, name);
 				
+				
+				client.getCharacter().getWorld().registerMerchant(merchant);
 				merchant.setPosition(client.getCharacter().getPosition());
 				
 				client.getCharacter().getMap().addMapObject(merchant, true);

@@ -38,6 +38,7 @@ import maplestory.client.MapleClient;
 import maplestory.client.MapleMessenger;
 import maplestory.guild.GuildNotFoundException;
 import maplestory.guild.MapleGuild;
+import maplestory.life.MapleHiredMerchant;
 import maplestory.party.MapleParty;
 import maplestory.player.MapleCharacter;
 import maplestory.server.MapleServer;
@@ -60,6 +61,8 @@ public class World {
 	
 	private Map<Integer, MapleMessenger> messengers;
 	
+	private Map<Integer, MapleHiredMerchant> merchants;
+	
 	private Logger logger;
 	
 	@Getter
@@ -81,6 +84,7 @@ public class World {
 		parties = Collections.synchronizedMap(new HashMap<>());
 		guilds = Collections.synchronizedMap(new HashMap<>());
 		messengers = Collections.synchronizedMap(new HashMap<>());
+		merchants = Collections.synchronizedMap(new HashMap<>());
 		loadAllGuilds();
 		channels = new ArrayList<>(numChannels);
 		for(int i = 0; i < numChannels;i++){
@@ -178,15 +182,11 @@ public class World {
 	}
 	
 	public MapleParty getParty(int id){
-		synchronized (parties) {
-			return parties.get(id);
-		}
+		return parties.get(id);
 	}
 	
 	public void registerParty(MapleParty party){
-		synchronized (parties) {
-			parties.put(party.getPartyId(), party);
-		}
+		parties.put(party.getPartyId(), party);
 	}
 	
 	public void unregisterParty(MapleParty party){
@@ -194,9 +194,20 @@ public class World {
 			party.disband();
 		}
 		
-		synchronized (parties) {
-			parties.remove(party.getPartyId());
-		}
+		parties.remove(party.getPartyId());
+	}
+	
+	public void registerMerchant(MapleHiredMerchant merchant) {
+		merchants.put(merchant.getOwnerId(), merchant);
+	}
+	
+	public void unregisterMerchant(MapleHiredMerchant merchant) {
+		merchants.remove(merchant.getOwnerId());
+		merchant.remove();
+	}
+	
+	public MapleHiredMerchant getMerchantByOwner(int ownerId) {
+		return merchants.get(ownerId);
 	}
 	
 	public MapleChannel getChannelById(int id){
@@ -282,9 +293,7 @@ public class World {
 	public MapleMessenger createMessenger(MapleCharacter creator){
 		MapleMessenger ms = new MapleMessenger(creator);
 		
-		synchronized (messengers) {
-			messengers.put(ms.getUniqueId(), ms);
-		}
+		messengers.put(ms.getUniqueId(), ms);
 		
 		return ms;
 	}
@@ -307,9 +316,7 @@ public class World {
 	}
 
 	public MapleMessenger getMessenger(int messengerId) {
-		synchronized (messengers) {
-			return messengers.get(messengerId);
-		}
+		return messengers.get(messengerId);
 	}
 	
 	public static enum EventFlag {

@@ -956,4 +956,14 @@ public class MapleMap {
 		scriptDisabled = false;
 	}
 	
+	public void resetReactors() {
+		for(MapleMapObject reactor : getObjects()) {
+			if(reactor instanceof MapleReactor) {
+				((MapleReactor) reactor).getReactorData().reset();
+				spawnReactor((MapleReactor) reactor);
+				
+			}
+		}
+	}
+	
 }

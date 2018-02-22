@@ -4155,6 +4155,20 @@ public class PacketFactory {
 		
 		return out.getPacket();
 	}
+
+	public static byte[] dimensionalMirror(String text) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.NPC_TALK.getValue());
+		
+		out.write(4);
+		out.writeInt(9010022);
+		out.write(0x0E);
+		out.write(0);
+		out.writeInt(0);
+		out.writeMapleAsciiString(text);
+		
+		return out.getPacket();
+	}
 	
 /*	public static byte[] hiredMerchantOpen(MapleCharacter chr, MapleHiredMerchant merchant, boolean firstTime){
 		MaplePacketWriter out = new MaplePacketWriter();

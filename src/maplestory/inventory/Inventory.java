@@ -34,6 +34,8 @@ public interface Inventory {
 	 */
 	public int getFreeSlot(int margin);
 	
+	public int countFreeSlots();
+	
 	public InventoryType getType();
 	
 	public MapleCharacter getOwner();
@@ -53,6 +55,8 @@ public interface Inventory {
 	public void removeItemFromSlot(int slot, int amount);
 
 	public boolean isFull();
+	
+	public boolean isFull(int amount);
 	
 	public boolean hasSpace(int amountOfItems);
 

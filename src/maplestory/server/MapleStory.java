@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import config.MapleServerConfiguration;
 import lombok.Getter;
 import maplestory.inventory.item.ItemInfoProvider;
+import maplestory.script.legacy.OdinScriptPatches;
 import maplestory.skill.SkillFactory;
 import me.tyler.mdf.MapleFile;
 import me.tyler.mdf.MapleFileFactory;
@@ -34,8 +35,12 @@ public class MapleStory {
 	
 	private static int nextChannelPort = 0;
 	
+	@Getter
+	private static OdinScriptPatches legacyScriptPatches;
+	
 	public static void reloadConfig() throws IOException{
 		serverConfig = new MapleServerConfiguration(new File("config.yml"));
+		legacyScriptPatches = new OdinScriptPatches("scripts/legacy_patches.txt");
 	}
 	
 	private static void loadMapleData(){
@@ -50,7 +55,6 @@ public class MapleStory {
 		loadMapleFile("Item.mdf");
 		loadMapleFile("Quest.mdf");
 		loadMapleFile("Reactor.mdf");
-		loadMapleFile("Gachapon.mdf");
 		
 	}
 	
@@ -66,6 +70,9 @@ public class MapleStory {
 		
 		logger.info("Config loaded, maplestory version "+serverConfig.getMapleVersion());
 		
+		logger.info("Loading script patches");
+		legacyScriptPatches = new OdinScriptPatches("scripts/legacy_patches.txt");
+		
 		long timeToTake = System.currentTimeMillis();
 		
 		loadMapleData();	
@@ -73,7 +80,6 @@ public class MapleStory {
 		logger.info("Loading items");
 		
 		ItemInfoProvider.loadCashShop();
-		ItemInfoProvider.loadGachapon();
 		
         logger.info("Loading skills");
         

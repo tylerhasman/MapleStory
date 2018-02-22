@@ -40,6 +40,11 @@ public class MapleInventory implements Inventory {
 	}
 	
 	@Override
+	public int countFreeSlots() {
+		return maxSize - items.size();
+	}
+	
+	@Override
 	public final Map<Integer, Item> getItems() {
 		operationLock.lock();
 		try{
@@ -419,6 +424,16 @@ Item dropped = getItem(slot);
 		operationLock.lock();
 		try{
 			return items.size() >= getSize();
+		}finally{
+			operationLock.unlock();
+		}
+	}
+	
+	@Override
+	public boolean isFull(int amount) {
+		operationLock.lock();
+		try{
+			return items.size() + amount > getSize();
 		}finally{
 			operationLock.unlock();
 		}

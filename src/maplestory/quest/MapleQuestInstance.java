@@ -42,6 +42,14 @@ public class MapleQuestInstance {
 		progress.put(id, value);
 	}
 	
+	public void setAnyProgress(int value) {
+		if(progress.size() == 0) {
+			setProgress(0, value);
+		}else {
+			progress.put(progress.keySet().iterator().next(), value);
+		}
+	}
+	
 	private void loadMobs(MapleQuest quest){
 		for(int mob : quest.getQuestInfo().getRelevantMobs().keySet()){
 			setProgress(mob, 0);
@@ -54,6 +62,14 @@ public class MapleQuestInstance {
 		}
 		return progress.get(id);
 	}
+	
+	public int getAnyProgress() {
+		if(progress.size() == 0) {
+			return getProgress(0);
+		}
+		return getProgress(progress.keySet().iterator().next());
+	}
+	
 	
 	public MapleQuestStatus getStatus(){
 		return MapleQuestStatus.getById(status);
@@ -117,5 +133,5 @@ public class MapleQuestInstance {
         }
         return str.toString();
     }
-	
+
 }

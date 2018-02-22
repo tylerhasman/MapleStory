@@ -68,6 +68,10 @@ public class BuddyList {
 		return capacity;
 	}
 	
+	public void setCapacity(int capacity) {
+		this.capacity = capacity;
+	}
+	
 	private BuddyListEntry getEntry(String name) {
 		for(BuddyListEntry entry : entries) {
 			if(entry.snapshot.getName().equalsIgnoreCase(name)) {

@@ -1,0 +1,40 @@
+@@ Patches to allow old odin-ms scripts to run on this source
+@@ The left side is the odin-ms part and the right part after the -> is the updated part
+@@ When we load scripts we will just go through and apply each one
+@@ Lines that start with @@ are comments
+
+
+@@ override for giving players nx cash
+cm.getPlayer().getCashShop().gainCash -> cm.giveCash
+
+
+@@ override for the yellow text
+cm.getPlayer().announce(MaplePacketCreator.earnTitleMessage -> cm.sendMessage("YELLOW_POPUP", 
+
+@@ inventory overrides
+Packages.client.inventory -> Packages.maplestory.inventory
+MapleInventoryType -> InventoryType
+
+@@ buddy list overrides
+cm.getPlayer().setBuddyCapacity -> cm.getCharacter().getBuddyList().setCapacity
+cm.getPlayer().getBuddylist().getCapacity -> cm.getCharacter().getBuddyList().getCapacity
+
+@@ Disable storage for now since it doesn't work
+cm.getPlayer().getStorage().sendStorage -> cm.sendOk("Sorry, storage is currently disabled.");//
+
+
+@@ Disable Auto-Chaos Scroll
+cm.getPlayer().setCS -> //cm.getPlayer().setCS
+
+@@ Pet stuff
+cm.getPlayer().getNoPets -> cm.getPlayer().numPetsSpawned
+
+@@ Map stuff
+(cm.getPlayer().getMap()).getId -> (cm.getPlayer().getMap()).getMapId
+cm.getPlayer().getMap().getId -> cm.getPlayer().getMap().getMapId
+
+@@
+@@
+@@ This one changes a lot so we put it last, that way it wont affect other things
+cm.getPlayer() -> cm.getCharacter()
+

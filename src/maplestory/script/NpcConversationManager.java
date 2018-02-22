@@ -23,6 +23,19 @@ public class NpcConversationManager extends AbstractScriptManager {
 	    this.npc = npc;
 	}
 	
+	/*
+	 * 0 = ariant colliseum
+	 * 1 = Dojo
+	 * 2 = Carnival 1
+	 * 3 = Carnival 2
+	 * 4 = Ghost Ship PQ?
+	 * 5 = Pyramid PQ
+	 * 6 = Kerning Subway
+	 */
+	public void sendDimensionalMirror(String text) {
+		getClient().sendPacket(PacketFactory.dimensionalMirror(text));
+	}
+	
 	public void dispose() {
 		getCharacter().disposeOpenNpc();
 	}
@@ -88,13 +101,8 @@ public class NpcConversationManager extends AbstractScriptManager {
 	}
 	
 	public void sendStyle(String text, int[] styles){
-		//getClient().announce(MaplePacketCreator.getNPCTalkStyle(npc, text, styles));
 		getClient().sendPacket(PacketFactory.getNPCTalkStyle(npc, text, styles));
 	}
-	
-	/*public void sendStyle(String text, int styles[]) {
-		getClient().announce(PacketFactory.getNPCTalkStyle(npc, text, styles));
-	}*/
 
 	public void sendGetNumber(String text, int def, int min, int max) {
 		getClient().sendPacket(PacketFactory.getNPCTalkNum(npc, text, def, min, max));

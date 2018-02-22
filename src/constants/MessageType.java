@@ -22,4 +22,13 @@ public enum MessageType {
 		this.id = id;
 	}
 	
+	public static MessageType byId(int id) {
+		for(MessageType mt : values()) {
+			if(mt.id == id) {
+				return mt;
+			}
+		}
+		return null;
+	}
+	
 }

@@ -50,6 +50,7 @@ import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.inventory.item.ItemType;
 import maplestory.inventory.item.PetItem;
 import maplestory.inventory.storage.MapleStorageBox;
+import maplestory.life.MapleHiredMerchant;
 import maplestory.life.MapleLifeFactory;
 import maplestory.life.MapleMonster;
 import maplestory.life.MapleMount;
@@ -76,6 +77,7 @@ import maplestory.script.MapleScript;
 import maplestory.script.MapleScriptInstance;
 import maplestory.script.NpcConversationManager;
 import maplestory.script.QuestScriptManager;
+import maplestory.script.legacy.OdinNpcConversationManager;
 import maplestory.server.MapleServer;
 import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
@@ -283,6 +285,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	private Map<String, Object> scriptVariables;
 	
 	private BuddyList buddyList;
+	
+	private int hiredMerchantMap, hiredMerchantChannel;
 	
 	public MapleCharacter(MapleClient client) {
 		this.client = client;
@@ -1080,6 +1084,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		
 		int fmReturn = result.get("fm_return_map");
 		
+		getBuddyList().setCapacity(result.get("buddy_capacity"));
+		
 		accountId = result.get("owner");
 		
 		lastPortalId = result.get("last_portal");
@@ -1424,13 +1430,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     		}
     	}else{
     		
-    		String script = "UPDATE `characters` SET name=?, map=?, meso=?, hair=?, face=?, skincolor=?, gender=?, job=?, level=?, fame=?, str=?, dex=?, luk=?, int_=?, hp=?, maxhp=?, mp=?, maxmp=?, exp=?, ap=?, sp=?, fm_return_map=?, mount_tiredness =?, mount_exp = ?, mount_level = ?, last_portal = ?, last_fame = ? WHERE `id`=?";
+    		String script = "UPDATE `characters` SET name=?, map=?, meso=?, hair=?, face=?, skincolor=?, gender=?, job=?, level=?, fame=?, str=?, dex=?, luk=?, int_=?, hp=?, maxhp=?, mp=?, maxmp=?, exp=?, ap=?, sp=?, fm_return_map=?, mount_tiredness =?, mount_exp = ?, mount_level = ?, last_portal = ?, last_fame = ?, buddy_capacity = ? WHERE `id`=?";
     		
     		if(mount == null){
     			mount = new MapleMount(this, 0, 0);
     		}
     		
-    		MapleDatabase.getInstance().execute(script, name, mapId, meso, hair, face, skinColor, gender, job.getId(), level, fame, str, dex, luk, int_, hp, maxHp, mp, maxMp, exp, remainingAp, remainingSp, fmReturnMap, mount.getTiredness(), mount.getExp(), mount.getLevel(), lastPortalId, lastFame, id);
+    		MapleDatabase.getInstance().execute(script, name, mapId, meso, hair, face, skinColor, gender, job.getId(), level, fame, str, dex, luk, int_, hp, maxHp, mp, maxMp, exp, remainingAp, remainingSp, fmReturnMap, mount.getTiredness(), mount.getExp(), mount.getLevel(), lastPortalId, lastFame, getBuddyList().getCapacity(), id);
     		
     		saveInventory();
     		saveCooldowns();
@@ -1528,7 +1534,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             		}else{
             			MapleDatabase.getInstance().execute(script, iv.getType().getId(), slot, getId(), item.getItemId(), item.getAmount(), item.getOwner(), item.getFlag(), expirationDate, unique_id);
             		}
-            	}	
+            	}
         	}catch(Exception e){
         		e.printStackTrace();
         	}
@@ -2891,6 +2897,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	public MapleScriptInstance openNpc(MapleNPC npc) {
 		MapleScript script = new MapleScript("scripts/npc/"+npc.getId()+".js", "scripts/npc/fallback.js");
 		
+		if(script.isLegacy()) {
+			
+			if(script.isDangerous()) {
+				getClient().getChannel().getLogger().info("Using dangerous legacy script for "+npc.getName()+" ("+npc.getId()+") will probably fail somewhere");
+			}else {
+				getClient().getChannel().getLogger().info("Using legacy script for "+npc.getName()+" ("+npc.getId()+")");
+			}
+			
+		}else {
+			getClient().getChannel().getLogger().info("Using non-legacy script for "+npc.getName()+" ("+npc.getId()+")");
+		}
+		
 		return openNpc(script, npc);
 	}
 
@@ -2950,7 +2968,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		MapleScriptInstance instance = null;
 		
 		try{
-			NpcConversationManager cm = new NpcConversationManager(this, npc);
+			NpcConversationManager cm;
+			
+			if(script.isLegacy()) {
+				cm = new OdinNpcConversationManager(this, npc, script.getFile().getName());
+			}else {
+				cm = new NpcConversationManager(this, npc);
+			}
 			
 			sb.put("cm", cm);
 			
@@ -3014,16 +3038,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			}
 		}
 		
-		if(eq > 0 && getInventory(InventoryType.EQUIP).getFreeSlot(eq) == -1){
+		if(eq > 0 && getInventory(InventoryType.EQUIP).countFreeSlots() < eq){
 			return false;
-		} else if(use > 0 && getInventory(InventoryType.USE).getFreeSlot(use) == -1){
+		} else if(use > 0 && getInventory(InventoryType.USE).countFreeSlots() < use){
 			return false;
-		}else if(setup > 0 && getInventory(InventoryType.SETUP).getFreeSlot(setup) == -1){
+		}else if(setup > 0 && getInventory(InventoryType.SETUP).countFreeSlots() < setup){
 			//I don't think anyone in the history of EVER has ever had their setup inventory full
 			return false;
-		}else if(etc > 0 && getInventory(InventoryType.ETC).getFreeSlot(etc) == -1){
+		}else if(etc > 0 && getInventory(InventoryType.ETC).countFreeSlots() < etc){
 			return false;
-		}else if(cash > 0 && getInventory(InventoryType.CASH).getFreeSlot(cash) == -1){
+		}else if(cash > 0 && getInventory(InventoryType.CASH).countFreeSlots() < cash){
 			return false;
 		}
 			
@@ -3057,6 +3081,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		return true;
 	}
 
+	public int numPetsSpawned() {
+		int num = 0;
+		
+		for(int i = 0; i < pets.length;i++){
+			if(pets[i] != null){
+				num++;
+			}
+		}
+		
+		return num;
+	}
+	
 	private int getNextPetSlot(){
 		for(int i = 0; i < pets.length;i++){
 			if(pets[i] == null){
@@ -3233,7 +3269,80 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		
 		client.sendPacket(PacketFactory.buddyListUpdate(getBuddyList()));
 		
+	}
 	
+	public int getSavedLocation(String name) {
+		try {
+			List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `map` FROM `saved_locations` WHERE `owner`=? AND `name`=?", getId(), name);
+			if(results.size() == 0) {
+				return -1;
+			}
+			return results.get(0).get("map");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public void saveLocation(String name) {
+		try {
+			MapleDatabase.getInstance().execute("DELETE FROM `saved_locations` WHERE `owner`=? AND `name`=?", getId(), name);
+			MapleDatabase.getInstance().execute("INSERT INTO `saved_locations` (`owner`, `name`, `map`) VALUES (?, ?, ?)", getId(), name, getMapId());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Ripped directly from Solaxia for the sake of the odin npc wrapper
+	 */
+	public void resetStats() {
+		List<Pair<MapleStat, Integer>> statup = new ArrayList<>(5);
+        int tap = 0, tsp = 1;
+        int tstr = 4, tdex = 4, tint = 4, tluk = 4;
+        int levelap = (isCygnus() ? 6 : 5);
+        switch (job.getId()) {
+            case 100:
+            case 1100:
+            case 2100:
+                tstr = 35;
+                tap = ((getLevel() - 10) * levelap) + 14;
+                tsp += ((getLevel() - 10) * 3);
+                break;
+            case 200:
+            case 1200:
+                tint = 20;
+                tap = ((getLevel() - 8) * levelap) + 29;
+                tsp += ((getLevel() - 8) * 3);
+                break;
+            case 300:
+            case 1300:
+            case 400:
+            case 1400:
+                tdex = 25;
+                tap = ((getLevel() - 10) * levelap) + 24;
+                tsp += ((getLevel() - 10) * 3);
+                break;
+            case 500:
+            case 1500:
+                tdex = 20;
+                tap = ((getLevel() - 10) * levelap) + 29;
+                tsp += ((getLevel() - 10) * 3);
+                break;
+        }
+        this.remainingAp = tap;
+        this.remainingSp = tsp;
+        this.dex = tdex;
+        this.int_ = tint;
+        this.str = tstr;
+        this.luk = tluk;
+        statup.add(new Pair<>(MapleStat.AVAILABLEAP, tap));
+        statup.add(new Pair<>(MapleStat.AVAILABLESP, tsp));
+        statup.add(new Pair<>(MapleStat.STR, tstr));
+        statup.add(new Pair<>(MapleStat.DEX, tdex));
+        statup.add(new Pair<>(MapleStat.INT, tint));
+        statup.add(new Pair<>(MapleStat.LUK, tluk));
+        getClient().sendPacket(PacketFactory.updatePlayerStats(statup, this));
 	}
 	
 }

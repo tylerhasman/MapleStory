@@ -1,12 +1,18 @@
 package maplestory.script;
 
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import tools.data.output.MaplePacketWriter;
 import constants.MessageType;
 import constants.PopupInfo;
 import lombok.Getter;
+import maplestory.cashshop.CashShopWallet;
+import maplestory.cashshop.CashShopWallet.CashShopCurrency;
 import maplestory.client.MapleClient;
+import maplestory.inventory.Inventory;
 import maplestory.inventory.InventoryType;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemFactory;
@@ -17,14 +23,19 @@ import maplestory.life.MapleMonster;
 import maplestory.map.MapleMap;
 import maplestory.map.MapleMapItemPresent;
 import maplestory.map.MapleMapObject;
+import maplestory.map.MaplePortal;
+import maplestory.party.MapleParty.PartyEntry;
 import maplestory.map.MapleMapItem.DropType;
 import maplestory.player.MapleCharacter;
 import maplestory.player.MapleJob;
 import maplestory.quest.MapleQuest;
+import maplestory.quest.MapleQuestInstance;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
 import maplestory.server.net.PacketFactory;
 import maplestory.server.net.SendOpcode;
 import maplestory.skill.SkillFactory;
+import me.tyler.mdf.Pair;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class AbstractScriptManager {
 
@@ -262,7 +273,14 @@ public class AbstractScriptManager {
 	}
 	
 	public boolean isQuestStarted(int quest){
-		return getClient().getCharacter().getQuest(quest).getStatus() == MapleQuestStatus.STARTED;
+		
+		MapleQuestInstance inst = getClient().getCharacter().getQuest(quest);
+		
+		if(inst == null) {
+			return false;
+		}
+		
+		return inst.getStatus() == MapleQuestStatus.STARTED;
 	}
 	
 	public boolean isQuestCompleted(int quest){
@@ -275,6 +293,10 @@ public class AbstractScriptManager {
 	
 	public void updateQuest(int questId, int data){
 		getCharacter().getQuest(questId).setProgress(0, data);
+	}
+	
+	public void completeQuest(int questId) {
+		getCharacter().getQuest(questId).complete();
 	}
 	
 	public boolean canHold(int itemId){
@@ -356,6 +378,10 @@ public class AbstractScriptManager {
 	
 	public void sendHint(String hint, int w, int h){
 		getCharacter().sendHint(hint, w, h);
+	}
+
+	public void giveCashShopCurrency(CashShopCurrency currency, int amount) {
+		CashShopWallet.getWallet(getCharacter()).giveCash(currency, amount);
 	}
 	
 }

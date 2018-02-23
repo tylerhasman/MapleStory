@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import maplestory.server.MapleStory;
@@ -43,14 +44,34 @@ public class Database {
 		return executeWithKeys(script, false, args).getNumRowsChanged();
 	}
 	
-	public ExecuteResult executeWithKeys(String script, boolean returnGeneratedKeys, Object... args) throws SQLException{
+	public ExecuteResult execute(BatchedScript script, boolean returnGeneratedKeys) throws SQLException {
+		if(script.getBatches().size() == 0) {
+			return new ExecuteResult(0, Collections.emptyList());
+		}
 		long start = System.currentTimeMillis();
 		try(Connection con = getNewConnection()){
 			
-			try(PreparedStatement ps = con.prepareStatement(script, returnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS)){
+			try(PreparedStatement ps = con.prepareStatement(script.getScript(), returnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS)){
 				
-				for(int i = 0; i < args.length;i++){
-					ps.setObject(i + 1, args[i]);
+				for(int batchId : script.getBatches().keySet()) {
+					
+					Object[] args = script.getBatches().get(batchId);
+					
+					for(int i = 0; i < args.length;i++){
+						if(args[i] == null) {
+							throw new IllegalArgumentException("Cannot pass unknown 'null' value to mysql. Use PossibleNullValue class");
+						}
+						if(args[i] instanceof PossibleNullValue) {
+							PossibleNullValue pnv = (PossibleNullValue) args[i];
+							
+							ps.setObject(i + 1, pnv.getValue(), pnv.getSqlType());
+						}else {
+							ps.setObject(i + 1, args[i]);	
+						}
+					}
+					
+					ps.addBatch();
+					
 				}
 				
 				int nRowsChanged = ps.executeUpdate();
@@ -79,6 +100,13 @@ public class Database {
 			if(MapleStory.getServerConfig().isVerboseDatabaseEnabled())
 				log.debug(script+" executed in "+(System.currentTimeMillis() - start)+" ms");
 		}
+	}
+	
+	public ExecuteResult executeWithKeys(String script, boolean returnGeneratedKeys, Object... args) throws SQLException{
+		BatchedScript batch = new BatchedScript(script);
+		batch.addBatch(args);
+		
+		return execute(batch, returnGeneratedKeys);
 	}
 	
 	public List<QueryResult> query(String script, Object... args) throws SQLException{

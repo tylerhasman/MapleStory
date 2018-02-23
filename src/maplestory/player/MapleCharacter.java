@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.PackedColorModel;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.SQLType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -126,7 +127,9 @@ import constants.skills.Spearman;
 import constants.skills.SuperGM;
 import constants.skills.Swordsman;
 import constants.skills.ThunderBreaker;
+import database.BatchedScript;
 import database.MapleDatabase;
+import database.PossibleNullValue;
 import database.QueryResult;
 import io.netty.util.concurrent.ScheduledFuture;
 
@@ -1497,50 +1500,106 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     	
     }
     
-    public void saveInventory() throws SQLException{
+    public void saveInventory() throws SQLException {
        
-    	MapleDatabase.getInstance().execute("DELETE FROM `inventory_items` WHERE `player`=?", getId());
+    	List<QueryResult> itemQueries = MapleDatabase.getInstance().query("SELECT * FROM `inventory_items` WHERE `player`=?", getId());
     	
-        for (Inventory iv : inventories.values()) {
-        	try{//Surround with try-catch because otherwise if an item causes an eror the player might lose all their items!
-            	String script = "INSERT INTO `inventory_items` (`inventory_type`,`slot`,`player`,`itemid`,`amount`,`owner`,`flag`,`expiration`,`unique_id`) VALUES (?,?,?,?,?,?,?,?,?)";
-            	String scriptWithData = "INSERT INTO `inventory_items` (`inventory_type`,`slot`,`player`,`itemid`,`amount`,`owner`,`flag`,`expiration`,`unique_id`,`data`) VALUES (?,?,?,?,?,?,?,?,?,?)";
-            	
-            	for(int slot : iv.getItems().keySet()){
-            		Item item = iv.getItems().get(slot);
-                	
-                	long expirationDate = -1;
-                	long unique_id = -1;
+    	Map<InventoryType, List<Integer>> items = new HashMap<>();//This will contain all the items we have, after we deal with one, we remove it to signify it has been handled
+    	
+    	for(InventoryType type : InventoryType.values()) {
+    		
+    		List<Integer> slots = new ArrayList<>();
+    		
+    		Inventory inv = getInventory(type);
+    		
+    		inv.getItems().keySet().stream().forEach(slots::add);
 
-            		if(item instanceof CashItem){
-            			expirationDate = ((CashItem)item).getExpirationDate();
-            			unique_id = ((CashItem)item).getUniqueId();
-            		}
-            		
-            		String data = null;
-            		
-            		if(item instanceof EquipItem){
-            			EquipItem eq = (EquipItem) item;
-            			
-            			data = eq.getStatInfo().serialize().toString();
-            		}
-            		
-            		if(item instanceof PetItem){
-            			data = ((PetItem) item).createPetSnapshot().serialize();
-            		}
-            		
-            		if(data != null){
-            			MapleDatabase.getInstance().execute(scriptWithData, iv.getType().getId(), slot, getId(), item.getItemId(), item.getAmount(), item.getOwner(), item.getFlag(), expirationDate, unique_id, data);
-            		}else{
-            			MapleDatabase.getInstance().execute(script, iv.getType().getId(), slot, getId(), item.getItemId(), item.getAmount(), item.getOwner(), item.getFlag(), expirationDate, unique_id);
-            		}
-            	}
-        	}catch(Exception e){
-        		e.printStackTrace();
-        	}
-        	
-        }
-        
+    		items.put(type, slots);
+    		
+    	}
+    	
+    	BatchedScript updateBatch = new BatchedScript("UPDATE `inventory_items` SET `itemid`=?, `amount`=?, `owner`=?, `flag`=?, `expiration`=?, `unique_id`=?, `data`=? WHERE `id`=?");
+    	BatchedScript deleteBatch = new BatchedScript("DELETE FROM `inventory_items` WHERE `id`=?");
+		BatchedScript insertBatch = new BatchedScript("INSERT INTO `inventory_items` (`inventory_type`,`slot`,`player`,`itemid`,`amount`,`owner`,`flag`,`expiration`,`unique_id`, `data`) VALUES (?,?,?,?,?,?,?,?,?,?)");
+		
+    	for(QueryResult result : itemQueries) {
+    		
+    		InventoryType type = InventoryType.getById(result.get("inventory_type"));
+    		
+    		int slot = result.get("slot");
+    		
+    		Item thisItem = ItemFactory.getItem(result);
+    		
+    		Item current = getInventory(type).getItem(slot);
+    		
+    		items.get(type).remove((Integer) slot);
+    		
+    		if(current == null) {//We already know it existed in the past since we got it back in the query
+    			//Delete the item from database
+    			
+    			int id = result.get("id");
+    			
+    			deleteBatch.addBatch(id);
+    			
+    		}else if(!current.equals(thisItem)) {
+    			//Update this item with the new data
+
+    			int id = result.get("id");
+    			
+    			long expiration = Item.getExpiration(current);
+    			long uniqueId = Item.getUniqueId(current);
+    			
+    			String data = null;
+        		
+        		if(current instanceof EquipItem){
+        			EquipItem eq = (EquipItem) current;
+        			
+        			data = eq.getStatInfo().serialize().toString();
+        		}
+        		
+        		if(current instanceof PetItem){
+        			data = ((PetItem) current).createPetSnapshot().serialize();
+        		}
+    			
+        		updateBatch.addBatch(current.getItemId(), current.getAmount(), current.getOwner(), current.getFlag(), expiration, uniqueId, new PossibleNullValue(data, java.sql.Types.VARCHAR), id);
+        		
+    		}
+    		
+    	}
+    	
+    	//Handle all unhandled values here by inserting them
+    	
+    	for(InventoryType type : items.keySet()) {
+    		List<Integer> slots = items.get(type);
+    		
+    		for(int slot : slots) {
+    			
+    			Item item = getInventory(type).getItem(slot);
+    			
+    			long expiration = Item.getExpiration(item);
+    			long uniqueId = Item.getUniqueId(item);
+    			
+    			String data = null;
+        		
+        		if(item instanceof EquipItem){
+        			EquipItem eq = (EquipItem) item;
+        			
+        			data = eq.getStatInfo().serialize().toString();
+        		}
+        		
+        		if(item instanceof PetItem){
+        			data = ((PetItem) item).createPetSnapshot().serialize();
+        		}
+    			
+        		insertBatch.addBatch(type.getId(), slot, getId(), item.getItemId(), item.getAmount(), item.getOwner(), item.getFlag(), expiration, uniqueId, new PossibleNullValue(data, java.sql.Types.VARCHAR));
+        		
+    		}
+    		
+    	}
+    	
+    	MapleDatabase.getInstance().execute(deleteBatch, false);
+    	MapleDatabase.getInstance().execute(updateBatch, false);
+    	MapleDatabase.getInstance().execute(insertBatch, false);
     }
     
 	public static boolean checkNameTaken(String name, World world) throws SQLException {

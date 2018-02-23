@@ -50,8 +50,7 @@ public class MapleMapFactory {
 
 		map = new MapleMap(mapid, world, channel, mapData.readInt("info/returnMap"), monsterRate);
 		maps.put(mapid, map);
-		// map.setOnFirstUserEnter(NodeTool.getString(mapData.getChild("info/onFirstUserEnter"),
-		// String.valueOf(mapid)));
+
 		 map.setGlobalScriptOnUserEnter(mapData.readString("info/onUserEnter", ""));
 		// String.valueOf(mapid)));
 		map.setFieldLimit(mapData.readInt("info/fieldLimit"));

@@ -19,6 +19,6 @@
 */
 
 function start() {
-    Packages.server.MapleShopFactory.getInstance().getShop(11000).sendShop(cm.getClient());
+    cm.openShopNpc(11000);
     cm.dispose();
 }

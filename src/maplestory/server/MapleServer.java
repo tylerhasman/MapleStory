@@ -124,8 +124,10 @@ public class MapleServer implements Runnable{
 				channel.shutdown();
 			}
 		}
+		MapleStory.getLogger().info("Shutting down tasks");
 		TimerManager.shutdown();
 		crashed = false;
+		MapleStory.getLogger().info("Server shutdown");
 	}
 	
 	@Override

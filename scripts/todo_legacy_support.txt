@@ -1,1 +1,8 @@
 cm.getCharacter().gotPartyQuestItem <--- Not implemented yet
+
+retest 51 (mar)
+balrog pq 95
+balrog pq 97
+some stature 105
+guild emblem 194
+guild id 207

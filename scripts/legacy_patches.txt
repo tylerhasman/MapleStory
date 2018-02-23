@@ -15,6 +15,9 @@ cm.getPlayer().announce(MaplePacketCreator.earnTitleMessage -> cm.sendMessage("Y
 Packages.client.inventory -> Packages.maplestory.inventory
 MapleInventoryType -> InventoryType
 
+@@ Why do they have so many methods that do the same thing >_<
+cm.getItemQuantity -> cm.itemQuantity
+
 @@ buddy list overrides
 cm.getPlayer().setBuddyCapacity -> cm.getCharacter().getBuddyList().setCapacity
 cm.getPlayer().getBuddylist().getCapacity -> cm.getCharacter().getBuddyList().getCapacity
@@ -22,9 +25,12 @@ cm.getPlayer().getBuddylist().getCapacity -> cm.getCharacter().getBuddyList().ge
 @@ Disable storage for now since it doesn't work
 cm.getPlayer().getStorage().sendStorage -> cm.sendOk("Sorry, storage is currently disabled.");//
 
+@@ GM, we do it by account, not character
+cm.getPlayer().isGM -> cm.getClient().isGM
 
 @@ Disable Auto-Chaos Scroll
 cm.getPlayer().setCS -> //cm.getPlayer().setCS
+
 
 @@ Pet stuff
 cm.getPlayer().getNoPets -> cm.getPlayer().numPetsSpawned
@@ -32,9 +38,26 @@ cm.getPlayer().getNoPets -> cm.getPlayer().numPetsSpawned
 @@ Map stuff
 (cm.getPlayer().getMap()).getId -> (cm.getPlayer().getMap()).getMapId
 cm.getPlayer().getMap().getId -> cm.getPlayer().getMap().getMapId
+spawnMonsterOnGroundBelow -> spawnMonster
+countPlayers -> getPlayers().size
+
+@@ UI stuff
+cm.lockUI -> cm.getCharacter().lockUI
+
+@@ Open NPC
+cm.getClient().openNpc -> cm.getCharacter().openNpc
+cm.openShopNPC -> cm.openShopNpc
+
+@@ Life
+
+Packages.server.life -> Packages.maplestory.life
+
+@@ Exp Patch (We handle the exp rate so we just replace this with '1' and it will multiply it by '1', nice
+cm.getPlayer().getExpRate() -> 1
 
 @@
 @@
 @@ This one changes a lot so we put it last, that way it wont affect other things
-cm.getPlayer() -> cm.getCharacter()
-
+cm.getChar -> cm.getCharacter
+cm.c.getPlayer -> cm.getCharacter
+cm.getPlayer -> cm.getCharacter

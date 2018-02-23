@@ -63,10 +63,21 @@ public class ChangeMapHandler extends MaplePacketHandler {
 				}else{
 					if(startwp.isEmpty()){
 						
-						if(client.getCharacter().getMapId() / 100 == 9140900){
+						
+						int mapCodeCurrent = client.getCharacter().getMapId() / 10000;
+						int mapCodeTarget = target / 10000;
+						
+						if(mapCodeCurrent == 102 && mapCodeTarget == 102) {
+							client.getCharacter().changeMap(target);
+						}else if(client.getCharacter().getMapId() == 0 && target == 10000) {
+							client.getCharacter().changeMap(target);
+						}else if(client.getCharacter().getMapId() / 100 == 9140900){
 							if (target == 914090011 || target == 914090012 || target == 914090013 || target == 140090000) {
 								client.getCharacter().changeMap(target);
 							}
+						}else {
+							client.getChannel().getLogger().warn("Unhandled warp "+target+" from "+client.getCharacter().getMapId());
+							client.getCharacter().changeMap(target);
 						}
 						
 					}else{

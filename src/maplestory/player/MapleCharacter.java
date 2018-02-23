@@ -2009,7 +2009,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		
 		int total = amount + partyBonus;
 		
-		int equip = (int) getWorld().getRates().modify(this, RateType.EXP, total);
+		int equip = (int) getWorld().getRates().modify(this, quest ? RateType.QUEST : RateType.EXP, total);
 		equip -= total;
 		
 		total += equip;
@@ -2950,6 +2950,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 	
 	public MapleScriptInstance openNpc(int id){
+		if(!MapleLifeFactory.doesNpcExist(id)) {
+			throw new IllegalArgumentException("No npc with id "+id);
+		}
 		return openNpc(MapleLifeFactory.getNPC(id));
 	}
 	
@@ -2972,6 +2975,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 
 	public MapleScriptInstance openQuestNpc(MapleScript script, int quest, int npc, boolean end){
+		if(!MapleLifeFactory.doesNpcExist(npc)) {
+			throw new IllegalArgumentException("No npc with id "+npc);
+		}
 		MapleScriptInstance instance = null;
 		
 		try{
@@ -2998,6 +3004,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 	
 	public void openQuestNpc(MapleScriptInstance script, int quest, int npc, boolean end){
+		if(!MapleLifeFactory.doesNpcExist(npc)) {
+			throw new IllegalArgumentException("No npc with id "+npc);
+		}
 		try{
 			QuestScriptManager qm = new QuestScriptManager(this, quest, npc);
 			
@@ -3020,6 +3029,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 	
 	public MapleScriptInstance openNpc(MapleScript script, int npc) {
+		if(!MapleLifeFactory.doesNpcExist(npc)) {
+			throw new IllegalArgumentException("No npc with id "+npc);
+		}
 		return openNpc(script, new SimpleBindings(), MapleLifeFactory.getNPC(npc));
 	}
 	
@@ -3170,6 +3182,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			}
 		}
 		return -1;
+	}
+	
+	public MaplePetInstance getPet(int index) {
+		if(index < 0 || index >= pets.length) {
+			return null;
+		}
+		
+		return pets[index];
 	}
 	
 	public void lockUI(){
@@ -3325,7 +3345,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			}
 			
 		}
-		
+
+		client.sendPacket(PacketFactory.buddyListCapacity(getBuddyList().getCapacity()));
 		client.sendPacket(PacketFactory.buddyListUpdate(getBuddyList()));
 		
 	}

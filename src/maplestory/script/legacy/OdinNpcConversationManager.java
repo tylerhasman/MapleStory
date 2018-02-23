@@ -84,10 +84,20 @@ public class OdinNpcConversationManager extends NpcConversationManager {
 	}
 
 	public void startQuest(short id) {
+		
+		if(!MapleQuest.exists(id)) {
+			return;
+		}
+		
 		startQuest(id, getNpcId());
 	}
 
 	public void completeQuest(short id) {
+		
+		if(!MapleQuest.exists(id)) {
+			return;
+		}
+		
 		completeQuest(id);
 	}
 
@@ -401,89 +411,143 @@ public class OdinNpcConversationManager extends NpcConversationManager {
 	}
 
 	public void updateQuest(int questId, int data) {
+		if(!MapleQuest.exists(questId)) {
+			return;
+		}
 		getCharacter().getQuest(questId).setAnyProgress(data);
 		getCharacter().updateQuest(getCharacter().getQuest(questId));
 	}
 
 	public void updateQuest(int qid, String data) {
+		if(!MapleQuest.exists(qid)) {
+			return;
+		}
 		updateQuest(qid, Integer.valueOf(data));
 	}
 
 	public void updateQuest(int qid, int pid, int data) {
+		if(!MapleQuest.exists(qid)) {
+			return;
+		}
 		getCharacter().getQuest(qid).setProgress(pid, data);
 		getCharacter().updateQuest(getCharacter().getQuest(qid));
 	}
 
 	public void updateQuest(int qid, int pid, String data) {
+		if(!MapleQuest.exists(qid)) {
+			return;
+		}
 		updateQuest(qid, pid, Integer.valueOf(data));
 	}
 
 	public int getQuestStatus(int id) {
+		if(!MapleQuest.exists(id)) {
+			return MapleQuestStatus.NOT_STARTED.getId();
+		}
 		return getCharacter().getQuest(id).getStatus().getId();
 	}
 
 	public MapleQuestStatus getQuestStat(int id) {
+		if(!MapleQuest.exists(id)) {
+			return MapleQuestStatus.NOT_STARTED;
+		}
 		return getCharacter().getQuest(id).getStatus();
 	}
 
 	public boolean isQuestCompleted(int quest) {
+		if(!MapleQuest.exists(quest)) {
+			return false;
+		}
 		return getQuestStat(quest) == MapleQuestStatus.COMPLETED;
 	}
 
 	public boolean isQuestActive(int quest) {
+		if(!MapleQuest.exists(quest)) {
+			return false;
+		}
 		return isQuestStarted(quest);
 	}
 
 	public void setQuestProgress(int qid, int progress) {
+		if(!MapleQuest.exists(qid)) {
+			return;
+		}
 		getCharacter().getQuest(qid).setAnyProgress(progress);
 		getCharacter().updateQuest(getCharacter().getQuest(qid));
 	}
 
 	public void setQuestProgress(int qid, int pid, int progress) {
+		if(!MapleQuest.exists(qid)) {
+			return;
+		}
 		getCharacter().getQuest(qid).setProgress(pid, progress);
 		getCharacter().updateQuest(getCharacter().getQuest(qid));
 	}
 
 	public void setStringQuestProgress(int qid, String progress) {
+		if(!MapleQuest.exists(qid)) {
+			return;
+		}
 		getCharacter().getQuest(qid).setAnyProgress(Integer.valueOf(progress));
 		getCharacter().updateQuest(getCharacter().getQuest(qid));
 	}
 
 	public void setStringQuestProgress(int qid, int pid, String progress) {
+		if(!MapleQuest.exists(qid)) {
+			return;
+		}
 		getCharacter().getQuest(qid).setProgress(pid, Integer.valueOf(progress));
 		getCharacter().updateQuest(getCharacter().getQuest(qid));
 	}
 
 	public int getQuestProgress(int qid) {
+		if(!MapleQuest.exists(qid)) {
+			return 0;
+		}
 		int progress = getCharacter().getQuest(qid).getAnyProgress();
 
 		return progress;
 	}
 
 	public int getQuestProgress(int qid, int pid) {
+		if(!MapleQuest.exists(qid)) {
+			return 0;
+		}
 		int progress = getCharacter().getQuest(qid).getProgress(pid);
 
 		return progress;
 	}
 
 	public String getStringQuestProgress(int qid) {
+		if(!MapleQuest.exists(qid)) {
+			return "0";
+		}
 		int progress = getCharacter().getQuest(qid).getAnyProgress();
 
 		return String.valueOf(progress);
 	}
 
 	public String getStringQuestProgress(int qid, int pid) {
+		if(!MapleQuest.exists(qid)) {
+			return "0";
+		}
 		int progress = getCharacter().getQuest(qid).getProgress(pid);
 
 		return String.valueOf(progress);
 	}
 
 	public void resetAllQuestProgress(int qid) {
+		if(!MapleQuest.exists(qid)) {
+			return;
+		}
 		getCharacter().getQuest(qid).getProgress().clear();
 		getCharacter().updateQuest(getCharacter().getQuest(qid));
 	}
 
 	public void resetQuestProgress(int qid, int pid) {
+		if(!MapleQuest.exists(qid)) {
+			return;
+		}
 		getCharacter().getQuest(qid).getProgress().remove(pid);
 		getCharacter().updateQuest(getCharacter().getQuest(qid));
 	}

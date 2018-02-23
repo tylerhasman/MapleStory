@@ -274,11 +274,11 @@ public class AbstractScriptManager {
 	
 	public boolean isQuestStarted(int quest){
 		
-		MapleQuestInstance inst = getClient().getCharacter().getQuest(quest);
-		
-		if(inst == null) {
+		if(!MapleQuest.exists(quest)) {
 			return false;
 		}
+		
+		MapleQuestInstance inst = getClient().getCharacter().getQuest(quest);
 		
 		return inst.getStatus() == MapleQuestStatus.STARTED;
 	}
@@ -319,6 +319,33 @@ public class AbstractScriptManager {
 			return character.getInventory(id).removeItem(id, -amount);
 		}
 		
+	}
+	
+	public void displayAdventurerIntro() {
+		String intro = "";
+		if (getCharacter().getMapId() == 1020100) //Swordman
+        {
+           intro ="Effect/Direction3.img/swordman/Scene" + getCharacter().getGender();
+        } else if (getCharacter().getMapId() == 1020200) //Magician
+        {
+           intro ="Effect/Direction3.img/magician/Scene" + getCharacter().getGender();
+        } else if (getCharacter().getMapId() == 1020300) //Archer
+        {
+           intro ="Effect/Direction3.img/archer/Scene" + getCharacter().getGender();
+        } else if (getCharacter().getMapId() == 1020400) //Rogue
+        {
+           intro ="Effect/Direction3.img/rogue/Scene" + getCharacter().getGender();
+        } else if (getCharacter().getMapId() == 1020500) //Pirate
+        {
+           intro ="Effect/Direction3.img/pirate/Scene" + getCharacter().getGender();
+        }
+		
+		if(intro.isEmpty()){
+			getClient().getLogger().error("Can't display adventurer intro on map "+getCharacter().getMapId());
+			return;
+		}
+		
+		showIntro(intro);
 	}
 	
 	public void displayAranIntro() {

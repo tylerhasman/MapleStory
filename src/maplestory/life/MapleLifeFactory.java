@@ -158,6 +158,10 @@ public class MapleLifeFactory {
         }
     }
     
+    public static boolean doesNpcExist(int nid) {
+    	return npcStringData.readNode(String.valueOf(nid)) != null;
+    }
+    
     public static MapleNPC getNPC(int nid) {
     	
     	Node speakData = getNpcData().readNode(StringUtil.getLeftPaddedStr(String.valueOf(nid), '0', 7)+".img");
@@ -165,6 +169,7 @@ public class MapleLifeFactory {
     	boolean hasClientSideScript = searchAllChildren(speakData, "speak") != null;
     	
         return new MapleNPC(nid, hasClientSideScript, getNpcName(nid));
+        
     }
     
     public static String getNpcName(int nid){

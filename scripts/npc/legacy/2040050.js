@@ -61,6 +61,7 @@ function action(mode, type, selection) {
 	if(mode == 0) {
 		cm.sendNext("Not enough materials, huh? No worries. Just come see me once you gather up the necessary items. There are numerous ways to obtain them, whether it be hunting or purchasing it from others, so keep going.");
 		cm.dispose();
+		return;
 	}
 	if(mode == 1) {
 		status++;

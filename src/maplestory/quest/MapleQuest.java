@@ -142,5 +142,23 @@ public class MapleQuest {
 		
 		return quest;
 	}
+
+	public static boolean exists(int id) {
+		if(cache.containsKey(id)) {
+			return true;
+		}
+		
+		MapleFile questData = MapleStory.getDataFile("Quest.mdf");
+		
+		Node root = questData.getRootNode();
+		
+		String idStr = String.valueOf(id);
+		
+		Node info = root.readNode("QuestInfo.img").readNode(idStr);
+		Node acts = root.readNode("Act.img").readNode(idStr);
+		Node reqs = root.readNode("Check.img").readNode(idStr);
+		
+		return info != null && acts != null && reqs != null;
+	}
 	
 }

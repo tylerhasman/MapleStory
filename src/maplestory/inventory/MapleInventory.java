@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,14 +31,14 @@ public class MapleInventory implements Inventory {
 	private InventoryType type;
 	private WeakReference<MapleCharacter> owner;
 	
-	private ReentrantLock operationLock;
+	private ReadWriteLock operationLock;
 	
 	public MapleInventory(MapleCharacter owner, int maxSize, InventoryType type) {
 		items = new HashMap<>(maxSize);
 		this.maxSize = maxSize;
 		this.type = type;
 		this.owner = new WeakReference<MapleCharacter>(owner);
-		operationLock = new ReentrantLock(true);
+		operationLock = new ReentrantReadWriteLock(true);
 	}
 	
 	@Override
@@ -46,27 +48,27 @@ public class MapleInventory implements Inventory {
 	
 	@Override
 	public final Map<Integer, Item> getItems() {
-		operationLock.lock();
+		operationLock.readLock().lock();
 		try{
 			return Collections.unmodifiableMap(items);
 		}finally{
-			operationLock.unlock();
+			operationLock.readLock().unlock();
 		}
 	}
 	
 	@Override
 	public boolean hasSpace(int amountOfItems) {
-		operationLock.lock();
+		operationLock.readLock().lock();
 		try{
 			return items.size() + amountOfItems <= maxSize;
 		}finally{
-			operationLock.unlock();
+			operationLock.readLock().unlock();
 		}
 	}
 	
 	@Override
 	public void transferToCashInventory(int slot, CashShopInventory cashInventory) {
-		operationLock.lock();
+		operationLock.writeLock().lock();
 		
 		try{
 			Item item = getItem(slot);
@@ -87,14 +89,14 @@ public class MapleInventory implements Inventory {
 				throw new IllegalArgumentException("Item at slot "+slot+" is not a cash item. It is a "+item.getClass().getName()+" toString: "+item.toString());
 			}	
 		}finally{
-			operationLock.unlock();
+			operationLock.writeLock().unlock();
 		}
 		
 	}
 	
 	@Override
 	public Item firstOf(int itemId) {
-		operationLock.lock();
+		operationLock.readLock().lock();
 		try{
 			for(Item item : items.values()){
 				if(item.getItemId() == itemId){
@@ -103,13 +105,13 @@ public class MapleInventory implements Inventory {
 			}
 			return null;
 		}finally{
-			operationLock.unlock();
+			operationLock.readLock().unlock();
 		}
 	}
 	
 	@Override
 	public int findByCashId(int cashUniqueId) {
-		operationLock.lock();
+		operationLock.readLock().lock();
 		try{
 			for(Entry<Integer, Item> item : items.entrySet()){
 				if(item.getValue() instanceof CashItem){
@@ -120,7 +122,7 @@ public class MapleInventory implements Inventory {
 			}
 			return -1;
 		}finally{
-			operationLock.unlock();
+			operationLock.readLock().unlock();
 		}
 	}
 	
@@ -131,7 +133,7 @@ public class MapleInventory implements Inventory {
 	
 	@Override
 	public boolean hasSpace(int itemId, int quantity) {
-		operationLock.lock();
+		operationLock.readLock().lock();
 		try{
 			if(hasSpace(Math.max(quantity, ItemInfoProvider.getSlotMax(itemId)) / ItemInfoProvider.getSlotMax(itemId))){
 				return true;
@@ -146,13 +148,13 @@ public class MapleInventory implements Inventory {
 			
 			return quantity <= 0;
 		}finally{
-			operationLock.unlock();
+			operationLock.readLock().unlock();
 		}
 	}
 	
 	@Override
 	public int countById(int itemId) {
-		operationLock.lock();
+		operationLock.readLock().lock();
 		try{
 			int count = 0;
 			for(Item item : listById(itemId)){
@@ -160,7 +162,7 @@ public class MapleInventory implements Inventory {
 			}
 			return count;
 		}finally{
-			operationLock.unlock();
+			operationLock.readLock().unlock();
 		}
 	}
 	
@@ -210,16 +212,16 @@ public class MapleInventory implements Inventory {
 	
 	@Override
 	public void moveItem(int slot, int destination) {
-		operationLock.lock();
+		operationLock.writeLock().lock();
 		try{
 			moveItemUnsafe(slot, destination);
 		}finally{
-			operationLock.unlock();
+			operationLock.writeLock().unlock();
 		}
 	}
 	
 	private void swap(int one, int two){
-		operationLock.lock();
+		operationLock.writeLock().lock();
 		try{
 			Item itemOne = getItem(one);
 			Item itemTwo = getItem(two);
@@ -227,12 +229,12 @@ public class MapleInventory implements Inventory {
 			setItemInternal(two, itemOne);
 			setItemInternal(one, itemTwo);
 		}finally{
-			operationLock.unlock();
+			operationLock.writeLock().unlock();
 		}
 	}
 	
 	private void dropItemUnsafe(int slot, int amount){
-Item dropped = getItem(slot);
+		Item dropped = getItem(slot);
 		
 		if(dropped == null || amount <= 0){
 			return;
@@ -277,17 +279,17 @@ Item dropped = getItem(slot);
 	
 	@Override
 	public void dropItem(int slot, int amount) {
-		operationLock.lock();
+		operationLock.writeLock().lock();
 		try{
 			dropItemUnsafe(slot, amount);
 		}finally{
-			operationLock.unlock();
+			operationLock.writeLock().unlock();
 		}
 	}
 	
 	@Override
 	public void removeItemFromSlot(int slot, int amount) {
-		operationLock.lock();
+		operationLock.writeLock().lock();
 		try{
 			Item item = getItem(slot);
 			
@@ -300,13 +302,13 @@ Item dropped = getItem(slot);
 				sendPacket(PacketFactory.getInventoryOperationPacket(true, Collections.singletonList(InventoryOperation.updateAmount(item, slot))));
 			}
 		}finally{
-			operationLock.unlock();
+			operationLock.writeLock().unlock();
 		}
 	}
 	
 	@Override
 	public int getProjectileId(int bulletCount, Item weapon) {
-		operationLock.lock();
+		operationLock.readLock().lock();
 		try{
 			MapleWeaponType weaponType = ItemInfoProvider.getWeaponType(weapon.getItemId());
 			
@@ -353,13 +355,13 @@ Item dropped = getItem(slot);
 			
 			return 0;
 		}finally{
-			operationLock.unlock();
+			operationLock.readLock().unlock();
 		}
 	}
 	
 	@Override
 	public boolean removeItem(int id, int amount) {
-		operationLock.lock();
+		operationLock.writeLock().lock();
 		try{
 			if(amount == 0){
 				return true;
@@ -396,7 +398,7 @@ Item dropped = getItem(slot);
 			
 			return amount <= 0;
 		}finally{
-			operationLock.unlock();
+			operationLock.writeLock().unlock();
 		}
 	}
 	
@@ -411,31 +413,31 @@ Item dropped = getItem(slot);
 	}
 	
 	public final Item getItem(int slot){
-		operationLock.lock();
+		operationLock.readLock().lock();
 		try{
 			return items.get(slot);
 		}finally{
-			operationLock.unlock();
+			operationLock.readLock().unlock();
 		}
 	}
 	
 	@Override
 	public boolean isFull() {
-		operationLock.lock();
+		operationLock.readLock().lock();
 		try{
 			return items.size() >= getSize();
 		}finally{
-			operationLock.unlock();
+			operationLock.readLock().unlock();
 		}
 	}
 	
 	@Override
 	public boolean isFull(int amount) {
-		operationLock.lock();
+		operationLock.readLock().lock();
 		try{
 			return items.size() + amount > getSize();
 		}finally{
-			operationLock.unlock();
+			operationLock.readLock().unlock();
 		}
 	}
 	
@@ -445,7 +447,7 @@ Item dropped = getItem(slot);
 	}
 	
 	private List<Pair<Integer, Item>> listByIdWithSlot(int itemId){
-		operationLock.lock();
+		operationLock.readLock().lock();
 		try{
 			List<Pair<Integer, Item>> filtered = new ArrayList<>();
 			
@@ -459,13 +461,13 @@ Item dropped = getItem(slot);
 			
 			return filtered;
 		}finally{
-			operationLock.unlock();
+			operationLock.readLock().unlock();
 		}
 	}
 	
 	@Override
 	public boolean addItem(Item item) {
-		operationLock.lock();
+		operationLock.writeLock().lock();
 		try{
 			int slotMax = getOwner().getMaxSlotForItem(item);
 			
@@ -532,7 +534,7 @@ Item dropped = getItem(slot);
 			}
 			
 		}finally{
-			operationLock.unlock();
+			operationLock.writeLock().unlock();
 		}
 	}
 	
@@ -549,18 +551,23 @@ Item dropped = getItem(slot);
 	
 	@Override
 	public int getFreeSlot(int margin) {
-		for(int i = margin + 1;i <= getSize();i++){
-			if(getItem(i) == null){
-				return i;
+		operationLock.readLock().lock();
+		try {
+			for(int i = margin + 1;i <= getSize();i++){
+				if(getItem(i) == null){
+					return i;
+				}
 			}
+			
+			return -1;	
+		}finally {
+			operationLock.readLock().unlock();
 		}
-		
-		return -1;
 	}
 	
 	@Override
 	public List<Item> listById(int itemId) {
-		operationLock.lock();
+		operationLock.readLock().lock();
 		try{
 			List<Item> items = new ArrayList<>();
 			
@@ -571,12 +578,12 @@ Item dropped = getItem(slot);
 			}
 			return items;
 		}finally{
-			operationLock.unlock();
+			operationLock.readLock().unlock();
 		}
 	}
 	
 	protected void setItemInternal(int slot, Item item){
-		operationLock.lock();
+		operationLock.writeLock().lock();
 		try{
 			if(item == null){
 				items.remove(slot);
@@ -585,7 +592,7 @@ Item dropped = getItem(slot);
 				items.put(slot, item);
 			}
 		}finally{
-			operationLock.unlock();
+			operationLock.writeLock().unlock();
 		}
 	}
 	

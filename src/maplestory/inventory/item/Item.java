@@ -31,4 +31,20 @@ public interface Item extends Comparable<Item> {
 	
 	public ItemMeta getItemMeta();
 
+	public static long getExpiration(Item item) {
+		long expiration = -1;
+		if(item instanceof CashItem) {
+			expiration = ((CashItem) item).getExpirationDate();
+		}
+		return expiration;
+	}
+	
+	public static long getUniqueId(Item item) {
+		long uniqueId = -1;
+		if(item instanceof CashItem) {
+			uniqueId = ((CashItem) item).getUniqueId();
+		}
+		return uniqueId;
+	}
+	
 }

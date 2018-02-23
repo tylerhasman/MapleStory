@@ -210,10 +210,8 @@ public class MapleMap {
 			if(portal.getTarget() == null || portal.getTargetMapId() == getMapId()){
 				continue;
 			}
-			if(MapleServer.getChannel(world, channel).getMapFactory().isMapLoaded(portal.getTargetMapId())){
-				if(MapleServer.getChannel(world, channel).getMap(portal.getTargetMapId()).getPlayers().size() > 0)
-					sum++;
-			}
+			if(MapleServer.getChannel(world, channel).getMap(portal.getTargetMapId()).getPlayers().size() > 0)
+				sum++;
 		}
 		return sum;
 	}

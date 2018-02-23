@@ -379,7 +379,7 @@ public class ItemInfoProvider {
 		Node entry = item.getChild(name);
 		
 		if(entry != null){
-			return (int) entry.getValue();
+			return entry.intValue();
 		}
 		
 		return def;
@@ -819,6 +819,10 @@ public class ItemInfoProvider {
 			
 		}
 		
+	}
+
+	public static List<Integer> getMonstersWhoDrop(int itemId) {
+		return Collections.emptyList();
 	}
 	
 }

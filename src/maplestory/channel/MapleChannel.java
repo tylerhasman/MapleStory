@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 
 import constants.MessageType;
 import maplestory.client.MapleClient;
+import maplestory.map.MapleMap;
 import maplestory.map.MapleMapFactory;
 import maplestory.player.MapleCharacter;
 import maplestory.world.World;
@@ -14,7 +15,9 @@ public interface MapleChannel {
 
 	public int getId();
 	
-	public MapleMapFactory getMapFactory();
+	//public MapleMapFactory getMapFactory();
+	
+	public MapleMap getMap(int id);
 	
 	public Logger getLogger();
 	

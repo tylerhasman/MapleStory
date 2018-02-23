@@ -22,6 +22,7 @@ import constants.MessageType;
 import tools.TimerManager;
 import lombok.Getter;
 import maplestory.client.MapleClient;
+import maplestory.map.MapleMap;
 import maplestory.map.MapleMapFactory;
 import maplestory.player.MapleCharacter;
 import maplestory.server.MapleStory;
@@ -178,6 +179,11 @@ public class MapleSocketChannel implements MapleChannel {
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public MapleMap getMap(int id) {
+		return getMapFactory().getMap(id);
 	}
 	
 }

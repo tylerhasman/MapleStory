@@ -47,7 +47,7 @@ public abstract class AbstractMapleMapObject implements MapleMapObject {
     	if(world == -1){
     		return null;
     	}
-    	return MapleServer.getChannel(world, channel).getMapFactory().getMap(mapid);
+    	return MapleServer.getChannel(world, channel).getMap(mapid);
     }
     
     public void setMap(MapleMap map){

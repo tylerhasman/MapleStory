@@ -1016,7 +1016,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			throw new IllegalStateException("NOT IN A WORLD OR CHANNEL! "+getClient().getWorldId()+" "+getClient().getChannelId()+" "+getName()+" "+getMapId());
 		}
 		
-		return getClient().getChannel().getMapFactory().getMap(getMapId());
+		return getClient().getChannel().getMap(getMapId());
 	}
 	
 	public String getFullName(){
@@ -2234,7 +2234,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 
 	public void changeMap(int mapId) {
-		changeMap(client.getChannel().getMapFactory().getMap(mapId));
+		changeMap(client.getChannel().getMap(mapId));
 	}
 
 	public int getItemQuantity(int itemid, boolean checkEquipped) {
@@ -2790,7 +2790,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	public void banish(int mapId, String portal, String msg) {
 		sendMessage(MessageType.PINK_TEXT, msg);
 		
-		MapleMap map = client.getChannel().getMapFactory().getMap(mapId);
+		MapleMap map = client.getChannel().getMap(mapId);
 		
 		changeMap(map, map.getPortal(portal));
 	}

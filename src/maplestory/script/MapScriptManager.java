@@ -18,7 +18,7 @@ public class MapScriptManager extends AbstractScriptManager {
 	}
 	
 	public MapleMap getMap(){
-		return MapleServer.getChannel(world, channel).getMapFactory().getMap(map);
+		return MapleServer.getChannel(world, channel).getMap(map);
 	}
 	
 	public void grantGodlyStats(){

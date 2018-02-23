@@ -305,7 +305,7 @@ public class OdinNpcConversationManager extends NpcConversationManager {
 	}
 
 	public void warpParty(int id, int pid, int min, int max) {
-		MapleMap map = getClient().getChannel().getMapFactory().getMap(id);
+		MapleMap map = getClient().getChannel().getMap(id);
 		MaplePortal portal = map.getPortal(pid);
 
 		for (MapleCharacter mc : getPartyMembers()) {
@@ -331,7 +331,7 @@ public class OdinNpcConversationManager extends NpcConversationManager {
 	}
 
 	public MapleMap getWarpMap(int map) {
-		return getClient().getChannel().getMapFactory().getMap(map);
+		return getClient().getChannel().getMap(map);
 	}
 
 	public MapleMap getMap(int map) {

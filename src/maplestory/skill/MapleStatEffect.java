@@ -660,7 +660,7 @@ public class MapleStatEffect {
                 if (moveTo == 999999999) {
                     target = applyto.getMap().getReturnMap();
                 } else {
-                    target = applyto.getClient().getChannel().getMapFactory().getMap(moveTo);
+                    target = applyto.getClient().getChannel().getMap(moveTo);
                     int targetid = target.getMapId() / 10000000;
                     if (targetid != 60 && applyto.getMapId() / 10000000 != 61 && targetid != applyto.getMapId() / 10000000 && targetid != 21 && targetid != 20) {
                         return false;

@@ -211,7 +211,7 @@ public class MapleMap {
 				continue;
 			}
 			if(MapleServer.getChannel(world, channel).getMapFactory().isMapLoaded(portal.getTargetMapId())){
-				if(MapleServer.getChannel(world, channel).getMapFactory().getMap(portal.getTargetMapId()).getPlayers().size() > 0)
+				if(MapleServer.getChannel(world, channel).getMap(portal.getTargetMapId()).getPlayers().size() > 0)
 					sum++;
 			}
 		}
@@ -290,7 +290,7 @@ public class MapleMap {
 	}
 	
 	public MapleMap getReturnMap(){
-		return getChannel().getMapFactory().getMap(returnMap);
+		return getChannel().getMap(returnMap);
 	}
 	
 	public List<MapleMonster> getMonsters(){

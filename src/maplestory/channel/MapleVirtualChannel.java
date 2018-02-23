@@ -52,12 +52,7 @@ public class MapleVirtualChannel implements MapleChannel {
 	public int getId() {
 		return id;
 	}
-
-	@Override
-	public MapleMapFactory getMapFactory() {
-		return mapFactory;
-	}
-
+	
 	@Override
 	public Logger getLogger() {
 		return logger;
@@ -151,7 +146,7 @@ public class MapleVirtualChannel implements MapleChannel {
 		}else{
 			int currentMapId = client.getCharacter().getMapId();
 			
-			MapleMap map = getMapFactory().getMap(currentMapId);
+			MapleMap map = getMap(currentMapId);
 			
 			client.setChannelId(id);
 			client.getCharacter().changeMap(map);	
@@ -174,6 +169,11 @@ public class MapleVirtualChannel implements MapleChannel {
 		
 	}
 
+	@Override
+	public MapleMap getMap(int id) {
+		return mapFactory.getMap(id);
+	}
+	
 	@Override
 	public World getWorld() {
 		return world;

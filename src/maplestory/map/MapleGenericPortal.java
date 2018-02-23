@@ -121,7 +121,7 @@ public class MapleGenericPortal implements MaplePortal {
 
     @Override
     public void enterPortal(MapleClient c) {
-    	MapleMap to = c.getChannel().getMapFactory().getMap(targetmap);
+    	MapleMap to = c.getChannel().getMap(targetmap);
     	if(to == null){
     		c.sendReallowActions();
     		return;

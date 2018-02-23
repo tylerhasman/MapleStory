@@ -246,12 +246,12 @@ public class AbstractScriptManager {
 	}
 	
 	public void warp(int mapId, String pid){
-		MapleMap map = getClient().getChannel().getMapFactory().getMap(mapId);
+		MapleMap map = getClient().getChannel().getMap(mapId);
 		getClient().getCharacter().changeMap(map, map.getPortal(pid));
 	}
 	
 	public void warp(int mapId, int pid){
-		MapleMap map = getClient().getChannel().getMapFactory().getMap(mapId);
+		MapleMap map = getClient().getChannel().getMap(mapId);
 		
 		getClient().getCharacter().changeMap(map, map.getPortal(pid));
 	}

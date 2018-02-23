@@ -79,7 +79,6 @@ public class MoveMonsterHandler extends MovementPacketHandler {
         if (res != null) {
             client.getCharacter().getMap().broadcastPacket(client.getCharacter(), PacketFactory.getMoveMonsterPacket(skillByte, skill, skill_1, skill_2, skill_3, skill_4, objectid, startPos, res), monster.getPosition());
             res.translateLife(monster);
-            mmo.setPosition(monster.getPosition());
         }
 	}
 

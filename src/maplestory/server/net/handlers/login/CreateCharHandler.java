@@ -53,7 +53,7 @@ public class CreateCharHandler extends MaplePacketHandler {
 			character.setJob(MapleJob.NOBLESSE);
 			guideBook = 4161047;
 		}else if(job == 1){
-			character.setMapId(10000);
+			character.setMapId(0);
 			character.setJob(MapleJob.BEGINNER);
 			guideBook = 4161001;
 		}else if(job == 2){

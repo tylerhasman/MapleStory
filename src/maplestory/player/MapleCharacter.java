@@ -58,6 +58,8 @@ import maplestory.life.MapleMount;
 import maplestory.life.MapleNPC;
 import maplestory.life.MapleSummon;
 import maplestory.life.MobSkill;
+import maplestory.life.movement.AbsoluteLifeMovement;
+import maplestory.life.movement.MovementPath;
 import maplestory.map.AbstractAnimatedMapleMapObject;
 import maplestory.map.MapleMagicDoor;
 import maplestory.map.MapleMap;
@@ -1828,6 +1830,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	@Override
 	public void sendSpawnData(MapleClient client) {
 		client.sendPacket(PacketFactory.spawnPlayerMapObject(this));
+
 		for(int i = 0; i < pets.length;i++){
 			MaplePetInstance inst = pets[i];
 			
@@ -2627,7 +2630,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		if (getMap().getFootholds().findBelow(pos) == null) {
 			return 0;
 		} else {
-			return getMap().getFootholds().findBelow(pos).getY1();
+			return getMap().getFootholds().findBelow(pos).getId();
 		}
 	}
 	

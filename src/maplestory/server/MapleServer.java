@@ -2,16 +2,24 @@ package maplestory.server;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import tools.TimerManager;
 import constants.MessageType;
 import lombok.Getter;
 import maplestory.channel.MapleChannel;
+import maplestory.channel.MapleCrossWorldChannel;
 import maplestory.channel.MapleSocketChannel;
+import maplestory.channel.MapleVirtualChannel;
+import maplestory.map.MapleMap;
+import maplestory.map.MapleMapFactory;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.MapleConnectionHandler;
+import maplestory.world.MapleGlobalWorld;
+import maplestory.world.MapleWorld;
 import maplestory.world.World;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -24,6 +32,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 public class MapleServer implements Runnable{
 
+	public static final int CROSS_WORLD_ID = 99;
+	
 	private static boolean crashed = true;
 	
 	@Getter
@@ -36,6 +46,8 @@ public class MapleServer implements Runnable{
 	@Getter
 	private EventLoopGroup eventLoopGroupBoss, eventLoopGroupWorker;
 	
+	private World globalWorld;
+	
 	public MapleServer(int numWorlds) {
 		if(instance != null){
 			throw new IllegalStateException("MapleServer already created!");
@@ -43,12 +55,13 @@ public class MapleServer implements Runnable{
 		eventLoopGroupBoss = new NioEventLoopGroup();
 		eventLoopGroupWorker = new NioEventLoopGroup();
 		instance = this;
+		globalWorld = new MapleGlobalWorld();
 		worlds = new ArrayList<>(numWorlds);
 		for(int i = 0; i < numWorlds;i++){
 			
 			int channels = MapleStory.getServerConfig().getWorldConfigurations().get(i).getChannels();
 			
-			worlds.add(new World(i, channels, eventLoopGroupBoss, eventLoopGroupWorker));
+			worlds.add(new MapleWorld(i, channels, eventLoopGroupBoss, eventLoopGroupWorker));
 			
 		}
 		if(MapleStory.getServerConfig().isAutoSaveEnabled()){
@@ -100,12 +113,17 @@ public class MapleServer implements Runnable{
 		consoleListener.start();
 	}
 	
+
+	
 	public static List<World> getWorlds() {
 		return instance.worlds;
 	}
 	
 	public static World getWorld(int id) {
-		if(id >= getWorlds().size()){
+		if(id == CROSS_WORLD_ID) {
+			return getInstance().globalWorld;
+		}
+		if(getWorlds().size() <= id || id < 0) {
 			return null;
 		}
 		return getWorlds().get(id);
@@ -132,9 +150,7 @@ public class MapleServer implements Runnable{
 	
 	@Override
 	public void run() {
-		
 
-		
 		ServerBootstrap b = new ServerBootstrap();
 		
 		b.group(eventLoopGroupBoss, eventLoopGroupWorker)
@@ -183,6 +199,10 @@ public class MapleServer implements Runnable{
 		return online;
 	}
 
+	public static MapleChannel getCrossWorldChannel(){
+		return getInstance().globalWorld.getChannelById(0);
+	}
+	
 	public static MapleChannel getChannel(int world, int channel) {
 		return getWorld(world).getChannelById(channel);
 	}

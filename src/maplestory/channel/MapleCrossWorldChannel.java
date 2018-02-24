@@ -2,6 +2,7 @@ package maplestory.channel;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -17,11 +18,12 @@ import maplestory.player.MapleCharacter;
 import maplestory.server.MapleServer;
 import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
-import maplestory.world.MapleGlobalWorld;
 import maplestory.world.World;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tools.TimerManager;
 
-public class MapleVirtualChannel implements MapleChannel {
+public class MapleCrossWorldChannel implements MapleChannel {
+
 
 	private int id;
 	
@@ -29,14 +31,15 @@ public class MapleVirtualChannel implements MapleChannel {
 	
 	private Logger logger;
 	
-	private World world;
+	private int virtualPort;
 	
-	public MapleVirtualChannel(int id, World world) {
+	public MapleCrossWorldChannel(int worldId, int id, int virtualPort) {
 		this.id = id;
-		this.world = world;
-		mapFactory = new MapleMapFactory(world.getId(), id);
+		mapFactory = new MapleMapFactory(worldId, id);
 		
-		logger = LoggerFactory.getLogger("["+world.getName()+" Channel "+(id + 1)+"]");
+		this.virtualPort = virtualPort;
+		
+		logger = LoggerFactory.getLogger("[Cross-Channel "+(id + 1)+"]");
 		
 		if(MapleStory.getServerConfig().isMapUnloadingEnabled()){
 			TimerManager.scheduleRepeatingTask(new Runnable() {
@@ -62,35 +65,18 @@ public class MapleVirtualChannel implements MapleChannel {
 
 	@Override
 	public List<MapleCharacter> getPlayers() {
-		return world.getPlayerStorage().getAllPlayers().
-				stream().
-				filter(pl -> pl.getClient().getChannelId() == id)
-				.collect(Collectors.toList());
+		List<MapleCharacter> chr = new ArrayList<>();
+		
+		for(MapleMap map : mapFactory.getLoadedMaps()) {
+			chr.addAll(map.getPlayers());
+		}
+		
+		return chr;
 	}
 
 	@Override
 	public int getConnectedPlayerCount() {
-		int count = 0;
-		for(MapleCharacter character : world.getPlayerStorage().getAllPlayers()){
-			if(character.getClient().getChannelId() == id){
-				count++;
-			}
-		}
-		return count;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		
-		if(obj instanceof MapleVirtualChannel){
-			MapleVirtualChannel other = (MapleVirtualChannel) obj;
-			
-			if(other.world == world && other.id == id){
-				return true;
-			}
-		}
-		
-		return super.equals(obj);
+		return mapFactory.getLoadedMaps().stream().mapToInt(map -> map.getPlayers().size()).sum();
 	}
 
 	@Override
@@ -137,11 +123,10 @@ public class MapleVirtualChannel implements MapleChannel {
 		
 		if(client.getCharacter().isCashShopOpen()){
 			try {
-				int port = world.getVirtualPort();
 				
 				InetAddress address = InetAddress.getByName(MapleStory.getServerConfig().getChannelServerIp());
 				
-				client.sendPacket(PacketFactory.getChannelChange(address, port));
+				client.sendPacket(PacketFactory.getChannelChange(address, virtualPort));
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			}
@@ -160,11 +145,10 @@ public class MapleVirtualChannel implements MapleChannel {
 	public void initialConnection(MapleClient client, int sessionId) {
 		
 		try {
-			int port = world.getVirtualPort();
 			
 			InetAddress address = InetAddress.getByName(MapleStory.getServerConfig().getChannelServerIp());
 			
-			client.sendChannelAddress(address, port, sessionId);
+			client.sendChannelAddress(address, virtualPort, sessionId);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
@@ -173,17 +157,12 @@ public class MapleVirtualChannel implements MapleChannel {
 
 	@Override
 	public MapleMap getMap(int id) {
-		
-		if(MapleStory.getServerConfig().isCrossWorldMap(id) && !(world instanceof MapleGlobalWorld)) {
-			return MapleServer.getCrossWorldChannel().getMap(id);
-		}
-		
 		return mapFactory.getMap(id);
 	}
 	
 	@Override
 	public World getWorld() {
-		return world;
+		throw new NotImplementedException();
 	}
 
 }

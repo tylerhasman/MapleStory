@@ -208,14 +208,30 @@ public class PacketFactory {
         writer.writeInt(chr.getId());
         writer.write(chr.getLevel()); //v83
         writer.writeMapleAsciiString(chr.getName());
-        MapleGuild guild = chr.getGuild();
-        if (guild == null) {
-            writer.writeMapleAsciiString("");
-            writer.write(new byte[6]);
-        } else {
-        	writer.writeMapleAsciiString(guild.getName());
-        	writer.writeGuildEmblem(guild.getEmblem());
+        
+        if(MapleStory.getServerConfig().isCrossWorldMap(chr.getMapId())) {
+        	MapleGuild guild = chr.getGuild();
+            
+        	if(guild == null) {
+            	writer.writeMapleAsciiString(chr.getWorld().getName());
+            	writer.write(new byte[6]);    		
+        	}else {
+            	writer.writeMapleAsciiString(guild.getName()+" ["+chr.getWorld().getName()+"]");
+            	writer.writeGuildEmblem(guild.getEmblem());
+        	}
+        	
+        }else {
+        	MapleGuild guild = chr.getGuild();
+            if (guild == null) {
+                writer.writeMapleAsciiString("");
+                writer.write(new byte[6]);
+            } else {
+            	writer.writeMapleAsciiString(guild.getName());
+            	writer.writeGuildEmblem(guild.getEmblem());
+            }
         }
+        
+
         writer.writeInt(0);
         writer.writeShort(0); //v83
         writer.write(0xFC);

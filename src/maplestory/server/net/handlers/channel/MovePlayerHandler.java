@@ -25,6 +25,7 @@ import io.netty.buffer.ByteBuf;
 
 import constants.LoginStatus;
 import maplestory.client.MapleClient;
+import maplestory.life.movement.LifeMovement;
 import maplestory.life.movement.MovementPath;
 import maplestory.server.net.PacketFactory;
 
@@ -40,6 +41,8 @@ public final class MovePlayerHandler extends MovementPacketHandler {
         if (res != null) {
         	res.translateLife(client.getCharacter());
             client.getCharacter().getMap().broadcastPacket(PacketFactory.movePlayer(client.getCharacter().getId(), res), client.getCharacter().getId());
+            
+        
         }
     }
 }

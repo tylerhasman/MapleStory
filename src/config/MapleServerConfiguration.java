@@ -5,7 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.yaml.snakeyaml.Yaml;
@@ -61,6 +63,8 @@ public class MapleServerConfiguration {
 	
 	private boolean virtualChannelsEnabled;
 	
+	private Set<Integer> crossWorldMaps;
+	
 	public MapleServerConfiguration(File file) throws IOException {
 		Configuration config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
 		
@@ -105,6 +109,8 @@ public class MapleServerConfiguration {
 		g_questExpRate = config.getInt("game.rates.quest");
 		g_dropRate = config.getInt("game.rates.drop");
 		
+		crossWorldMaps = new HashSet<>(config.getIntList("cross_world_maps"));
+		
 		worldConfigurations = new HashMap<>();
 		
 		for(int i = 0; i < worlds;i++){
@@ -133,6 +139,10 @@ public class MapleServerConfiguration {
 		
 	}
 
+	public boolean isCrossWorldMap(int id) {
+		return crossWorldMaps.contains(id);
+	}
+	
 	public WorldConfiguration getWorldConfiguration(int id) {
 		if(worldConfigurations.containsKey(id)){
 			return worldConfigurations.get(id);

@@ -5,7 +5,7 @@ database:
     pass: ''
     verbose: false
 server:
-    worlds: 1
+    worlds: 2
     login_port: 8484
     channel_ports: 8485
     channel_load: 50
@@ -16,6 +16,8 @@ server:
     cache_scripts: false
     auto_register: true
     virtual_channels: true
+cross_world_maps: # These maps will be cross world. When a player joins it they will be able to see other players from other worlds
+    - 910000000
 game:
     allow_beginner_parties: false
     map_unloading: #I recommend this is not turned on. If a map relies on its script not being unloaded then this could potentially break many things.

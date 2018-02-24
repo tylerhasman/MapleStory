@@ -38,6 +38,8 @@ public class PlayerLoggedInHandler extends MaplePacketHandler {
 		client.setId(chr.getAccountId());
 		client.setLoggedInStatus(LoginStatus.IN_GAME);
 		
+		client.getCharacter().setWorld(client.getWorldId());
+		
 		client.getCharacter().getDamageNumberGenerator().newSeeds();
 		
 		client.sendPacket(PacketFactory.getCharInfo(chr));

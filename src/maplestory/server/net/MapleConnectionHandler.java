@@ -160,7 +160,7 @@ public class MapleConnectionHandler extends ChannelInboundHandlerAdapter {
 		client = new MapleClient(ctx.channel(), logger, sendCypher, recvCypher);
 		client.setWorldId(world);
 		client.setChannelId(channel);
-		
+
 		logger.info("Client "+ctx.channel().remoteAddress()+" connected");
 		
 		resetHandlers();

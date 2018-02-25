@@ -1,8 +1,16 @@
 package maplestory.server;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.util.Arrays;
+import java.util.List;
 
 import constants.MessageType;
 import maplestory.world.World;
@@ -39,7 +47,30 @@ public class ConsoleListener implements Runnable {
 					for(World world : MapleServer.getWorlds()) {
 						world.getRankManager().updateRankings();
 					}
+				}else if(args[0].equalsIgnoreCase("dump")) {
+					List<ThreadInfo> threads = Arrays.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true, true));
 					
+					File file = new File("dump_"+System.currentTimeMillis()+".log");
+					
+					try {
+						file.createNewFile();
+						
+						try(FileOutputStream fos = new FileOutputStream(file)){
+							try(BufferedWriter out = new BufferedWriter(new OutputStreamWriter(fos))){
+								
+								for(ThreadInfo info : threads){
+									out.write(info.toString());
+									out.newLine();
+								}
+								
+								out.flush();
+							}
+						}
+						
+						
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}else {
 					System.out.println("Unknown cmd");
 				}

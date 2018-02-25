@@ -117,9 +117,13 @@ public class MapleMapItem extends AbstractMapleMapObject {
 				
 				int owned = chr.getItemQuantity(getItemId(), true);
 				
+				
 				for(MapleMapObject obj : map.getObjects()){
 					if(obj instanceof MapleMapItem){
 						MapleMapItem dropped = (MapleMapItem) obj;
+						if(dropped.getOwner() == -1) {
+							continue;
+						}
 						if(dropped.getItemId() == getItemId() && dropped.getOwner() == owner){
 							sameItemId.add(dropped);
 						}

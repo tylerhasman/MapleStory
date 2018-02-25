@@ -19,8 +19,8 @@ MapleInventoryType -> InventoryType
 cm.getItemQuantity -> cm.itemQuantity
 
 @@ buddy list overrides
-cm.getPlayer().setBuddyCapacity -> cm.getCharacter().getBuddyList().setCapacity
-cm.getPlayer().getBuddylist().getCapacity -> cm.getCharacter().getBuddyList().getCapacity
+cm.getPlayer().setBuddyCapacity -> cm.getPlayer().getBuddyList().setCapacity
+cm.getPlayer().getBuddylist().getCapacity -> cm.getPlayer().getBuddyList().getCapacity
 
 @@ Disable storage for now since it doesn't work
 cm.getPlayer().getStorage().sendStorage -> cm.sendOk("Sorry, storage is currently disabled.");//
@@ -42,15 +42,21 @@ spawnMonsterOnGroundBelow -> spawnMonster
 countPlayers -> getPlayers().size
 
 @@ UI stuff
-cm.lockUI -> cm.getCharacter().lockUI
+cm.lockUI -> cm.getPlayer().lockUI
 
 @@ Open NPC
-cm.getClient().openNpc -> cm.getCharacter().openNpc
+cm.getClient().openNpc -> cm.getPlayer().openNpc
 cm.openShopNPC -> cm.openShopNpc
 
 @@ Life
 
 Packages.server.life -> Packages.maplestory.life
+
+@@ Party Quest
+
+gotPartyQuestItem -> getPartyQuestProgress().hasPartyQuestItem
+removePartyQuestItem -> getPartyQuestProgress().removePartyQuestItem
+setPartyQuestItemObtained -> getPartyQuestProgress().addPartyQuestItem
 
 @@ Exp Patch (We handle the exp rate so we just replace this with '1' and it will multiply it by '1', nice
 cm.getPlayer().getExpRate() -> 1

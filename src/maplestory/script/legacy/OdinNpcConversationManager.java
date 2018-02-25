@@ -88,7 +88,7 @@ public class OdinNpcConversationManager extends NpcConversationManager {
 		if(!MapleQuest.exists(id)) {
 			return;
 		}
-		
+
 		startQuest(id, getNpcId());
 	}
 
@@ -920,22 +920,6 @@ public class OdinNpcConversationManager extends NpcConversationManager {
 	
 	public void giveCash(int id, int amount) {
 		giveCashShopCurrency(CashShopCurrency.getById(id), amount);
-	}
-
-	/**
-	 * The purpose of this class is to perfectly map to odinms's maple party
-	 * 
-	 * @author Tyler
-	 *
-	 */
-	public static class OdinMapleParty {
-
-		private MapleParty handle;
-
-		public OdinMapleParty(MapleParty handle) {
-			this.handle = handle;
-		}
-
 	}
 
 }

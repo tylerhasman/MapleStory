@@ -23,6 +23,10 @@ public class MapleMapItemPresent extends MapleMapItem {
 	@Override
 	public void pickup(MapleCharacter chr) {
 		
+		if(chr.getId() != getOwner()) {
+			return;
+		}
+		
 		if(getMesos() > 0){
 			int each = getMesos() / 4;
 			

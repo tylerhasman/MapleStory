@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -74,7 +75,7 @@ public class Database {
 					
 				}
 				
-				int nRowsChanged = ps.executeUpdate();
+				int nRowsChanged = Arrays.stream(ps.executeBatch()).sum();
 				List<Integer> generatedKeys = null;
 				
 				if(returnGeneratedKeys){

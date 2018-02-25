@@ -296,6 +296,9 @@ public class AbstractScriptManager {
 	}
 	
 	public void completeQuest(int questId) {
+		if(!MapleQuest.exists(questId)) {
+			return;
+		}
 		getCharacter().getQuest(questId).complete();
 	}
 	

@@ -29,6 +29,7 @@ import maplestory.map.MapleMapObject;
 import maplestory.map.MapleMapObjectType;
 import maplestory.party.MapleParty.PartyEntry;
 import maplestory.player.MapleCharacter;
+import maplestory.quest.MapleQuest;
 import maplestory.quest.MapleQuestInstance;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
 import maplestory.server.MapleServer;
@@ -282,7 +283,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 			@Override
 			public void run() {
 				if(deathListeners != null){
-					deathListeners.forEach(dl -> dl.onMonsterDeath(getStats().getAnimationTimes().get("die1")));
+					deathListeners.forEach(dl -> {
+						dl.onMonsterDeath(getStats().getAnimationTimes().getOrDefault("die1", 100));
+					});
 				}
 				
 				dropItems(source);
@@ -290,7 +293,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 				setController(null);
 			}
 			
-		}, stats.getAnimationTimes().getOrDefault("die1", 0));
+		}, stats.getAnimationTimes().getOrDefault("die1", 100));
 		
 		synchronized (tasks) {
 			tasks.forEach(task -> task.cancel(false));

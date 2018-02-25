@@ -1,0 +1,1 @@
+load("scripts/npc/2nd_job_npc_marbles.js");

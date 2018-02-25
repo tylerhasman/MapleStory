@@ -36,7 +36,7 @@ function action(mode, type, selection) {
     if (status == 0) {
         cm.sendYesNo("Would you like to experience what it's like to be a Bowman?");
     } else if (status == 1){
-	cm.lockUI();
+		cm.lockUI();
         cm.warp(1020300, 0);
         cm.dispose();
   }

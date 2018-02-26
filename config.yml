@@ -34,6 +34,8 @@ game:
         meso: 10
         quest: 10
         drop: 5
+events:
+   - ellinia_orbis_boat
 world:
     0:
         name: Scania

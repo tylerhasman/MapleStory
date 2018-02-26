@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,6 +66,8 @@ public class MapleServerConfiguration {
 	
 	private Set<Integer> crossWorldMaps;
 	
+	private List<String> events;
+	
 	public MapleServerConfiguration(File file) throws IOException {
 		Configuration config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
 		
@@ -110,6 +113,8 @@ public class MapleServerConfiguration {
 		g_dropRate = config.getInt("game.rates.drop");
 		
 		crossWorldMaps = new HashSet<>(config.getIntList("cross_world_maps"));
+		
+		events = config.getStringList("events");
 		
 		worldConfigurations = new HashMap<>();
 		

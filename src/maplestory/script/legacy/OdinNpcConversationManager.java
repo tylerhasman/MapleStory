@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import constants.LoginStatus;
 import constants.MessageType;
 import maplestory.cashshop.CashShopWallet.CashShopCurrency;
+import maplestory.channel.MapleEvent;
 import maplestory.client.MapleClient;
 import maplestory.guild.MapleGuild;
 import maplestory.guild.MapleGuildRankLevel;
@@ -356,8 +357,8 @@ public class OdinNpcConversationManager extends NpcConversationManager {
 		getMap(mapid).resetReactors();
 	}
 
-	public Object getEventManager(String event) {
-		throw new NotImplementedException();
+	public MapleEvent getEventManager(String event) {
+		return getClient().getChannel().getEvent(event);
 	}
 
 	public Object getEventInstanceManager() {

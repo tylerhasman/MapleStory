@@ -10,7 +10,10 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -45,6 +48,8 @@ public class MapleSocketChannel implements MapleChannel {
 	@Getter
 	private Logger logger;
 	
+	private Map<String, MapleEvent> events;
+	
 	//private EventLoopGroup boss, worker;
 	
 	public MapleSocketChannel(int id, int port, World world, EventLoopGroup eventLoopGroupBoss, EventLoopGroup eventLoopGroupWorker) {
@@ -52,6 +57,7 @@ public class MapleSocketChannel implements MapleChannel {
 		this.id = id;
 		this.port = port;
 		this.world = world;
+		events = new HashMap<>();
 		logger = LoggerFactory.getLogger("["+world.getName()+" Channel "+(id + 1)+"]");
 
 		ServerBootstrap b = new ServerBootstrap();
@@ -185,5 +191,20 @@ public class MapleSocketChannel implements MapleChannel {
 	public MapleMap getMap(int id) {
 		return getMapFactory().getMap(id);
 	}
+
+
+	@Override
+	public Collection<MapleEvent> getEvents() {
+		return events.values();
+	}
+
+	@Override
+	public MapleEvent getEvent(String id) {
+		return events.get(id);
+	}
 	
+	@Override
+	public void registerEvent(String id, MapleEvent event) {
+		events.put(id, event);
+	}
 }

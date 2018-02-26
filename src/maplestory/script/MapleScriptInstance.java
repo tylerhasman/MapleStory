@@ -61,8 +61,8 @@ public class MapleScriptInstance {
 		function("destroy");
 	}
 	
-	public void function(String name, Object... args) throws NoSuchMethodException, ScriptException{
-		instance.invokeFunction(name, args);
+	public Object function(String name, Object... args) throws NoSuchMethodException, ScriptException{
+		return instance.invokeFunction(name, args);
 	}
 	
 	public void setVariable(String name, Object obj){

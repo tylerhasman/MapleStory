@@ -2,7 +2,10 @@ package maplestory.channel;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -31,9 +34,12 @@ public class MapleVirtualChannel implements MapleChannel {
 	
 	private World world;
 	
+	private Map<String, MapleEvent> events;
+	
 	public MapleVirtualChannel(int id, World world) {
 		this.id = id;
 		this.world = world;
+		events = new HashMap<>();
 		mapFactory = new MapleMapFactory(world.getId(), id);
 		
 		logger = LoggerFactory.getLogger("["+world.getName()+" Channel "+(id + 1)+"]");
@@ -184,6 +190,21 @@ public class MapleVirtualChannel implements MapleChannel {
 	@Override
 	public World getWorld() {
 		return world;
+	}
+
+	@Override
+	public Collection<MapleEvent> getEvents() {
+		return events.values();
+	}
+
+	@Override
+	public MapleEvent getEvent(String id) {
+		return events.get(id);
+	}
+	
+	@Override
+	public void registerEvent(String id, MapleEvent event) {
+		events.put(id, event);
 	}
 
 }

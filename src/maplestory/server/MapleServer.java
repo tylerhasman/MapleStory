@@ -61,9 +61,15 @@ public class MapleServer implements Runnable{
 			
 			int channels = MapleStory.getServerConfig().getWorldConfigurations().get(i).getChannels();
 			
-			worlds.add(new MapleWorld(i, channels, eventLoopGroupBoss, eventLoopGroupWorker));
+			MapleWorld world = new MapleWorld(i, channels, eventLoopGroupBoss, eventLoopGroupWorker);
+			
+			worlds.add(world);
+		
+			world.getLogger().info("Loading events");
+			world.reloadEvents();
 			
 		}
+		
 		if(MapleStory.getServerConfig().isAutoSaveEnabled()){
 			TimerManager.scheduleRepeatingTask(new Runnable() {
 				

@@ -3375,6 +3375,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	public void updateBoat(boolean docked) {
+		client.sendPacket(PacketFactory.boatEffect(docked));
+	}
 
 	/**
 	 * Ripped directly from Solaxia for the sake of the odin npc wrapper

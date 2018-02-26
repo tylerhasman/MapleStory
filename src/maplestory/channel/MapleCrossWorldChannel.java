@@ -3,7 +3,10 @@ package maplestory.channel;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -24,7 +27,6 @@ import tools.TimerManager;
 
 public class MapleCrossWorldChannel implements MapleChannel {
 
-
 	private int id;
 	
 	protected MapleMapFactory mapFactory;
@@ -32,12 +34,17 @@ public class MapleCrossWorldChannel implements MapleChannel {
 	private Logger logger;
 	
 	private int virtualPort;
+
+	private Map<String, MapleEvent> events;
+	
 	
 	public MapleCrossWorldChannel(int worldId, int id, int virtualPort) {
 		this.id = id;
 		mapFactory = new MapleMapFactory(worldId, id);
 		
 		this.virtualPort = virtualPort;
+		
+		events = new HashMap<>();
 		
 		logger = LoggerFactory.getLogger("[Cross-Channel "+(id + 1)+"]");
 		
@@ -163,6 +170,22 @@ public class MapleCrossWorldChannel implements MapleChannel {
 	@Override
 	public World getWorld() {
 		throw new NotImplementedException();
+	}
+	
+
+	@Override
+	public Collection<MapleEvent> getEvents() {
+		return events.values();
+	}
+
+	@Override
+	public MapleEvent getEvent(String id) {
+		return events.get(id);
+	}
+	
+	@Override
+	public void registerEvent(String id, MapleEvent event) {
+		events.put(id, event);
 	}
 
 }

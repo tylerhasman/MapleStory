@@ -1,5 +1,6 @@
 package maplestory.channel;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -14,8 +15,6 @@ import maplestory.world.World;
 public interface MapleChannel {
 
 	public int getId();
-	
-	//public MapleMapFactory getMapFactory();
 	
 	public MapleMap getMap(int id);
 	
@@ -40,5 +39,11 @@ public interface MapleChannel {
 	public void initialConnection(MapleClient client, int sessionId);
 	
 	public World getWorld();
+	
+	public Collection<MapleEvent> getEvents();
+	
+	public MapleEvent getEvent(String id);
+	
+	public void registerEvent(String id, MapleEvent event);
 	
 }

@@ -4185,6 +4185,14 @@ public class PacketFactory {
 		
 		return out.getPacket();
 	}
+
+	public static byte[] boatEffect(boolean docked) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.BOAT_STATE.getValue());
+		out.writeShort(docked ? 1 : 2);
+		
+		return out.getPacket();
+	}
 	
 /*	public static byte[] hiredMerchantOpen(MapleCharacter chr, MapleHiredMerchant merchant, boolean firstTime){
 		MaplePacketWriter out = new MaplePacketWriter();

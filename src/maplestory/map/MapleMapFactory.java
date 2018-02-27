@@ -205,7 +205,7 @@ public class MapleMapFactory {
     	}
     }
     
-    public List<Integer> findMap(String query){
+    public static List<Integer> findMap(String query){
     	
     	query = query.toLowerCase();
     	
@@ -229,7 +229,7 @@ public class MapleMapFactory {
     	
     }
     
-    public String getMapName(int id){
+    public static String getMapName(int id){
     	Node data = getNameData().getChild(getMapStringName(id));
     	if(data == null){
     		return String.valueOf(id);

@@ -1,6 +1,8 @@
 var status = -1;
 var maps;
 
+var MapFactory = Java.type("maplestory.map.MapleMapFactory");
+
 function start(){
 	action(1, 0, 0);
 }
@@ -17,8 +19,7 @@ function action(mode, type, selection){
 	if(status == 0){
 		cm.sendGetText("Enter a map name: ");
 	}else if(status == 1){
-		factory = cm.getClient().getChannel().getMapFactory();
-		maps = factory.findMap(cm.getInputText());
+		maps = MapFactory.findMap(cm.getInputText());
 		if(maps.size() == 0){
 			cm.sendOk("I found zero maps with that search term!");
 			status = -1;
@@ -32,7 +33,7 @@ function action(mode, type, selection){
 			}
 			id = maps.get(i);
 			
-			str += "#L"+i+"#"+factory.getMapName(id)+" ("+id+") #l\r\n";
+			str += "#L"+i+"#"+MapFactory.getMapName(id)+" ("+id+") #l\r\n";
 		}
 		
 		cm.sendSimple(str);

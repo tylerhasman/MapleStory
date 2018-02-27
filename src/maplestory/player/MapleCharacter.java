@@ -1964,6 +1964,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	public void setExp(int exp){
 		this.exp = exp;
 		
+		if(this.exp < 0) {
+			this.exp = 0;
+		}
+		
 		updateStat(MapleStat.EXP, exp);
 	}
 	

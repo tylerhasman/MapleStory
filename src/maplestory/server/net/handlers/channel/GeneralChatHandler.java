@@ -61,6 +61,8 @@ import maplestory.server.net.SendOpcode;
 import maplestory.skill.Skill;
 import maplestory.skill.SkillFactory;
 import maplestory.util.StringUtil;
+import maplestory.world.MapleWorld;
+import maplestory.world.World;
 
 public class GeneralChatHandler extends MaplePacketHandler {
 
@@ -72,10 +74,6 @@ public class GeneralChatHandler extends MaplePacketHandler {
 		
 		try{
 			if(text.startsWith("!")){
-				/*if(!client.isGM()){
-					client.getCharacter().sendMessage(MessageType.PINK_TEXT, "Press the trade button for your commands");
-					return;
-				}*/
 				String[] args = text.split(" ");
 				
 				if(args[0].equalsIgnoreCase("!ping")){
@@ -91,6 +89,27 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					}else{
 						client.getCharacter().sendMessage(MessageType.POPUP, "No player named "+args[1]);
 					}
+				}else if(args[0].equalsIgnoreCase("!reloadevents")) {
+					
+					for(World world : MapleServer.getWorlds()) {
+						if(world instanceof MapleWorld) {
+							((MapleWorld) world).reloadEvents();
+						}
+					}
+				}else if(args[0].equalsIgnoreCase("!boat")) {
+					client.sendPacket(PacketFactory.boatEffect(true));
+				}else if(args[0].equalsIgnoreCase("!spawnnpc")) {
+					int id = Integer.parseInt(args[1]);
+					
+					MapleMap map = client.getCharacter().getMap();
+					
+					MapleNPC npc = MapleLifeFactory.getNPC(id);
+					
+					npc.setPosition(client.getCharacter().getPosition());
+					npc.setFh(client.getCharacter().getFh());
+					
+					map.addMapObject(npc, true);
+					
 				}else if(args[0].equalsIgnoreCase("!reloadskills")){
 					SkillFactory.loadAllSkills();
 				}else if(args[0].equalsIgnoreCase("!clearmerchants")){
@@ -99,18 +118,6 @@ public class GeneralChatHandler extends MaplePacketHandler {
 							client.getCharacter().getMap().removeObject(merchant.getObjectId());
 						}
 					}
-				}else if(args[0].equalsIgnoreCase("!purgemaps")){
-					
-					for(MapleMap map : client.getChannel().getMapFactory().getLoadedMaps()){
-						if(map.getPlayers().size() == 0){
-							client.getChannel().getMapFactory().unloadMap(map.getMapId());
-						}
-					}
-				}else if(args[0].equalsIgnoreCase("!unloadmap")){
-					
-					int id = Integer.parseInt(args[1]);
-					
-					client.getChannel().getMapFactory().unloadMap(id);
 				}else if(args[0].equalsIgnoreCase("!maxhpmp")){
 					client.getCharacter().setMaxHp(30000);
 					client.getCharacter().setMaxMp(30000);
@@ -311,10 +318,6 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					}
 				}else if(args[0].equalsIgnoreCase("!currentmap")){
 					client.getCharacter().sendMessage(MessageType.LIGHT_BLUE_TEXT, client.getCharacter().getMapId()+" is your current map id");
-				}else if(args[0].equalsIgnoreCase("!unloadmap")){
-					int id = Integer.parseInt(args[1]);
-					
-					client.getChannel().getMapFactory().unloadMap(id);
 				}else if(args[0].equalsIgnoreCase("!dispose")){
 					client.getCharacter().disposeOpenNpc();
 				}else if(args[0].equalsIgnoreCase("!fixinventory")){
@@ -336,6 +339,7 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					client.getCharacter().sendMessage(MessageType.NOTICE, "Done");
 				}else if(args[0].equalsIgnoreCase("!clearquests")){
 					MapleQuest.clearCache();
+
 				}else if(args[0].equalsIgnoreCase("!createguild")){
 					MaplePacketWriter writer = new MaplePacketWriter();
 					writer.writeShort(SendOpcode.GUILD_OPERATION.getValue());
@@ -472,9 +476,15 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					client.getCharacter().setLevel(Integer.parseInt(args[1]));
 				}else if(args[0].equalsIgnoreCase("!map")){
 					int id = Integer.parseInt(args[1]);
+					int portal = -1;
 					
-					if(client.getChannel().getMapFactory().getMap(id) != null){
-						client.getCharacter().changeMap(id);
+					if(args.length > 2) {
+						portal = Integer.parseInt(args[2]);
+					}
+					
+					if(client.getChannel().getMap(id) != null){
+						MapleMap map = client.getChannel().getMap(id);
+						client.getCharacter().changeMap(map, portal == -1 ? map.getFallbackPortal() : map.getPortal(portal));
 					}else{
 						client.getCharacter().sendMessage(MessageType.LIGHT_BLUE_TEXT, "No map with id "+id);
 					}
@@ -483,11 +493,18 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					int id = Integer.parseInt(args[1]);
 					int amount = Integer.parseInt(args[2]);
 					
-					for(int i = 0; i < amount;i++){
-						MapleMonster monster = MapleLifeFactory.getMonster(id);
-						monster.setPosition(client.getCharacter().getPosition());
-						client.getCharacter().getMap().spawnMonster(monster);
+					if(MapleLifeFactory.getMonster(id) == null) {
+						client.getCharacter().sendMessage(MessageType.PINK_TEXT, "No monster with id "+id);
+					}else {
+						client.getCharacter().sendMessage(MessageType.PINK_TEXT, "Spawned "+amount+" "+MapleLifeFactory.getMonster(id).getStats().getName());
+						for(int i = 0; i < amount;i++){
+							MapleMonster monster = MapleLifeFactory.getMonster(id);
+							monster.setPosition(client.getCharacter().getPosition());
+							client.getCharacter().getMap().spawnMonster(monster);
+						}	
 					}
+					
+					
 /*				}else if(args[0].equalsIgnoreCase("!shutdown")){
 					MapleServer.getInstance().shutdown();*/
 				}else if(args[0].equalsIgnoreCase("!damage")){
@@ -552,6 +569,31 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					client.getCharacter().sendMessage(MessageType.NOTICE, "Done!");
 				}else if(args[0].equalsIgnoreCase("!note")){
 					String note = StringUtil.joinStringFrom(args, 1);
+				}else if(args[0].equalsIgnoreCase("!legacytest")) {
+					
+					File legacy = new File("scripts/npc/legacy");
+					
+					if(args.length == 2) {
+						client.getCharacter().setScriptVariable("legacy", Integer.valueOf(args[1]));
+					}
+					
+					int next = (int) client.getCharacter().getScriptVariable("legacy", 0);
+					client.getCharacter().setScriptVariable("legacy", next + 1);
+					
+					File[] files = legacy.listFiles(f -> f.getName().endsWith(".js"));
+					
+					File nextFile = files[next];
+					
+					int id = Integer.parseInt(nextFile.getName().substring(0, nextFile.getName().indexOf('.')));
+					client.getCharacter().sendMessage(MessageType.NOTICE, next+" / "+files.length+" Testing "+nextFile.getPath()+" "+MapleLifeFactory.getNpcName(id));
+					
+					
+					
+					if(!MapleLifeFactory.doesNpcExist(id)) {
+						client.getCharacter().sendMessage(MessageType.PINK_TEXT, id+" doesn't exist!");
+					}else {
+						client.getCharacter().openNpc(new MapleScript("scripts/npc/"+id+".js"), id);
+					}
 					
 				}else{
 					client.getCharacter().sendMessage(MessageType.PINK_TEXT, "Unknown command!");

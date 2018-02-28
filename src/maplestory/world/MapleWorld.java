@@ -8,6 +8,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.temporal.ChronoField;
@@ -32,6 +33,7 @@ import database.MapleDatabase;
 import database.QueryResult;
 import lombok.Getter;
 import maplestory.channel.MapleChannel;
+import maplestory.channel.MapleEvent;
 import maplestory.channel.MapleSocketChannel;
 import maplestory.channel.MapleVirtualChannel;
 import maplestory.client.MapleClient;
@@ -41,6 +43,7 @@ import maplestory.guild.MapleGuild;
 import maplestory.life.MapleHiredMerchant;
 import maplestory.party.MapleParty;
 import maplestory.player.MapleCharacter;
+import maplestory.script.MapleScript;
 import maplestory.server.MapleServer;
 import maplestory.server.MapleStory;
 import maplestory.server.net.MapleConnectionHandler;
@@ -89,9 +92,9 @@ public class MapleWorld implements World {
 		channels = new ArrayList<>(numChannels);
 		for(int i = 0; i < numChannels;i++){
 			if(!MapleStory.getServerConfig().isVirtualChannelsEnabled()){
-				channels.add(new MapleSocketChannel(i, MapleStory.getNextChannelPort(), this, eventLoopGroupBoss, eventLoopGroupWorker));
+				addChannel(new MapleSocketChannel(i, MapleStory.getNextChannelPort(), this, eventLoopGroupBoss, eventLoopGroupWorker));
 			}else{
-				channels.add(new MapleVirtualChannel(i, this));
+				addChannel(new MapleVirtualChannel(i, this));
 			}
 		}
 		eventFlag = EventFlag.NONE;
@@ -124,6 +127,29 @@ public class MapleWorld implements World {
 		rankManager.updateRankings();
 		
 		TimerManager.schedule(() -> rankManager.updateRankings(), 1, TimeUnit.HOURS);//Update every hour
+		
+	}
+	
+	private void addChannel(MapleChannel channel) {
+		channels.add(channel);
+	}
+	
+	public void reloadEvents() {
+		for(MapleChannel channel : channels) {
+			
+			for(MapleEvent event : channel.getEvents()) {
+				event.cancelAllEvents();
+			}
+			
+			channel.getEvents().clear();
+			
+			for(String eventPath : MapleStory.getServerConfig().getEvents()) {
+				MapleEvent event = new MapleEvent(channel, "scripts/event/"+eventPath+".js");
+				
+				channel.registerEvent(event.getEventId(), event);
+			}
+			
+		}
 	}
 	
 	public Channel getVirtualChannelSocket() {

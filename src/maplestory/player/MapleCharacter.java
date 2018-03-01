@@ -88,6 +88,7 @@ import maplestory.server.net.handlers.channel.GroupChatHandler.GroupChatType;
 import maplestory.shop.MapleShop;
 import maplestory.skill.MapleStatEffect;
 import maplestory.skill.Skill;
+import maplestory.skill.SkillChanges;
 import maplestory.skill.SkillData;
 import maplestory.skill.SkillFactory;
 import maplestory.util.Pair;
@@ -1618,14 +1619,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	
 	public void loadSkills() throws SQLException{
 		
-		List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `skillid`,`level` FROM `skills` WHERE `owner`=?", getId());
+		List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `skillid`,`level`,`mastery` FROM `skills` WHERE `owner`=?", getId());
 		
 		for(QueryResult result : results){
 			
 			int skillId = result.get("skillid");
 			int level = result.get("level");
+			int mastery = result.get("mastery");
 			
-			skills.put(skillId, new SkillData(level, 0));//TODO: Implement mastery
+			skills.put(skillId, new SkillData(level, mastery));//TODO: Implement mastery
 			
 		}
 		
@@ -2232,6 +2234,68 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		return r;
 	}
 	
+	public void changeMultipleSkillLevels(SkillChanges changes) {
+		
+		List<QueryResult> isNewResults = null;
+		try {
+			isNewResults = MapleDatabase.getInstance().query("SELECT `skillid` FROM `skills` WHERE `owner`=?", getId());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		List<Integer> already = new ArrayList<>();
+		
+		for(QueryResult result : isNewResults) {
+			already.add(result.get("skillid"));
+		}
+		
+		BatchedScript updateScript = new BatchedScript("UPDATE `skills` SET `level`=?,`mastery`=? WHERE `skillid`=? AND `owner`=?");
+		BatchedScript insertScript = new BatchedScript("INSERT INTO `skills` (`owner`,`level`,`skillid`,`mastery`) VALUES (?, ?, ?, ?)");
+		
+		while(changes.next()) {
+			
+			Skill skill = changes.getSkill();
+			int level = changes.getLevel();
+			int masterLevel = changes.getMasteryLevel();
+		
+			if(skill == null){
+				throw new NullPointerException("skill cannot be null");
+			}
+			
+			if(level < 0){
+				throw new IllegalArgumentException("level cannot be less than 0");
+			}
+			
+			if(level > skill.getMaxLevel()){
+				throw new IllegalArgumentException("level cannot be greater than "+skill.getMaxLevel()+" (SKILL "+SkillFactory.getSkillName(skill.getId()));
+			}
+			
+			SkillData data = new SkillData(level, masterLevel);
+			
+			this.skills.put(skill.getId(), data);
+			
+			client.sendPacket(PacketFactory.getUpdateSkillPacket(skill.getId(), level, masterLevel, 0));
+			
+			if(already.contains(skill.getId())){
+				updateScript.addBatch(level, masterLevel, skill.getId(), getId());
+			}else{
+				insertScript.addBatch(getId(), level, skill.getId(), masterLevel);
+			}
+			
+		}
+		
+		try {
+			MapleDatabase.getInstance().execute(updateScript, false);
+			MapleDatabase.getInstance().execute(insertScript, false);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+
+	}
+	
 	public void changeSkillLevel(Skill skill, int level, int masterLevel) {
 
 		if(skill == null){
@@ -2265,13 +2329,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		
 		if(isNew){
 			try {
-				MapleDatabase.getInstance().execute("INSERT INTO `skills` (`owner`, `skillid`, `level`) VALUES (?, ?, ?)", getId(), skill.getId(), level);
+				MapleDatabase.getInstance().execute("INSERT INTO `skills` (`owner`, `skillid`, `level`,`mastery`) VALUES (?, ?, ?, ?)", getId(), skill.getId(), level, masterLevel);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}else{
 			try {
-				MapleDatabase.getInstance().execute("UPDATE `skills` SET `level`=? WHERE `owner`=? AND `skillid`=?", level, getId(), skill.getId());
+				MapleDatabase.getInstance().execute("UPDATE `skills` SET `level`=?, `mastery`=? WHERE `owner`=? AND `skillid`=?", level, masterLevel, getId(), skill.getId());
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

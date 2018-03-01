@@ -59,6 +59,7 @@ import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
 import maplestory.server.net.SendOpcode;
 import maplestory.skill.Skill;
+import maplestory.skill.SkillChanges;
 import maplestory.skill.SkillFactory;
 import maplestory.util.StringUtil;
 import maplestory.world.MapleWorld;
@@ -437,6 +438,7 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					}
 					
 				}else if(args[0].equalsIgnoreCase("!maxall")){
+					SkillChanges changes = new SkillChanges();
 					List<Integer> maxed = new ArrayList<>();
 					for(Skill skill : SkillFactory.getAllSkills()){
 						if(client.getCharacter().getSkillLevel(skill) == skill.getMaxLevel()){
@@ -446,9 +448,10 @@ public class GeneralChatHandler extends MaplePacketHandler {
 							continue;
 						}
 						
-						client.getCharacter().changeSkillLevel(skill, skill.getMaxLevel(), skill.getMaxLevel());
+						changes.addChange(skill, skill.getMaxLevel(), skill.getMaxLevel());
 						maxed.add(skill.getId());
 					}
+					client.getCharacter().changeMultipleSkillLevels(changes);
 					StringBuilder builder = new StringBuilder();
 					builder.append("Maxed "+maxed.size()+" skills...\r\n\r\n");
 					for(int skillId : maxed){

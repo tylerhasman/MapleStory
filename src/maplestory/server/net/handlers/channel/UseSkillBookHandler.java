@@ -29,6 +29,8 @@ public class UseSkillBookHandler extends MaplePacketHandler {
 		
 		Item toUse = chr.getInventory(InventoryType.USE).getItem(slot);
         
+		System.out.println(toUse.getClass().getSimpleName());
+		
 		if(toUse instanceof SkillBook){
 			if(toUse.getItemId() != itemId){
 				return;
@@ -65,6 +67,8 @@ public class UseSkillBookHandler extends MaplePacketHandler {
 					success = false;
 				}
 				chr.getInventory(InventoryType.USE).removeItemFromSlot(slot, 1);
+			}else{
+				client.getCharacter().sendMessage(MessageType.POPUP, "You do not meet the requirements for that mastery book.");
 			}
 			
 			client.sendPacket(PacketFactory.skillBookSuccess(chr, skill, maxlevel, newSkill, useable, success));

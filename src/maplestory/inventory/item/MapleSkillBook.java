@@ -58,4 +58,18 @@ public class MapleSkillBook extends MapleItem implements SkillBook {
 		return successRate;
 	}
 
+	@Override
+	public Item copy() {
+		return new MapleSkillBook(getItemId(), getAmount(), masterLevel, getRequiredSkillLevel(), skills, getSuccessRate());
+	}
+	
+	@Override
+	public Item copyOf(int amount) {
+		
+		Item item = copy();
+		item.setAmount(amount);
+		
+		return item;
+	}
+	
 }

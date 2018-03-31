@@ -11,6 +11,7 @@ import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemFactory;
 import maplestory.player.MapleCharacter;
 import maplestory.player.MapleJob;
+import maplestory.server.MapleStory;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
 
@@ -49,15 +50,15 @@ public class CreateCharHandler extends MaplePacketHandler {
 		character.setName(name);
 		
 		if(job == 0){
-			character.setMapId(130030000);
+			character.setMapId(MapleStory.getServerConfig().getStartingMapCygnus());
 			character.setJob(MapleJob.NOBLESSE);
 			guideBook = 4161047;
 		}else if(job == 1){
-			character.setMapId(0);
+			character.setMapId(MapleStory.getServerConfig().getStartingMapBeginner());
 			character.setJob(MapleJob.BEGINNER);
 			guideBook = 4161001;
 		}else if(job == 2){
-			character.setMapId(914000000);
+			character.setMapId(MapleStory.getServerConfig().getStartingMapAran());
 			character.setJob(MapleJob.LEGEND);
 			guideBook = 4161048;
 		}else{

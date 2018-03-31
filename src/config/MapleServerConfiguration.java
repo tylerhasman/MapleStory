@@ -68,6 +68,9 @@ public class MapleServerConfiguration {
 	
 	private List<String> events;
 	
+	@Getter
+	private int startingMapAran, startingMapBeginner, startingMapCygnus;
+	
 	public MapleServerConfiguration(File file) throws IOException {
 		Configuration config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
 		
@@ -99,6 +102,10 @@ public class MapleServerConfiguration {
 		mapUnloadingEnabled = config.getBoolean("game.map_unloading.enabled");
 		mapUnloadTime = config.getLong("game.map_unloading.unload_time");
 		mapNeighborThreshold = config.getInt("game.map_unloading.neighbor_threshold");
+		
+		startingMapAran = config.getInt("game.starting_maps.aran");
+		startingMapBeginner = config.getInt("game.starting_maps.beginner");
+		startingMapCygnus = config.getInt("game.starting_maps.cygnus");
 		
 		defaultCashItemExpireTime = config.getLong("game.default_cash_item_expire");
 		

@@ -27,9 +27,9 @@ game:
     default_cash_item_expire: 1296000000
     cache_wallets: true
     starting_maps:
-       aran: 390009999
-       beginner: 390009999
-       cygnus: 390009999
+       aran: 914000000
+       beginner: 0
+       cygnus: 130030000
     auto_save:
         enabled: true
         interval: 300000

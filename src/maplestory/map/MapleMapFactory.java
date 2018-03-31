@@ -2,6 +2,7 @@
 package maplestory.map;
 
 import java.awt.Point;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,8 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
+import database.MapleDatabase;
+import database.QueryResult;
 import maplestory.life.MapleLifeFactory;
 import maplestory.life.MapleMonster;
+import maplestory.life.MapleNPC;
 import maplestory.map.MapleReactor.ReactorData;
 import maplestory.server.MapleServer;
 import maplestory.server.MapleStory;
@@ -127,6 +131,36 @@ public class MapleMapFactory {
 				}
 			}
 		}
+		
+		try {
+			List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `npc_id`,`cy`,`f`,`foothold`,`rx0`,`rx1`,`x`,`y` FROM `custom_npcs` WHERE `map_id`=?", mapid);
+		
+			for(QueryResult result : results) {
+				
+				int npcId = result.get("npc_id");
+				int cy = result.get("cy");
+				int f = result.get("f");
+				int foothold = result.get("foothold");
+				int rx0 = result.get("rx0");
+				int rx1 = result.get("rx1");
+				int x = result.get("x");
+				int y = result.get("y");
+				
+				MapleNPC life = MapleLifeFactory.getNPC(npcId);
+				life.setCy(cy);
+				life.setF(f);
+				life.setFh(foothold);
+				life.setRx0(rx0);
+				life.setRx1(rx1);
+				life.setPosition(new Point(x, y));
+				
+				map.addMapObject(life, false);
+				
+			}
+		
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	
 		if (mapData.getChild("reactor") != null) {
 			for (Node reactor : mapData.getChild("reactor")) {
@@ -142,7 +176,7 @@ public class MapleMapFactory {
 		 
 		try {
 			map.setMapName(getMapName(mapid));
-			map.setStreetName(nameData.readString(getMapStringName(mapid)+"/streetName", ""));
+			map.setStreetName(nameData.readString(getMapStringName(mapid, false)+"/streetName", ""));
 		} catch (Exception e) {
 			map.setMapName("");
 			map.setStreetName("");
@@ -230,7 +264,11 @@ public class MapleMapFactory {
     }
     
     public static String getMapName(int id){
-    	Node data = getNameData().getChild(getMapStringName(id));
+    	int link = resolveMapLink(id);
+    	if(link >= 0) {
+    		id = link;
+    	}
+    	Node data = getNameData().getChild(getMapStringName(id, false));
     	if(data == null){
     		return String.valueOf(id);
     	}
@@ -270,7 +308,7 @@ public class MapleMapFactory {
         return myReactor;
     }
 
-    private String getMapId(int mapid) {
+    private static String getMapId(int mapid) {
         String mapName = StringUtil.getLeftPaddedStr(Integer.toString(mapid), '0', 9);
         StringBuilder builder = new StringBuilder("Map/Map");
         int area = mapid / 100000000;
@@ -282,7 +320,20 @@ public class MapleMapFactory {
         return mapName;
     }
 
-    private static String getMapStringName(int mapid) {
+    private static int resolveMapLink(int mapid) {
+    	Node source = MapleStory.getDataFile("Map.mdf").getRootNode();
+    	
+    	MapleMap map = null;
+    	String mapName = getMapId(mapid);
+		Node mapData = source.getChild(mapName);
+		if (mapData == null)
+			return -1;
+		String link = mapData.readString("info/link", "");
+		
+		return Integer.valueOf(link);
+    }
+    
+    private static String getMapStringName(int mapid, boolean forceEtc) {
         StringBuilder builder = new StringBuilder();
         if (mapid < 100000000) {
             builder.append("maple");
@@ -303,6 +354,7 @@ public class MapleMapFactory {
         } else {
             builder.append("etc");
         }
+        
         builder.append("/").append(mapid);
         return builder.toString();
     }

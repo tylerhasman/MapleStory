@@ -18,6 +18,8 @@ public interface MapleChannel {
 	
 	public MapleMap getMap(int id);
 	
+	public boolean isMapLoaded(int id);
+	
 	public Logger getLogger();
 	
 	public List<MapleCharacter> getPlayers();

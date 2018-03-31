@@ -188,6 +188,15 @@ public class MapleVirtualChannel implements MapleChannel {
 	}
 	
 	@Override
+	public boolean isMapLoaded(int id) {
+		if(MapleStory.getServerConfig().isCrossWorldMap(id) && !(world instanceof MapleGlobalWorld)) {
+			return MapleServer.getCrossWorldChannel().isMapLoaded(id);
+		}
+		
+		return mapFactory.isMapLoaded(id);
+	}
+	
+	@Override
 	public World getWorld() {
 		return world;
 	}

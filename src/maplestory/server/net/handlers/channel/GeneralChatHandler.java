@@ -1,5 +1,6 @@
 package maplestory.server.net.handlers.channel;
 
+import java.awt.Point;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -22,7 +23,9 @@ import constants.LoginStatus;
 import constants.MessageType;
 import constants.Song;
 import constants.SpecialEffect;
+import database.MapleDatabase;
 import io.netty.buffer.ByteBuf;
+import maplestory.channel.MapleChannel;
 import maplestory.client.MapleClient;
 import maplestory.guild.MapleGuild;
 import maplestory.inventory.Inventory;
@@ -62,6 +65,7 @@ import maplestory.skill.Skill;
 import maplestory.skill.SkillChanges;
 import maplestory.skill.SkillFactory;
 import maplestory.util.StringUtil;
+import maplestory.world.MapleGlobalWorld;
 import maplestory.world.MapleWorld;
 import maplestory.world.World;
 
@@ -597,6 +601,58 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					}else {
 						client.getCharacter().openNpc(new MapleScript("scripts/npc/"+id+".js"), id);
 					}
+				}else if(args[0].equalsIgnoreCase("!customnpc")) {
+					
+					MapleCharacter chr = client.getCharacter();
+					
+					int npcId = Integer.parseInt(args[1]);
+					
+					if(MapleLifeFactory.getNpcName(npcId).isEmpty()) {
+						chr.sendMessage(MessageType.PINK_TEXT, "No npc exists with id "+npcId);
+						return;
+					}
+					
+					int mapId = chr.getMapId();
+					int cy = chr.getPosition().y;
+					int f = chr.isFacingLeft() ? 1 : 0;
+					int fh = chr.getFh();
+					int rx0 = chr.getPosition().x - 50;
+					int rx1 = chr.getPosition().x + 50;
+					int x = chr.getPosition().x;
+					int y = chr.getPosition().y;
+					
+					MapleDatabase.getInstance().execute("INSERT INTO `custom_npcs` (`npc_id`,`map_id`,`cy`,`f`,`foothold`,`rx0`,`rx1`,`x,`,`y` VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", npcId, mapId, cy, f, fh, rx0, rx1, x, y);
+					
+					
+					for(World world : MapleServer.getWorlds()) {
+						for(MapleChannel channel : world.getChannels()) {
+							if(channel.isMapLoaded(mapId)) {
+								MapleNPC npc = MapleLifeFactory.getNPC(npcId);
+								npc.setCy(cy);
+								npc.setF(f);
+								npc.setFh(fh);
+								npc.setRx0(rx0);
+								npc.setRx1(rx1);
+								npc.setPosition(new Point(x, y));
+								channel.getMap(mapId).addMapObject(npc, true);
+							}
+						}
+					}
+					
+					MapleChannel gw = MapleServer.getCrossWorldChannel();
+					
+					if(gw.isMapLoaded(mapId)) {
+						MapleNPC npc = MapleLifeFactory.getNPC(npcId);
+						npc.setCy(cy);
+						npc.setF(f);
+						npc.setFh(fh);
+						npc.setRx0(rx0);
+						npc.setRx1(rx1);
+						npc.setPosition(new Point(x, y));
+						gw.getMap(mapId).addMapObject(npc, true);
+					}
+					
+					client.getCharacter().sendMessage(MessageType.NOTICE, "Created npc "+MapleLifeFactory.getNpcName(npcId));
 					
 				}else{
 					client.getCharacter().sendMessage(MessageType.PINK_TEXT, "Unknown command!");

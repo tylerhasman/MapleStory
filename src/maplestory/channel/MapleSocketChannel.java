@@ -192,6 +192,10 @@ public class MapleSocketChannel implements MapleChannel {
 		return getMapFactory().getMap(id);
 	}
 
+	@Override
+	public boolean isMapLoaded(int id) {
+		return getMapFactory().isMapLoaded(id);
+	}
 
 	@Override
 	public Collection<MapleEvent> getEvents() {

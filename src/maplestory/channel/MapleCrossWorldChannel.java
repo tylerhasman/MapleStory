@@ -168,6 +168,11 @@ public class MapleCrossWorldChannel implements MapleChannel {
 	}
 	
 	@Override
+	public boolean isMapLoaded(int id) {
+		return mapFactory.isMapLoaded(id);
+	}
+	
+	@Override
 	public World getWorld() {
 		throw new NotImplementedException();
 	}

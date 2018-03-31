@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import constants.MessageType;
+import maplestory.channel.MapleChannel;
+import maplestory.player.MapleCharacter;
 import maplestory.world.World;
 
 public class ConsoleListener implements Runnable {
@@ -47,6 +49,14 @@ public class ConsoleListener implements Runnable {
 					for(World world : MapleServer.getWorlds()) {
 						world.getRankManager().updateRankings();
 					}
+				}else if(args[0].equalsIgnoreCase("players")) {
+					
+					for(World world : MapleServer.getWorlds()) {
+						for(MapleCharacter chr : world.getPlayerStorage().getAllPlayers()) {
+							System.out.println(chr.getName()+" "+chr.getWorldId()+" "+chr.getMapId());
+						}
+					}
+					
 				}else if(args[0].equalsIgnoreCase("dump")) {
 					List<ThreadInfo> threads = Arrays.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true, true));
 					

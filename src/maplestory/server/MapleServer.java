@@ -75,7 +75,6 @@ public class MapleServer implements Runnable{
 				
 				@Override
 				public void run() {
-					MapleStory.getLogger().info("Auto saving");
 					for(World world : worlds){
 						world.broadcastMessage(MessageType.LIGHT_BLUE_TEXT, "The world is currently auto-saving, please expect momentary lag");
 						for(MapleCharacter chr : world.getPlayerStorage().getAllPlayers()){

@@ -63,6 +63,7 @@ import maplestory.party.PartyOperationType;
 import maplestory.player.BuddyList;
 import maplestory.player.MapleCharacter;
 import maplestory.player.MapleCharacterSnapshot;
+import maplestory.player.MapleJob;
 import maplestory.player.MapleNote;
 import maplestory.player.MaplePetInstance;
 import maplestory.player.BuddyList.BuddyListEntry;
@@ -810,7 +811,7 @@ public class PacketFactory {
             mplew.write(0);
         }
         
-        if (chr.getClient().isGM()) {
+        if (chr.getJob() == MapleJob.GM || chr.getJob() == MapleJob.SUPERGM) {
             mplew.write(0);
             return;
         }

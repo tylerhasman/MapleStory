@@ -126,7 +126,7 @@ public class ItemInfoProvider {
 		Node root = getInstance().itemData.getRootNode();
 		for(Node topDir : root){
 			for(Node file : topDir){
-				if(file.getName().equals(id.substring(0, 4) + ".img")){
+				if(id.length() > 3 && file.getName().equals(id.substring(0, 4) + ".img")){
 					data = getInstance().itemData.getRootNode().getChild(topDir.getName()+"/"+file.getName());
 					
 					if(data == null){

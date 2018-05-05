@@ -26,7 +26,7 @@ import maplestory.player.BuddyList.BuddyListEntry;
 import maplestory.server.MapleServer;
 import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
-import maplestory.server.security.AccountEncryption;
+import maplestory.server.security.Sha256AccountEncryption;
 import maplestory.server.security.MapleAESOFB;
 import maplestory.world.World;
 
@@ -224,8 +224,8 @@ public class MapleClient {
 			if(results.size() == 0){
 				
 				if(MapleStory.getServerConfig().isAutoRegisterEnabled()){
-					String salt = AccountEncryption.getRandomSalt();
-					String hashedPassword = AccountEncryption.hash(password, salt);
+					String salt = MapleStory.getPasswordEncryption().getRandomSalt();
+					String hashedPassword = MapleStory.getPasswordEncryption().hash(password, salt);
 					MapleDatabase.getInstance().execute("INSERT INTO `accounts` (`username`, `password`, `salt`, `last_login`) VALUES (?, ?, ?, ?)", username, hashedPassword, salt, System.currentTimeMillis());
 					
 					results = MapleDatabase.getInstance().query("SELECT `id`,`pic`,`loggedin`,`gm`,`password`,`salt`,`login_message` FROM `accounts` WHERE `username`=?", username);
@@ -247,7 +247,7 @@ public class MapleClient {
 			String storedPassword = first.get("password");
 			String salt = first.get("salt");
 			
-			if(AccountEncryption.hash(password, salt).equals(storedPassword)){
+			if(MapleStory.getPasswordEncryption().hash(password, salt).equals(storedPassword)){
 				this.username = username;
 				this.id = first.get("id");
 				accountNames.put(this.id, this.username);
@@ -307,8 +307,8 @@ public class MapleClient {
 			return false;
 		}
 		
-		String salt = AccountEncryption.getRandomSalt();
-		String hashedPassword = AccountEncryption.hash(password, salt);
+		String salt = MapleStory.getPasswordEncryption().getRandomSalt();
+		String hashedPassword = MapleStory.getPasswordEncryption().hash(password, salt);
 		
 		int i = MapleDatabase.getInstance().execute("INSERT INTO `accounts` (`username`, `password`, `salt`, `pic`) VALUES (?, ?, ?, ?)", username, hashedPassword, salt, "");
 		

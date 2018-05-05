@@ -14,6 +14,9 @@ import config.MapleServerConfiguration;
 import lombok.Getter;
 import maplestory.inventory.item.ItemInfoProvider;
 import maplestory.script.legacy.OdinScriptPatches;
+import maplestory.server.security.AccountEncryption;
+import maplestory.server.security.BCryptAccountEncryption;
+import maplestory.server.security.Sha256AccountEncryption;
 import maplestory.skill.SkillFactory;
 import me.tyler.mdf.MapleFile;
 import me.tyler.mdf.MapleFileFactory;
@@ -37,6 +40,9 @@ public class MapleStory {
 	
 	@Getter
 	private static OdinScriptPatches legacyScriptPatches;
+	
+	@Getter
+	private static AccountEncryption passwordEncryption = new BCryptAccountEncryption();
 	
 	public static void reloadConfig() throws IOException{
 		serverConfig = new MapleServerConfiguration(new File("config.yml"));

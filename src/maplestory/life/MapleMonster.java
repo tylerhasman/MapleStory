@@ -351,6 +351,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 			}
 		}
 		
+		Collections.shuffle(actual);//Makes it look more random instead of things lining up
+		
 		dropItems(chr, actual);
 		
 	}

@@ -20,6 +20,7 @@ import tools.data.output.MaplePacketWriter;
 import constants.ExpTable;
 import constants.ItemLetterFont;
 import constants.LoginStatus;
+import constants.MapleBuffStat;
 import constants.MessageType;
 import constants.Song;
 import constants.SpecialEffect;
@@ -61,6 +62,7 @@ import maplestory.server.MapleStory;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
 import maplestory.server.net.SendOpcode;
+import maplestory.skill.MapleStatEffect;
 import maplestory.skill.Skill;
 import maplestory.skill.SkillChanges;
 import maplestory.skill.SkillFactory;
@@ -99,6 +101,14 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					for(World world : MapleServer.getWorlds()) {
 						if(world instanceof MapleWorld) {
 							((MapleWorld) world).reloadEvents();
+						}
+					}
+				}else if(args[0].equals("!mybuffs")) {
+					for(MapleBuffStat stat : MapleBuffStat.values()) {
+						if(client.getCharacter().hasBuff(stat)) {
+							MapleStatEffect effect = client.getCharacter().getBuffStatSource(stat);
+							
+							client.getCharacter().sendMessage(MessageType.PINK_TEXT, stat.name()+" "+effect.getSourceId());
 						}
 					}
 				}else if(args[0].equalsIgnoreCase("!boat")) {

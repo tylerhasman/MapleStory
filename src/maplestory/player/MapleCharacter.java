@@ -2,21 +2,15 @@ package maplestory.player;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.awt.image.PackedColorModel;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.SQLType;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -25,7 +19,6 @@ import javax.script.Bindings;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,24 +35,19 @@ import maplestory.inventory.MapleCashInventory;
 import maplestory.inventory.MapleEquippedInventory;
 import maplestory.inventory.MapleInventory;
 import maplestory.inventory.MapleWeaponType;
-import maplestory.inventory.item.CashItem;
 import maplestory.inventory.item.DueyParcel;
 import maplestory.inventory.item.EquipItem;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.ItemFactory;
 import maplestory.inventory.item.ItemInfoProvider;
-import maplestory.inventory.item.ItemType;
 import maplestory.inventory.item.PetItem;
 import maplestory.inventory.storage.MapleStorageBox;
-import maplestory.life.MapleHiredMerchant;
 import maplestory.life.MapleLifeFactory;
 import maplestory.life.MapleMonster;
 import maplestory.life.MapleMount;
 import maplestory.life.MapleNPC;
 import maplestory.life.MapleSummon;
 import maplestory.life.MobSkill;
-import maplestory.life.movement.AbsoluteLifeMovement;
-import maplestory.life.movement.MovementPath;
 import maplestory.map.AbstractAnimatedMapleMapObject;
 import maplestory.map.MapleMagicDoor;
 import maplestory.map.MapleMap;
@@ -71,7 +59,6 @@ import maplestory.party.MapleParty.PartyEntry;
 import maplestory.player.BuddyList.BuddyListEntry;
 import maplestory.player.monsterbook.MonsterBook;
 import maplestory.player.ui.MapleTradeInterface;
-import maplestory.player.ui.TradeInterface;
 import maplestory.player.ui.UserInterface;
 import maplestory.quest.MapleQuest;
 import maplestory.quest.MapleQuestInstance;
@@ -86,6 +73,7 @@ import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
 import maplestory.server.net.handlers.channel.GroupChatHandler.GroupChatType;
 import maplestory.shop.MapleShop;
+import maplestory.skill.Buffs;
 import maplestory.skill.MapleStatEffect;
 import maplestory.skill.Skill;
 import maplestory.skill.SkillChanges;
@@ -98,7 +86,6 @@ import maplestory.world.RateManager.RateType;
 import tools.CRand32;
 import tools.TimerManager;
 import tools.TimerManager.MapleTask;
-import constants.EquipSlot;
 import constants.ExpTable;
 import constants.LoginStatus;
 import constants.MapleBuffStat;
@@ -116,7 +103,6 @@ import constants.skills.Corsair;
 import constants.skills.DarkKnight;
 import constants.skills.DawnWarrior;
 import constants.skills.FPArchMage;
-import constants.skills.GM;
 import constants.skills.Gunslinger;
 import constants.skills.Hermit;
 import constants.skills.ILArchMage;
@@ -126,15 +112,12 @@ import constants.skills.Paladin;
 import constants.skills.Priest;
 import constants.skills.Ranger;
 import constants.skills.Sniper;
-import constants.skills.Spearman;
-import constants.skills.SuperGM;
 import constants.skills.Swordsman;
 import constants.skills.ThunderBreaker;
 import database.BatchedScript;
 import database.MapleDatabase;
 import database.PossibleNullValue;
 import database.QueryResult;
-import io.netty.util.concurrent.ScheduledFuture;
 
 @ToString(includeFieldNames=true)
 public class MapleCharacter extends AbstractAnimatedMapleMapObject {
@@ -1325,6 +1308,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 	
 	public void setMp(int mp){
+		if(mp < 0) {
+			mp = 0;
+		}else if(mp > getMaxMp()) {
+			mp = getMaxMp();
+		}
 		this.mp = Math.max(0, Math.min(getMaxMp(), mp));
 		updateStat(MapleStat.MP, mp);
 	}
@@ -1945,9 +1933,23 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		if(godModeEnabled){
 			return;
 		}
-		setHp(hp - damage);
 		
-		updateStat(MapleStat.HP, hp);
+		if(hasBuff(MapleBuffStat.MAGIC_GUARD)) {
+			float percent = getBuffedValue(MapleBuffStat.MAGIC_GUARD);
+			percent /= 100F;
+			int mpDamage = (int) (percent * damage);
+			int hpDamage = damage - mpDamage;
+			
+			int leftover = getMp() - mpDamage;
+
+			leftover = (leftover < 0 ? -leftover : 0);
+			
+			setHp(hp - leftover - hpDamage);
+			setMp(mp - mpDamage);
+		}else {
+			setHp(hp - damage);
+		}
+		
 	}
 
 	public void restoreHp(int amount) {

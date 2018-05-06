@@ -1814,6 +1814,16 @@ public class PacketFactory {
         return mplew.getPacket();
     }
 
+    public static byte[] showRecovery(int cid, int amount) {
+    	MaplePacketWriter mplew = new MaplePacketWriter();
+        mplew.writeShort(SendOpcode.SHOW_FOREIGN_EFFECT.getValue());
+        mplew.writeInt(cid);
+        mplew.write(0x0A);
+        mplew.write(amount);
+        
+        return mplew.getPacket();
+    }
+    
 	public static byte[] getSpawnSummonPacket(MapleSummon summon, boolean animated) {
 		MaplePacketWriter mplew = new MaplePacketWriter(25);
 		mplew.writeShort(SendOpcode.SPAWN_SPECIAL_MAPOBJECT.getValue());
@@ -2039,7 +2049,7 @@ public class PacketFactory {
 		return mplew.getPacket();
 	}
 	
-	 private static void writeLongMaskFromList(MaplePacketWriter mplew, List<MapleBuffStat> statups) {
+	 private static void writeLongMaskFromList(MaplePacketWriter mplew, Collection<MapleBuffStat> statups) {
 		 long firstmask = 0;
 		 long secondmask = 0;
 		 for (MapleBuffStat statup : statups) {
@@ -2053,7 +2063,7 @@ public class PacketFactory {
 		 mplew.writeLong(secondmask);
 	 }
 
-	public static byte[] cancelBuff(List<MapleBuffStat> buffstats) {
+	public static byte[] cancelBuff(Collection<MapleBuffStat> buffstats) {
 		 MaplePacketWriter mplew = new MaplePacketWriter();
 		 mplew.writeShort(SendOpcode.CANCEL_BUFF.getValue());
 		 writeLongMaskFromList(mplew, buffstats);
@@ -2061,7 +2071,7 @@ public class PacketFactory {
 		 return mplew.getPacket();
 	}
 
-	public static byte[] cancelForeignBuff(int cid, List<MapleBuffStat> statups) {
+	public static byte[] cancelForeignBuff(int cid, Collection<MapleBuffStat> statups) {
 		 MaplePacketWriter mplew = new MaplePacketWriter();
 		 mplew.writeShort(SendOpcode.CANCEL_FOREIGN_BUFF.getValue());
 		 mplew.writeInt(cid);
@@ -2294,7 +2304,6 @@ public class PacketFactory {
 			mplew.writeShort(-1); // might actually be the buffTime but it's not
 									// displayed anywhere
 		}
-
 		int size = mse.getStatusChanges().size(); // size
 		if (reflection != null) {
 			for (Integer ref : reflection) {
@@ -4191,6 +4200,15 @@ public class PacketFactory {
 		MaplePacketWriter out = new MaplePacketWriter();
 		out.writeShort(SendOpcode.BOAT_STATE.getValue());
 		out.writeShort(docked ? 1 : 2);
+		
+		return out.getPacket();
+	}
+	
+	public static byte[] showOwnRecovery(int amount) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.FIELD_UPDATE.getValue());
+		out.write(0x0A);
+		out.write(amount);
 		
 		return out.getPacket();
 	}

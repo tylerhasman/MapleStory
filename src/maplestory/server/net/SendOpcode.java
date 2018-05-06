@@ -226,6 +226,9 @@ public enum SendOpcode {
     CANCEL_FOREIGN_BUFF(0xC8),
     UPDATE_PARTYMEMBER_HP(0xC9),
     CHAIR_RESPONSE(0xCD),
+    /**
+     * AKA SHOW_ITEM_GAIN_INCHAT
+     */
     FIELD_UPDATE(0xCE),
     DOJO_WARP_UP(0xCF),
     LUCKSACK_PASS(0xD0),

@@ -5,6 +5,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +47,7 @@ public class TimerManager {
 	
 	public static MapleTask schedule(Runnable runnable, long delay, TimeUnit unit){
 		
-		MapleTask task = new MapleTask(runnable, Thread.currentThread().getStackTrace());
+		MapleTask task = new MapleTask(t -> runnable.run(), Thread.currentThread().getStackTrace());
 		
 		ScheduledFuture<?> future = instance.executor.schedule(task, delay, unit);
 		
@@ -56,9 +57,19 @@ public class TimerManager {
 	}
 	
 	public static MapleTask scheduleRepeatingTask(Runnable runnable, long delay, long timeBetweenExecution, TimeUnit unit){
+		MapleTask task = new MapleTask(t -> runnable.run(), Thread.currentThread().getStackTrace());
+		
+		ScheduledFuture<?> future = instance.executor.scheduleAtFixedRate(task, delay, timeBetweenExecution, unit);
+		
+		task.setFuture(future);
+		
+		return task;
+	}
+	
+	public static MapleTask scheduleRepeatingTask(Consumer<MapleTask> runnable, long delay, long timeBetweenExecution, TimeUnit unit){
 		MapleTask task = new MapleTask(runnable, Thread.currentThread().getStackTrace());
 		
-		ScheduledFuture<?> future = instance.executor.scheduleAtFixedRate(new MapleTask(runnable, Thread.currentThread().getStackTrace()), delay, timeBetweenExecution, unit);
+		ScheduledFuture<?> future = instance.executor.scheduleAtFixedRate(task, delay, timeBetweenExecution, unit);
 		
 		task.setFuture(future);
 		
@@ -86,11 +97,11 @@ public class TimerManager {
 		@Getter
 		private long timesExecuted;
 		@Getter
-		private Runnable task;
+		private Consumer<MapleTask> task;
 		
 		private ScheduledFuture<?> future;
 		
-		MapleTask(Runnable task, StackTraceElement[] source) {
+		MapleTask(Consumer<MapleTask> task, StackTraceElement[] source) {
 			sourceStack = source;
 			this.task = task;
 			timesExecuted = 0;
@@ -109,7 +120,7 @@ public class TimerManager {
 		public void run() {
 			
 			try{
-				task.run();
+				task.accept(this);
 			}catch(Exception e){
 				logger.error("Error with task! Error below");
 				e.printStackTrace();

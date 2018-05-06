@@ -323,12 +323,15 @@ public class MapleMapFactory {
     private static int resolveMapLink(int mapid) {
     	Node source = MapleStory.getDataFile("Map.mdf").getRootNode();
     	
-    	MapleMap map = null;
     	String mapName = getMapId(mapid);
 		Node mapData = source.getChild(mapName);
 		if (mapData == null)
 			return -1;
 		String link = mapData.readString("info/link", "");
+		
+		if(link.isEmpty()) {
+			return -1;
+		}
 		
 		return Integer.valueOf(link);
     }

@@ -844,7 +844,7 @@ public class OdinNpcConversationManager extends NpcConversationManager {
 	}
 
 	public void cancelItem(int id) {
-		getCharacter().cancelEffect(ItemInfoProvider.getItemEffect(id), false, -1);
+		getCharacter().cancelEffect(ItemInfoProvider.getItemEffect(id));
 	}
 
 	public void teachSkill(int id, int level, int master, long exp) {

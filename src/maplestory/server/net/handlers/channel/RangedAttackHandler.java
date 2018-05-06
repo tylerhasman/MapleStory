@@ -31,8 +31,8 @@ public class RangedAttackHandler extends AbstractDealDamageHandler {
 		
 		AttackInfo attack = parseDamage(buf, chr, true);
 		
-		if(chr.getBuffEffect(MapleBuffStat.MORPH) != null){
-			if(chr.getBuffEffect(MapleBuffStat.MORPH).isMorphWithoutAttack()){
+		if(chr.hasBuff(MapleBuffStat.MORPH)){
+			if(chr.getBuffStatSource(MapleBuffStat.MORPH).isMorphWithoutAttack()){
 				return;
 			}
 		}

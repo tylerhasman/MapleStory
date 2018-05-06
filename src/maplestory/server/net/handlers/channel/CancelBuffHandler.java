@@ -3,9 +3,14 @@ package maplestory.server.net.handlers.channel;
 import constants.skills.Bishop;
 import constants.skills.Bowmaster;
 import constants.skills.Corsair;
+import constants.skills.DarkKnight;
 import constants.skills.FPArchMage;
+import constants.skills.Hermit;
 import constants.skills.ILArchMage;
 import constants.skills.Marksman;
+import constants.skills.Priest;
+import constants.skills.Ranger;
+import constants.skills.Sniper;
 import constants.skills.WindArcher;
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
@@ -34,10 +39,11 @@ public class CancelBuffHandler extends MaplePacketHandler {
 			chr.getMap().broadcastPacket(PacketFactory.skillCancel(client.getCharacter(), sourceid), chr.getId());
 			break;
 		default:
-			client.getCharacter().cancelEffect(SkillFactory.getSkill(sourceid).getEffect(1), false, -1);
+			client.getCharacter().cancelEffect(SkillFactory.getSkill(sourceid).getEffect(1));
 			break;
 		}
 
 	}
+
 
 }

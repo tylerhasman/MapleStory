@@ -15,7 +15,7 @@ public class CancelItemEffectHandler extends MaplePacketHandler {
 			return;
 		}
 		
-		client.getCharacter().cancelEffect(ItemInfoProvider.getItemEffect(itemId), false, -1);
+		client.getCharacter().cancelEffect(ItemInfoProvider.getItemEffect(itemId));
 	}
 
 }

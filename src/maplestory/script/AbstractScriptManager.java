@@ -55,7 +55,7 @@ public class AbstractScriptManager {
 	}
 	
 	public boolean hasItemBuff(int itemId){
-		return character.hasBuff(ItemInfoProvider.getItemEffect(itemId));
+		return character.hasEffect(ItemInfoProvider.getItemEffect(itemId));
 	}
 	
 	public void openDuey(){

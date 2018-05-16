@@ -18,6 +18,10 @@ public class Buffs {
 
 	private Map<Integer, MapleStatEffect> effects;
 	
+	private Map<MapleBuffStat, Integer> values;
+	
+	private Map<Integer, Long> startTimes;
+	
 	public Buffs() {
 		effects = new HashMap<>();
 	}
@@ -32,7 +36,14 @@ public class Buffs {
 	
 	public void removeBuff(int skillId) {
 		effects.remove(skillId);
+		
+		//startTimes.put(effect.getSourceId(), System.currentTimeMillis());
 	}
+	
+	public long getStartTime(int skillId) {
+		return startTimes.getOrDefault(skillId, 0L);
+	}
+	
 	
 	public boolean hasBuff(MapleStatEffect effect) {
 		return effects.containsKey(effect.getSourceId());

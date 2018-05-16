@@ -14,6 +14,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import database.MapleDatabase;
 import database.QueryResult;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import maplestory.life.MapleLifeFactory;
 import maplestory.life.MapleMonster;
 import maplestory.life.MapleNPC;
@@ -25,6 +27,9 @@ import me.tyler.mdf.Node;
 
 public class MapleMapFactory {
 
+	private static final List<CustomNpcData> customNpcs = new ArrayList<>();
+	private static boolean customNpcsLoaded = false;
+	
     private Map<Integer, MapleMap> maps;
     private int channel, world;
     private ReentrantLock mapLock = new ReentrantLock(true);
@@ -133,28 +138,23 @@ public class MapleMapFactory {
 		}
 		
 		try {
-			List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `npc_id`,`cy`,`f`,`foothold`,`rx0`,`rx1`,`x`,`y` FROM `custom_npcs` WHERE `map_id`=?", mapid);
-		
-			for(QueryResult result : results) {
+			if(!customNpcsLoaded) {
+				loadCustomNpcs();
+			}
+			
+			for(CustomNpcData npcData : customNpcs) {
 				
-				int npcId = result.get("npc_id");
-				int cy = result.get("cy");
-				int f = result.get("f");
-				int foothold = result.get("foothold");
-				int rx0 = result.get("rx0");
-				int rx1 = result.get("rx1");
-				int x = result.get("x");
-				int y = result.get("y");
-				
-				MapleNPC life = MapleLifeFactory.getNPC(npcId);
-				life.setCy(cy);
-				life.setF(f);
-				life.setFh(foothold);
-				life.setRx0(rx0);
-				life.setRx1(rx1);
-				life.setPosition(new Point(x, y));
-				
-				map.addMapObject(life, false);
+				if(npcData.mapId == mapid) {
+					MapleNPC life = MapleLifeFactory.getNPC(npcData.npcId);
+					life.setCy(npcData.cy);
+					life.setF(npcData.f);
+					life.setFh(npcData.foothold);
+					life.setRx0(npcData.rx0);
+					life.setRx1(npcData.rx1);
+					life.setPosition(new Point(npcData.x, npcData.y));
+					
+					map.addMapObject(life, false);
+				}
 				
 			}
 		
@@ -412,6 +412,41 @@ public class MapleMapFactory {
 		}finally{
 			mapLock.unlock();
 		}
+	}
+	
+	private static void loadCustomNpcs() throws SQLException {
+		customNpcs.clear();
+		
+		customNpcsLoaded = true;
+		
+		List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `npc_id`,`map_id`,`cy`,`f`,`foothold`,`rx0`,`rx1`,`x`,`y` FROM `custom_npcs`");
+		
+		for(QueryResult result : results) {
+			
+			int npcId = result.get("npc_id");
+			int mapId = result.get("map_id");
+			int cy = result.get("cy");
+			int f = result.get("f");
+			int foothold = result.get("foothold");
+			int rx0 = result.get("rx0");
+			int rx1 = result.get("rx1");
+			int x = result.get("x");
+			int y = result.get("y");
+			
+			customNpcs.add(new CustomNpcData(npcId, mapId, cy, f, foothold, rx0, rx1, x, y));
+		}
+		
+	}
+	
+	public static void reloadCustomNpcs() throws SQLException {
+		loadCustomNpcs();
+	}
+	
+	@AllArgsConstructor
+	static class CustomNpcData {
+		
+		private final int npcId, mapId, cy, f, foothold, rx0, rx1, x, y;
+		
 	}
 
 }

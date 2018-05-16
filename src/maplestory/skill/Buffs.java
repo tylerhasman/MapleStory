@@ -24,6 +24,16 @@ public class Buffs {
 	
 	public Buffs() {
 		effects = new HashMap<>();
+		values = new HashMap<>();
+		startTimes = new HashMap<>();
+	}
+	
+	public void setBuffedValue(MapleBuffStat stat, int val) {
+		values.put(stat, val);
+	}
+	
+	public int getBuffedValue(MapleBuffStat stat) {
+		return values.getOrDefault(stat, 0);
 	}
 	
 	public Collection<MapleStatEffect> getEffects(){

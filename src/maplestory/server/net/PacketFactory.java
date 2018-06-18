@@ -1724,6 +1724,7 @@ public class PacketFactory {
 		mplew.writeInt(skillid);
 		mplew.write(direction);
 		mplew.write(1);
+		mplew.writeLong(0);
 		return mplew.getPacket();
 	}
 
@@ -1786,7 +1787,7 @@ public class PacketFactory {
         mplew.writeShort(SendOpcode.SHOW_MAGNET.getValue());
         mplew.writeInt(mobId);
         mplew.write(success);
-        mplew.skip(10); //Mmmk
+        //mplew.skip(10); //Mmmk
         return mplew.getPacket();
 	}
 	
@@ -4210,6 +4211,23 @@ public class PacketFactory {
 		out.write(0x0A);
 		out.write(amount);
 		
+		return out.getPacket();
+	}
+	
+	public static byte[] damagePlayer(int cid, int skill, int damage, int monsterIdFrom, int direction) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.DAMAGE_PLAYER.getValue());
+		out.writeInt(cid);
+		out.write(skill);
+		out.writeInt(damage);
+		if(skill != -4) {
+			out.writeInt(monsterIdFrom);
+			out.write(direction);
+			out.writeShort(0);
+			out.writeInt(damage);
+		}else {
+			out.writeInt(damage);
+		}
 		return out.getPacket();
 	}
 	

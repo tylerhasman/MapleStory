@@ -21,13 +21,23 @@
 */
 package maplestory.server.net.handlers.channel;
 
+import java.util.Collections;
+import java.util.List;
+
+import constants.MapleBuffStat;
+import constants.skills.Crusader;
+import constants.skills.DawnWarrior;
+import constants.skills.Hero;
+import constants.skills.ThunderBreaker;
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
 import maplestory.player.MapleCharacter;
+import maplestory.player.MapleJob;
 import maplestory.server.net.PacketFactory;
 import maplestory.skill.MapleStatEffect;
 import maplestory.skill.Skill;
 import maplestory.skill.SkillFactory;
+import maplestory.util.Pair;
 
 public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
 	
@@ -36,54 +46,56 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
     }
 
     @Override
-    public void handle(ByteBuf buf, MapleClient c) {
-        MapleCharacter player = c.getCharacter();
-        AttackInfo attack = parseDamage(buf, player, false);
+    public void handle(ByteBuf buf, MapleClient client) {
+        MapleCharacter chr = client.getCharacter();
+        AttackInfo attack = parseDamage(buf, chr, false);
         
+        int orbs = chr.getBuffedValue(MapleBuffStat.COMBO);
         
-        player.getMap().broadcastPacket(PacketFactory.closeRangeAttack(player, attack.skill, attack.skilllevel, attack.stance, attack.numAttackedAndDamage, attack.allDamage, attack.speed, attack.direction, attack.display), player.getId());
-        
-        /*int numFinisherOrbs = 0;
-        Integer comboBuff = player.getBuffedValue(MapleBuffStat.COMBO);*/
-        /*if (isFinisher(attack.skill)) {
-            if (comboBuff != null) {
-                numFinisherOrbs = comboBuff.intValue() - 1;
-            }
-            player.handleOrbconsume();
+        if (isFinisher(attack.skill)) {
+        	if(orbs > 0) {
+        		orbs -= 2;// -2 to get rid of the extra +1 from the buff being active
+        		chr.setBuffedValue(MapleBuffStat.COMBO, orbs);
+        	}//Don't do anything otherwise
         } else if (attack.numAttacked > 0) {
-            if (attack.skill != 1111008 && comboBuff != null) {
-                int orbcount = player.getBuffedValue(MapleBuffStat.COMBO);
-                int oid = player.isCygnus() ? DawnWarrior.COMBO : Crusader.COMBO;
-                int advcomboid = player.isCygnus() ? DawnWarrior.ADVANCED_COMBO : Hero.ADVANCED_COMBO;
-                Skill combo = SkillFactory.getSkill(oid);
-                Skill advcombo = SkillFactory.getSkill(advcomboid);
-                MapleStatEffect ceffect;
-                int advComboSkillLevel = player.getSkillLevel(advcombo);
-                if (advComboSkillLevel > 0) {
-                    ceffect = advcombo.getEffect(advComboSkillLevel);
-                } else {
-                    ceffect = combo.getEffect(player.getSkillLevel(combo));
+            if (attack.skill != Crusader.SHOUT && orbs > 0) {
+            	
+                MapleStatEffect effect = chr.getBuffStatSource(MapleBuffStat.COMBO);
+                Skill skill = SkillFactory.getSkill(effect.getSourceId());
+                
+            	Skill advSkill = SkillFactory.getSkill(skill.getId() == Crusader.COMBO ? Hero.ADVANCED_COMBO : DawnWarrior.ADVANCED_COMBO);
+            	
+            	int advLevel = chr.getSkillLevel(advSkill);
+            	
+                int maxOrbs = effect.getX();
+                
+                boolean bonusOrb = false;
+                
+                if(advLevel > 0) {
+
+                	MapleStatEffect advEffect = advSkill.getEffect(advLevel);
+                	
+                	maxOrbs = advEffect.getX();
+                	
+                	bonusOrb = advEffect.makeChanceResult();
+                	
                 }
-                if (orbcount < ceffect.getX() + 1) {
-                    int neworbcount = orbcount + 1;
-                    if (advComboSkillLevel > 0 && ceffect.makeChanceResult()) {
-                        if (neworbcount <= ceffect.getX()) {
-                            neworbcount++;
-                        }
-                    }
-                    int duration = combo.getEffect(player.getSkillLevel(oid)).getDuration();
-                    List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<>(MapleBuffStat.COMBO, neworbcount));
-                    player.setBuffedValue(MapleBuffStat.COMBO, neworbcount);                 
-                    duration -= (int) (System.currentTimeMillis() - player.getBuffedStarttime(MapleBuffStat.COMBO));
-                    c.announce(MaplePacketCreator.giveBuff(oid, duration, stat));
-                    player.getMap().broadcastMessage(player, MaplePacketCreator.giveForeignBuff(player.getId(), stat), false);
+                
+                if (orbs <= maxOrbs) { // OR orbs <= effect.getX() IS EQUAL
+                    
+                	if(bonusOrb && orbs < maxOrbs) {
+                		orbs++;
+                	}
+                	
+                    chr.setBuffedValue(MapleBuffStat.COMBO, orbs++);
+                    
                 }
-            } else if (player.getSkillLevel(player.isCygnus() ? SkillFactory.getSkill(15100004) : SkillFactory.getSkill(5110001)) > 0 && (player.getJob().isA(MapleJob.MARAUDER) || player.getJob().isA(MapleJob.THUNDERBREAKER2))) {
+            }/* else if (player.getSkillLevel(player.isCygnus() ? SkillFactory.getSkill(15100004) : SkillFactory.getSkill(5110001)) > 0 && (player.getJob().isA(MapleJob.MARAUDER) || player.getJob().isA(MapleJob.THUNDERBREAKER2))) {
                 for (int i = 0; i < attack.numAttacked; i++) {
                     player.handleEnergyChargeGain();
                 }
-            }
-        }*/
+            }*/
+        }
         /*if (attack.numAttacked > 0 && attack.skill == DragonKnight.SACRIFICE) {
             int totDamageToOneMonster = 0; // sacrifice attacks only 1 mob with 1 attack
             final Iterator<List<Integer>> dmgIt = attack.allDamage.values().iterator();
@@ -122,12 +134,12 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         if (attack.skill > 0) {
             Skill skill = SkillFactory.getSkill(attack.skill);
             //animationTime = skill.getAnimationTime();
-            MapleStatEffect effect_ = skill.getEffect(player.getSkillLevel(skill));
+            MapleStatEffect effect_ = skill.getEffect(chr.getSkillLevel(skill));
             if (effect_.getCooldown() > 0) {
-                if (player.isSkillCoolingDown(attack.skill)) {
+                if (chr.isSkillCoolingDown(attack.skill)) {
                     return;
                 } else {
-                    player.addCooldown(skill);
+                    chr.addCooldown(skill);
                 }
             }
         }
@@ -141,8 +153,10 @@ public final class CloseRangeDamageHandler extends AbstractDealDamageHandler {
         }else{
         	applyAttack(attack, player, attackCount);
         }*/
-       
-        applyAttack(attack, player, attackCount);
+        chr.getMap().broadcastPacket(PacketFactory.closeRangeAttack(chr, attack.skill, attack.skilllevel, attack.stance, attack.numAttackedAndDamage, attack.allDamage, attack.speed, attack.direction, attack.display), chr.getId());
+        
+        applyAttack(attack, chr, attackCount);
         
     }
+    
 }

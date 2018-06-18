@@ -45,9 +45,12 @@ public class Buffs {
 	}
 	
 	public void removeBuff(int skillId) {
-		effects.remove(skillId);
+		if(!effects.containsKey(skillId)) {
+			return;
+		}
+		MapleStatEffect effect = effects.remove(skillId);
 		
-		//startTimes.put(effect.getSourceId(), System.currentTimeMillis());
+		startTimes.put(effect.getSourceId(), System.currentTimeMillis());
 	}
 	
 	public long getStartTime(int skillId) {

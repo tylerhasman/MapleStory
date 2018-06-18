@@ -40,8 +40,10 @@ import maplestory.life.MapleLifeFactory;
 import maplestory.life.MapleMonster;
 import maplestory.life.MapleMount;
 import maplestory.life.MapleNPC;
+import maplestory.life.MapleSummon;
 import maplestory.map.MapleMagicDoor;
 import maplestory.map.MapleMap;
+import maplestory.map.MapleMapFactory;
 import maplestory.map.MapleMapItem;
 import maplestory.map.MapleMapObject;
 import maplestory.map.MapleMapObjectType;
@@ -103,6 +105,18 @@ public class GeneralChatHandler extends MaplePacketHandler {
 							((MapleWorld) world).reloadEvents();
 						}
 					}
+				}else if(args[0].equalsIgnoreCase("!magnet")) {
+					for(MapleMapObject monster : client.getCharacter().getMap().getObjects()) {
+						if(monster instanceof MapleMonster) {
+							client.sendPacket(PacketFactory.getShowMagnetEffect(monster.getObjectId(), (byte) 1));
+						}
+					}
+				}else if(args[0].equalsIgnoreCase("!combo")) {
+					
+					int combo = Integer.parseInt(args[1]);
+					
+					client.getCharacter().setBuffedValue(MapleBuffStat.COMBO, combo);
+					
 				}else if(args[0].equals("!mybuffs")) {
 					for(MapleBuffStat stat : MapleBuffStat.values()) {
 						if(client.getCharacter().hasBuff(stat)) {
@@ -172,6 +186,17 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					
 					if(victim != null){
 						client.getCharacter().changeMap(victim.getMap(), victim.getMap().getClosestPortal(victim.getPosition()));
+					}else{
+						client.getCharacter().sendMessage(MessageType.POPUP, "No player named "+args[1]);
+					}
+				}else if(args[0].equalsIgnoreCase("!move")) {
+					String name = args[1];
+					int to = Integer.parseInt(args[2]);
+					
+					MapleCharacter victim = client.getWorld().getPlayerStorage().getByName(name);
+					
+					if(victim != null){
+						victim.changeMap(to);
 					}else{
 						client.getCharacter().sendMessage(MessageType.POPUP, "No player named "+args[1]);
 					}
@@ -427,6 +452,14 @@ public class GeneralChatHandler extends MaplePacketHandler {
 					
 					client.getCharacter().clearAllCooldowns();
 					client.getCharacter().sendMessage(MessageType.LIGHT_BLUE_TEXT, "Cooldowns cleared");
+				}else if(args[0].equalsIgnoreCase("!clearsummon")) {
+					
+					
+					for(MapleSummon summon : client.getCharacter().getSummons()) {
+						summon.remove();
+					}
+					
+					client.getCharacter().getSummons().clear();
 					
 				}else if(args[0].equalsIgnoreCase("!levelup")){
 					int amount = Integer.parseInt(args[1]);
@@ -450,7 +483,12 @@ public class GeneralChatHandler extends MaplePacketHandler {
 						client.getCharacter().getMap().broadcastPacket(PacketFactory.musicChange(song));
 						client.getCharacter().sendMessage(MessageType.LIGHT_BLUE_TEXT, "Music changed to "+name);
 					}
+				}else if(args[0].equalsIgnoreCase("!job")) {
+					String job = args[1];
 					
+					MapleJob mj = MapleJob.valueOf(job);
+					
+					client.getCharacter().changeJob(mj);
 				}else if(args[0].equalsIgnoreCase("!maxall")){
 					SkillChanges changes = new SkillChanges();
 					List<Integer> maxed = new ArrayList<>();
@@ -517,6 +555,7 @@ public class GeneralChatHandler extends MaplePacketHandler {
 						for(int i = 0; i < amount;i++){
 							MapleMonster monster = MapleLifeFactory.getMonster(id);
 							monster.setPosition(client.getCharacter().getPosition());
+							monster.setFh(client.getCharacter().getFh());
 							client.getCharacter().getMap().spawnMonster(monster);
 						}	
 					}

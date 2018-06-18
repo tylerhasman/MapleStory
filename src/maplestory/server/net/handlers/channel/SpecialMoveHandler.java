@@ -3,6 +3,7 @@ package maplestory.server.net.handlers.channel;
 import java.awt.Point;
 
 import tools.TimerManager;
+import constants.MapleBuffStat;
 import constants.MessageType;
 import constants.skills.Bishop;
 import constants.skills.Brawler;
@@ -63,15 +64,18 @@ public class SpecialMoveHandler extends MaplePacketHandler {
 			for(int i = 0; i < num;i++){
 				mobId = buf.readInt();
 				success = buf.readByte();
+				System.out.println(mobId+" "+success);
 				chr.getMap().broadcastPacket(PacketFactory.getShowMagnetEffect(mobId, success), chr.getId());
+				
 				MapleMapObject monster = chr.getMap().getObject(mobId);
 				if(monster instanceof MapleMonster){
 					((MapleMonster) monster).setAggro(true);
 					chr.controlMonster((MapleMonster) monster);
 				}
+				
 			}
 			byte direction = buf.readByte();
-			chr.getMap().broadcastPacket(PacketFactory.getShowBuffEffect(chr.getId(), skillid, chrSkillLevel, direction), chr.getId());
+			chr.getMap().broadcastPacket(PacketFactory.showBuffEffect(chr.getObjectId(), skillid, chrSkillLevel, direction), chr.getId());
 			client.sendReallowActions();
 			return;
 		}else if(skillid == Buccaneer.TIME_LEAP){
@@ -81,6 +85,16 @@ public class SpecialMoveHandler extends MaplePacketHandler {
 			chr.restoreHp(-lose);
 			int gain = lose * (effect.getY() / 100);
 			chr.restoreMp(gain);
+		}else if(skillid == Hero.ENRAGE) {
+			
+			int orbs = chr.getBuffedValue(MapleBuffStat.COMBO);
+			
+			if(orbs >= 11) {
+				chr.setBuffedValue(MapleBuffStat.COMBO, 0);
+			}else {
+				return;
+			}
+			
 		}else if(skillid % 10000000 == 1004){
 			buf.readShort();
 			
@@ -95,25 +109,27 @@ public class SpecialMoveHandler extends MaplePacketHandler {
 			pos = client.getCharacter().getPosition();
 		}
 		
-		final Point f_pos = pos;
+		if(chr.isAlive()){
+			if(skillid != Priest.MYSTIC_DOOR){
+				effect.applyTo(chr, pos);
+				client.sendReallowActions();
+			}else if(!client.getCharacter().canCreateMagicDoor()){
+				chr.sendMessage(MessageType.PINK_TEXT, "Please wait 5 seconds before casting mystic door again.");
+				client.sendReallowActions();
+			}
+		}else{
+			client.sendReallowActions();
+		}
+		
+		/*final Point f_pos = pos;
 		
 		TimerManager.schedule(new Runnable() {
 			
 			@Override
 			public void run() {
-				if(chr.isAlive()){
-					if(skillid != Priest.MYSTIC_DOOR){
-						effect.applyTo(chr, f_pos);
-						client.sendReallowActions();
-					}else if(client.getCharacter().canCreateMagicDoor()){
-						chr.sendMessage(MessageType.PINK_TEXT, "Please wait 5 seconds before casting mystic door again.");
-						client.sendReallowActions();
-					}
-				}else{
-					client.sendReallowActions();
-				}
+				
 			}
-		}, skill.getAnimationTime());
+		}, skill.getAnimationTime());*/
 		
 
 		

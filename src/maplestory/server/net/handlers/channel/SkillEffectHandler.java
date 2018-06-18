@@ -14,7 +14,7 @@ public class SkillEffectHandler extends MaplePacketHandler {
 		int skillId = buf.readInt();
 		int level = buf.readByte();
 		byte flags = buf.readByte();
-		int speed = buf.readByte();
+		int speed = buf.readUnsignedByte();
 		byte direction = buf.readByte();
 		
 		Skill skill = SkillFactory.getSkill(skillId);

@@ -347,6 +347,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		}
 	}
 	
+	
+	
 	public boolean isMessengerOpen(){
 		return messengerId >= 0;
 	}
@@ -921,15 +923,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	public static class CooldownValueHolder {
 		
 		private MapleTask cancelTask;
-		private long timeLeft;
+		private long delay;
+		private long startTime;
 		private long cancelTaskStartTime;
 
 
 		public CooldownValueHolder(MapleTask cdFinish, long delay) {
 			cancelTask = cdFinish;
-			timeLeft = delay;
+			this.delay = delay;
+			startTime = System.currentTimeMillis();
 		}
 		
+		public long getTimeLeft() {
+			return delay - (System.currentTimeMillis() - startTime);
+		}
 		
 		public void cancel() {
 			if(cancelTask != null){
@@ -941,7 +948,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		public void pauseTask(){
 			if(cancelTask != null){
 				cancelTask.cancel(false);
-				timeLeft -= (System.currentTimeMillis() - cancelTaskStartTime);
 			}
 		}
 		
@@ -953,7 +959,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 					public void run() {
 						chr.clearCooldown(skillId);
 					}
-				}, timeLeft);
+				}, getTimeLeft());
 				cancelTaskStartTime = System.currentTimeMillis();
 			}
 		}
@@ -1176,6 +1182,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 	
 	public void changeJob(MapleJob job){
+		
+		if(job == null) {
+			throw new NullPointerException("job cannot be null");
+		}
 		
 		if(this.job.isBeginnerJob() && !job.isBeginnerJob()){
 			
@@ -2017,6 +2027,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 			return;
 		}
 		
+		if(!isAlive()) {
+			return;
+		}
+		
 		if(quest) {
 			amount *= getRate(RateType.QUEST);
 		}else {
@@ -2615,7 +2629,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	
 	public void clearAllCooldowns() {
 		synchronized (cooldowns) {
-			for(int i : cooldowns.keySet()){
+			for(int i : new ArrayList<>(cooldowns.keySet())){
 				clearCooldown(i);
 			}	
 		}
@@ -3420,7 +3434,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	
 
 	public int getBuffedValue(MapleBuffStat effect) {
-        int sum = 0;
+        int sum = buffs.getBuffedValue(effect);
 		for(MapleStatEffect eff : buffs.getEffects()) {
         	if(eff.getStatups().contains(effect)) {
         		sum += eff.getStatupData(effect);
@@ -3428,9 +3442,34 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
 		return sum;
 	}
-
+	
 	public MapleStatEffect getBuffStatSource(MapleBuffStat stat) {
 		return buffs.getSourceOf(stat);
+	}
+
+	public void setBuffedValue(MapleBuffStat stat, int val) {
+		if(buffs.getBuffStats().contains(stat)) {
+			buffs.setBuffedValue(stat, val);
+			
+			val = getBuffedValue(stat);
+			
+			MapleStatEffect effect = getBuffStatSource(stat);
+	        
+			int duration = effect.getDuration();
+			
+			duration -= (int) (System.currentTimeMillis() - getBuffStartTime(stat));
+			
+			List<Pair<MapleBuffStat, Integer>> stats = Collections.singletonList(new Pair<>(stat, val));
+	        client.sendPacket(PacketFactory.getGiveBuff(effect.getSourceId(), duration, stats));
+	        getMap().broadcastPacket(PacketFactory.giveForeignBuff(getObjectId(), stats), getId());	
+		}
+	}
+
+	public long getBuffStartTime(MapleBuffStat stat) {
+		if(!hasBuff(stat)) {
+			return 0;
+		}
+		return buffs.getStartTime(buffs.getSourceOf(stat).getSourceId());
 	}
 	
 }

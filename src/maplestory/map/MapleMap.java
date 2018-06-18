@@ -230,7 +230,7 @@ public class MapleMap {
 	
 	private void doMonsterSpawns(){
 		if(monsterSpawnsEnabled.get()){
-			for(SpawnPoint sp : monsterSpawnPoints){
+			for(SpawnPoint sp : new ArrayList<>(monsterSpawnPoints)){
 				if(sp.shouldSpawn()){
 					sp.spawnMonster(this, false);
 				}

@@ -135,9 +135,16 @@ public class MapleInventory implements Inventory {
 	public boolean hasSpace(int itemId, int quantity) {
 		operationLock.readLock().lock();
 		try{
+			if(ItemType.RECHARGABLE.isThis(itemId)) {
+				if(getFreeSlot() != -1) {
+					return true;
+				}
+				
+			}
 			if(hasSpace(Math.max(quantity, ItemInfoProvider.getSlotMax(itemId)) / ItemInfoProvider.getSlotMax(itemId))){
 				return true;
 			}
+			
 			
 			for(Item item : items.values()){
 				if(item.getItemId() == itemId){
@@ -530,7 +537,7 @@ public class MapleInventory implements Inventory {
 				
 				setItemInternal(slot, item);
 				sendPacket(PacketFactory.getInventoryOperationPacket(true, changes));
-				return false;
+				return true;
 			}
 			
 		}finally{

@@ -2,6 +2,7 @@ package maplestory.guild.bbs;
 
 import java.util.List;
 
+import maplestory.player.MapleCharacter;
 import maplestory.player.MapleCharacterSnapshot;
 
 public interface BulletinPost {
@@ -19,5 +20,11 @@ public interface BulletinPost {
 	public BulletinEmote getEmote();
 	
 	public List<BulletinReply> getReplies();
+	
+	public void addReply(MapleCharacter author, String message);
+
+	public void removeReply(int replyId);
+
+	public BulletinReply findReply(int replyId);
 	
 }

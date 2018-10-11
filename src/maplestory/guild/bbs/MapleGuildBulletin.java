@@ -1,6 +1,7 @@
 package maplestory.guild.bbs;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import database.MapleDatabase;
 import database.QueryResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import maplestory.guild.MapleGuild;
 import maplestory.player.MapleCharacter;
 import maplestory.player.MapleCharacterSnapshot;
@@ -59,7 +61,7 @@ public class MapleGuildBulletin implements GuildBulletin {
 		
 		if(old != null){
 			
-			MapleBulletinPost newPost = new MapleBulletinPost(character.getId(), old.getPostId(), old.getPostTime(), text, title);
+			MapleBulletinPost newPost = new MapleBulletinPost(character.getId(), old.getPostId(), old.getPostTime(), text, title, null);
 			
 			posts.put(old.getPostId(), newPost);
 			
@@ -77,14 +79,28 @@ public class MapleGuildBulletin implements GuildBulletin {
 	
 	@Override
 	public void addPost(String title, String text, BulletinEmote emote, MapleCharacter poster) {
-		MapleBulletinPost post = new MapleBulletinPost(poster.getId(), nextPost++, System.currentTimeMillis(), text, title);
+		MapleBulletinPost post = new MapleBulletinPost(poster.getId(), nextPost++, System.currentTimeMillis(), text, title, null);
 		
 		posts.put(post.postId, post);
 	}
 	
 	@Override
 	public void setNotice(String title, String text, BulletinEmote emote, MapleCharacter poster) {
-		notice = new MapleBulletinPost(poster.getId(), nextPost++, System.currentTimeMillis(), text, title);
+		notice = new MapleBulletinPost(poster.getId(), nextPost++, System.currentTimeMillis(), text, title, null);
+	}
+	
+	@AllArgsConstructor(access=AccessLevel.PROTECTED)
+	static class MapleBulletinReply implements BulletinReply {
+
+		@Getter
+		private int replyId, author;
+		
+		@Getter
+		private long postTime;
+		
+		@Getter
+		private String content;
+		
 	}
 	
 	@AllArgsConstructor(access=AccessLevel.PROTECTED)
@@ -97,6 +113,8 @@ public class MapleGuildBulletin implements GuildBulletin {
 		private long postTime;
 		
 		private String content, subject;
+		
+		private List<BulletinReply> replies;
 		
 		@Override
 		public MapleCharacterSnapshot getAuthor() {
@@ -130,7 +148,39 @@ public class MapleGuildBulletin implements GuildBulletin {
 
 		@Override
 		public List<BulletinReply> getReplies() {
-			return Collections.emptyList();
+			if(replies == null)
+				return Collections.emptyList();
+			return replies;
+		}
+
+		@Override
+		public void addReply(MapleCharacter author, String message) {
+			if(replies == null){
+				replies = new ArrayList<>();
+			}
+			replies.add(new MapleBulletinReply(replies.size(), author.getId(), System.currentTimeMillis(), message));
+		}
+		
+		@Override
+		public void removeReply(int replyId) {
+			if(replies == null){
+				return;
+			}
+			replies.removeIf(reply -> reply.getReplyId() == replyId);
+		}
+		
+		@Override
+		public BulletinReply findReply(int replyId) {
+			if(replies == null){
+				return null;
+			}
+			
+			for(BulletinReply reply : replies){
+				if(reply.getReplyId() == replyId)
+					return reply;
+			}
+			
+			return null;
 		}
 		
 	}
@@ -155,7 +205,24 @@ public class MapleGuildBulletin implements GuildBulletin {
 			long post_time = result.get("post_time");
 			boolean notice = result.get("notice");
 			
-			MapleBulletinPost post = new MapleBulletinPost(poster, postId, post_time, content, title);
+			List<QueryResult> replyResults = MapleDatabase.getInstance().query("SELECT  `author`, `post_time`, `content` FROM `guild_bbs_replies` WHERE `post`=?", postId);
+			
+			List<BulletinReply> replies = null;
+			
+			if(replyResults.size() > 0){
+				replies = new ArrayList<>();
+				
+				for(QueryResult replyResult : replyResults){
+					
+					int author = replyResult.get("author");
+					long postTime = replyResult.get("post_time");
+					String replyContent = replyResult.get("content");
+					
+					replies.add(new MapleBulletinReply(replies.size(), author, postTime, replyContent));
+				}
+			}
+			
+			MapleBulletinPost post = new MapleBulletinPost(poster, postId, post_time, content, title, null);
 			
 			if(notice){
 				bulletin.notice = post;

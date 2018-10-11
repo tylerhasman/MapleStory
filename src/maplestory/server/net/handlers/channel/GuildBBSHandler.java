@@ -4,8 +4,10 @@ import constants.MessageType;
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
 import maplestory.guild.MapleGuild;
+import maplestory.guild.MapleGuildRankLevel;
 import maplestory.guild.bbs.BulletinEmote;
 import maplestory.guild.bbs.BulletinPost;
+import maplestory.guild.bbs.BulletinReply;
 import maplestory.guild.bbs.GuildBulletin;
 import maplestory.server.net.MaplePacketHandler;
 import maplestory.server.net.PacketFactory;
@@ -79,9 +81,47 @@ public class GuildBBSHandler extends MaplePacketHandler {
 			if(post != null){
 				client.sendPacket(PacketFactory.guildBBSThread(post));
 			}
+		}else if(operation == 4){
+			
+			int postId = buf.readInt();
+			
+			String str = readMapleAsciiString(buf);
+			
+			BulletinPost post = bulletin.getPost(postId);
+			
+			if(postId == 0){
+				post = bulletin.getNotice();
+			}
+			
+			post.addReply(client.getCharacter(), str);
+			
+			if(post != null){
+				client.sendPacket(PacketFactory.guildBBSThread(post));
+			}
+		}else if(operation == 5){
+			
+			int postId = buf.readInt();
+			int replyId = buf.readInt();
+			
+			BulletinPost post = bulletin.getPost(postId);
+			
+			BulletinReply reply = post.findReply(replyId);
+			
+			if(post != null){
+				if(reply != null){
+					MapleGuildRankLevel level = guild.getRankLevel(client.getCharacter());
+					if(reply.getAuthor() == client.getCharacter().getId() || level == MapleGuildRankLevel.JR_MASTER || level == MapleGuildRankLevel.MASTER){
+						post.removeReply(replyId);
+						client.sendPacket(PacketFactory.guildBBSThread(post));
+					}else{
+						client.getCharacter().sendMessage(MessageType.POPUP, "Only a Jr. Master or Master may delete that post");
+					}
+				}
+			}
+			
 			
 		}else{
-			System.out.println("Unknown "+operation);
+			client.getLogger().warn("GuildBBSHandler Unhandled op code "+operation);
 		}
 		
 	}

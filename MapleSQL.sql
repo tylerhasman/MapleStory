@@ -1,8 +1,8 @@
 -- MySQL dump 10.13  Distrib 5.7.9, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: maplestory
+-- Host: 149.56.132.26    Database: maplestory
 -- ------------------------------------------------------
--- Server version	5.7.11
+-- Server version	5.5.60-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -38,18 +38,24 @@ CREATE TABLE `accounts` (
   `login_message` varchar(300) DEFAULT '',
   `last_login` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`,`nx_prepaid`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `accounts`
+-- Table structure for table `buddy_requests`
 --
 
-LOCK TABLES `accounts` WRITE;
-/*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
-INSERT INTO `accounts` VALUES (1,'admin','tm0N6ybkQxXmaX9IZYaZcsLxRhECjX3bLctXvQcwnb0=','h4aSUzSl0V6YA28I2M4Yb5HN3sqMrSfKc5rmNv0qPUqNKsUk1HLg676gooca0et/Ba/TKXIV+lF8AlyMEzfABg==','111111',0,1,101499,101531,11698,1749,4,'',1482360802757),(2,'test','7rSnsryPR81S1zWef+Duo85+/Z+/OgGfk1RFtOdw6J0=','nV0Rz9FyABzVyIO3GN2mAYdCxz/Dg9WY57r+akQ4wGcMPAJy01DFdygaSy6R+rSFDq7U+ShB5OqIbvE1yfcx4A==','',0,1,0,0,0,0,4,'Pets have been added! Don\'t buy them in the cashshop that doesnt work. Use the !drop [item] [amount] command instead -T',0),(3,'test2','Lnw/M5cBrmW4UBMF9kecAJMHTVf4hOuPr+Q1V8fB6Qc=','nScQxVnNPG7nCYSLRnwLbtIxLoZuZVIAIr16YAIAkDygOp9Q7Iv5gZEFn9g3MqAeUf70vHZwlfPa0q5iHgL4oQ==','111111',0,1,0,0,0,0,4,'Pets have been added! Don\'t buy them in the cashshop that doesnt work. Use the !drop [item] [amount] command instead -T',0),(4,'tyler','IoqzsaVrAORvP0TtcbTZXxkiUMyuCL6bgRrG90jrP48=','ywJVrsBGiC89urcUK+VLvITE1nN6FDwXf/mB8pKcWB5rsOon9w/CuK7FXM5yJi6KNztOmfmGd565vlBb5vTf7Q==','111111',0,1,0,0,0,0,4,'',0),(5,'jennie','/X01OPxMwbRMTjnA8ITKusms0xzlt4Zfr2aDRC00URw=','5HNoxgQ5c2TzlbTIQf9RSpT3t6LLCj4wtZwllXQr/ErHBESgadiSH1E29VYFi+UZh7Z6nSFI9qiaCqcsnvUwqQ==','111111',0,1,0,0,0,0,4,'',0),(7,'AutoRegister','nh6uGoup8mSXHAN+EFa1wTAXVExTEfBzPyFNuQJMHOM=','3XWlWI0LYrnyUAakAxidubMDyge1R+O2zkE9LKsyWjXMYoe/K0Axfgosh8ZXrRqe8aqNNIJfEvQXP7kk0wDJrw==','111111',0,0,0,0,0,0,4,'',0),(8,'fdhfsdh','j8ejMteUxwIjMXKjgrBd4bSL8ybFabbXfcV2UrWOPYg=','Ot9dp+ZeFcTi4q5TixlDG7HLmjgsOo6n0i4d92pJA6I/lry/beQyKyMV5+YTnGKyyPoyBCA69/VyLFZpDN3Ykg==','111111',0,0,0,0,0,0,4,'',0),(9,'admin2','obMgPXkDEIX5SM4bO9HqGPiZTE5YKQhsl5Jw0wj/L+I=','BWkDBhlTJdzsdq9mHb8Jt295RkDwzEQuDuMowhjxPnBrrbvqtdbGU9EwQks+UnKik62xHfk2LbCoGvwMxd53/Q==','',0,0,0,0,0,0,4,'',0),(10,'admin23','6p0veIYYoVMHkEOfvntXJ9NMoO4X2xub+l388GwAc1Q=','1X6jZhIyRmyjwHo1m0BydwsnsI3bW2JZlt2dH3Pr85J0k6WHIWcdiJceuF/YeJUo60b4hKeuHMLEygZPGIG0yg==','',0,0,0,0,0,0,4,'',0);
-/*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `buddy_requests`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `buddy_requests` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `from` int(11) NOT NULL,
+  `to` int(11) NOT NULL,
+  `accepted` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `cash_items`
@@ -66,15 +72,6 @@ CREATE TABLE `cash_items` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `cash_items`
---
-
-LOCK TABLES `cash_items` WRITE;
-/*!40000 ALTER TABLE `cash_items` DISABLE KEYS */;
-/*!40000 ALTER TABLE `cash_items` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `cashshop_codes`
@@ -97,16 +94,6 @@ CREATE TABLE `cashshop_codes` (
   UNIQUE KEY `cashshop_codescol_UNIQUE` (`code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `cashshop_codes`
---
-
-LOCK TABLES `cashshop_codes` WRITE;
-/*!40000 ALTER TABLE `cashshop_codes` DISABLE KEYS */;
-INSERT INTO `cashshop_codes` VALUES (1,'chicken',100,0,0,0,0,0,1),(2,'chicken2',0,0,0,5010000,1,0,0),(3,'chicken3',100,100,100,2010000,3,10000,0),(4,'admin',99999,99999,9999,0,0,0,0);
-/*!40000 ALTER TABLE `cashshop_codes` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `characters`
@@ -146,20 +133,11 @@ CREATE TABLE `characters` (
   `mount_level` int(11) NOT NULL DEFAULT '1',
   `last_fame` bigint(64) NOT NULL DEFAULT '0',
   `last_portal` int(11) NOT NULL DEFAULT '0',
+  `buddy_capacity` int(11) DEFAULT '20',
   PRIMARY KEY (`id`),
   KEY `owner` (`owner`)
-) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `characters`
---
-
-LOCK TABLES `characters` WRITE;
-/*!40000 ALTER TABLE `characters` DISABLE KEYS */;
-INSERT INTO `characters` VALUES (43,'Jennie',113,0,231,31647,0,21112,1,202,12,999,80,5,68956842,220070300,5,1421,1411,10145,10050,212209,18,3,220000000,0,0,1,1473017795718,7),(48,'Tyler',60,0,200,30027,1,20001,0,0,12,445,63,5,5040,10000,4,706,656,1343,1293,237500,0,149,0,0,0,1,0,0),(62,'dasdsadsa',2,0,2000,30037,2,20402,0,0,18,4,4,5,0,140090200,4,66,66,61,61,17,0,0,0,0,0,1,0,1),(66,'dddddd',3,0,0,30037,2,20002,0,0,24,4,4,5,0,10000,7,980,980,495,495,51,0,8,0,0,0,1,0,0),(68,'fdsdf',36,0,800,30023,2,20000,0,0,12,4,4,5,0,10000,8,531,688,396,396,9599,309,1,0,0,0,1,0,0),(69,'World2',200,1,122,30022,2,20001,0,0,999,999,205,999,1130,910000000,1,29963,30000,30000,30000,0,0,14,10000,0,0,1,0,6),(71,'Tyler1234',13,0,0,30023,3,20000,0,15,83,4,4,13,80,910000000,1,215,215,140,140,627,0,0,20000,0,0,1,0,5);
-/*!40000 ALTER TABLE `characters` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `cooldowns`
@@ -176,18 +154,30 @@ CREATE TABLE `cooldowns` (
   PRIMARY KEY (`id`),
   KEY `owner_idx` (`owner`),
   CONSTRAINT `owner` FOREIGN KEY (`owner`) REFERENCES `characters` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `cooldowns`
+-- Table structure for table `custom_npcs`
 --
 
-LOCK TABLES `cooldowns` WRITE;
-/*!40000 ALTER TABLE `cooldowns` DISABLE KEYS */;
-INSERT INTO `cooldowns` VALUES (1,69,2321005,120000),(2,69,1221011,20000),(3,69,2321009,360000),(4,69,2321006,1800000),(5,69,2321004,600000),(6,69,1221011,20000),(7,69,2321006,1800000),(8,69,2321004,600000),(9,69,1221011,20000),(10,69,2321006,1800000);
-/*!40000 ALTER TABLE `cooldowns` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `custom_npcs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `custom_npcs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `npc_id` int(11) NOT NULL,
+  `map_id` int(11) NOT NULL,
+  `cy` int(11) NOT NULL,
+  `f` int(11) NOT NULL,
+  `foothold` int(11) NOT NULL,
+  `rx0` int(11) NOT NULL,
+  `rx1` int(11) NOT NULL,
+  `x` int(11) NOT NULL,
+  `y` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `duey_packages`
@@ -210,15 +200,6 @@ CREATE TABLE `duey_packages` (
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `duey_packages`
---
-
-LOCK TABLES `duey_packages` WRITE;
-/*!40000 ALTER TABLE `duey_packages` DISABLE KEYS */;
-/*!40000 ALTER TABLE `duey_packages` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `guild_bbs`
@@ -244,14 +225,6 @@ CREATE TABLE `guild_bbs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `guild_bbs`
---
-
-LOCK TABLES `guild_bbs` WRITE;
-/*!40000 ALTER TABLE `guild_bbs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_bbs` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `guild_entries`
@@ -270,16 +243,6 @@ CREATE TABLE `guild_entries` (
   CONSTRAINT `guild_id_guilds` FOREIGN KEY (`guild`) REFERENCES `guilds` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `guild_entries`
---
-
-LOCK TABLES `guild_entries` WRITE;
-/*!40000 ALTER TABLE `guild_entries` DISABLE KEYS */;
-INSERT INTO `guild_entries` VALUES (43,1,4);
-/*!40000 ALTER TABLE `guild_entries` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `guilds`
@@ -310,16 +273,6 @@ CREATE TABLE `guilds` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `guilds`
---
-
-LOCK TABLES `guilds` WRITE;
-/*!40000 ALTER TABLE `guilds` DISABLE KEYS */;
-INSERT INTO `guilds` VALUES (1,0,'DeezNutz','Welcome to DeezNutz!',10,1023,9,3004,14,1469578623893,0,'Master','JrMaster','Member','Member','Member'),(2,0,'Guild','Welcome to Guild!',10,1001,1,3001,1,1469651334829,0,'Master','JrMaster','Member','Member','Member'),(3,0,'Cheese','Welcome to Cheese!',10,0,0,0,0,1480846835546,0,'Master','JrMaster','Member','Member','Member');
-/*!40000 ALTER TABLE `guilds` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `inventory_items`
 --
 
@@ -341,18 +294,8 @@ CREATE TABLE `inventory_items` (
   PRIMARY KEY (`id`),
   KEY `item_owner_player_id_idx` (`player`),
   CONSTRAINT `item_owner_player_id` FOREIGN KEY (`player`) REFERENCES `characters` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=72856 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=72989 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `inventory_items`
---
-
-LOCK TABLES `inventory_items` WRITE;
-/*!40000 ALTER TABLE `inventory_items` DISABLE KEYS */;
-INSERT INTO `inventory_items` VALUES (59327,4,43,1,4161001,1,'',0,-1,-1,NULL),(59328,4,43,2,4000040,12,'',0,-1,-1,NULL),(59329,4,43,3,4161015,1,'',0,-1,-1,NULL),(59330,4,43,4,4161015,1,'',0,-1,-1,NULL),(59331,4,43,5,4004002,2,'',0,-1,-1,NULL),(59332,4,43,6,4006001,95,'',0,-1,-1,NULL),(59333,4,43,7,4020004,6,'',0,-1,-1,NULL),(59334,4,43,8,4020008,2,'',0,-1,-1,NULL),(59335,4,43,9,4020003,5,'',0,-1,-1,NULL),(59336,4,43,10,4020005,2,'',0,-1,-1,NULL),(59337,4,43,11,4020002,4,'',0,-1,-1,NULL),(59338,4,43,12,4020007,23,'',0,-1,-1,NULL),(59339,4,43,13,4000149,1,'',0,-1,-1,NULL),(59340,4,43,14,4031357,1,'',0,-1,-1,NULL),(59341,4,43,15,4020006,2,'',0,-1,-1,NULL),(59342,4,43,16,4020001,4,'',0,-1,-1,NULL),(59343,4,43,17,4000233,2,'',0,-1,-1,NULL),(59344,4,43,18,4004003,2,'',0,-1,-1,NULL),(59345,4,43,19,4010003,1,'',0,-1,-1,NULL),(59346,4,43,20,4004000,3,'',0,-1,-1,NULL),(59347,4,43,21,4031624,1,'',0,-1,-1,NULL),(59348,4,43,22,4000172,10,'',0,-1,-1,NULL),(59349,4,43,23,4006000,10,'',0,-1,-1,NULL),(59350,4,43,24,4000352,2,'',0,-1,-1,NULL),(59351,4,43,25,4000238,3,'',0,-1,-1,NULL),(59352,4,43,27,4010006,6,'',0,-1,-1,NULL),(59353,4,43,28,4004004,9,'',0,-1,-1,NULL),(59354,4,43,38,4010005,1,'',0,-1,-1,NULL),(59355,4,43,39,4000416,1,'',0,-1,-1,NULL),(59356,4,43,40,4000021,2,'',0,-1,-1,NULL),(59357,4,43,42,4010001,1,'',0,-1,-1,NULL),(59358,5,43,1,5000005,1,'',0,1471482893903,1935705931,'{summoned=true, closeness=0, fullness=100, name=Filthy Ass, petLevel=1}'),(59359,5,43,2,5170000,1,'',0,1471482924926,65470050,NULL),(59360,1,43,1,1051095,1,'',0,-1,-1,'{luk=12, mp=70, level=7, wdef=76, mdef=48, avoid=3, int=20, itemLevel=1}'),(59361,1,43,2,1041142,1,'',0,1471029690741,-2500537965607355403,'{itemLevel=1}'),(59362,1,43,3,1092026,1,'',0,-1,-1,'{dex=2, wdef=66, upgradeSlots=7, itemLevel=1}'),(59363,1,43,4,1382041,1,'',0,-1,-1,'{mp=50, level=7, watk=39, hp=100, matk=93, mdef=7, int=21, itemLevel=1}'),(59364,1,43,5,1002903,1,'',0,1471028541482,5210753971629441231,'{itemLevel=1}'),(59365,1,43,6,1051118,1,'',0,1471028488996,-16002507825093955,'{itemLevel=1}'),(59366,1,43,7,1061007,1,'',0,1471029706207,-5347318474766237206,'{itemLevel=1}'),(59367,1,43,8,1382048,1,'',0,-1,-1,'{luk=2, watk=72, matk=118, upgradeSlots=7, itemLevel=1}'),(59368,1,43,9,1382052,1,'',0,-1,-1,'{luk=3, watk=108, matk=178, upgradeSlots=7, itemLevel=1}'),(59369,1,43,10,1372033,1,'',0,-1,-1,'{level=7, watk=45, hp=50, matk=103, mdef=7, int=23, itemLevel=1}'),(59370,1,43,11,1322063,1,'',0,-1,-1,'{str=9, level=3, dex=3, watk=80, avoid=3, speed=5, itemLevel=1}'),(59371,1,43,12,1372032,1,'',0,-1,-1,'{watk=75, matk=123, upgradeSlots=7, itemLevel=1}'),(59372,1,43,13,1382067,1,'',0,-1,-1,'{level=8, watk=71, matk=147, mdef=8, int=24, itemLevel=1}'),(59373,1,43,14,1372010,1,'',0,-1,-1,'{level=7, watk=69, matk=148, mdef=7, int=21, itemLevel=1}'),(59374,1,43,15,1372046,1,'',0,-1,-1,'{str=3, luk=3, mp=100, dex=3, watk=49, hp=100, matk=80, upgradeSlots=7, int=3, itemLevel=1}'),(59375,1,43,16,1051150,1,'',0,-1,-1,'{itemLevel=1}'),(59376,1,43,17,1082133,1,'',0,-1,-1,'{luk=2, wdef=35, mdef=10, int=4, itemLevel=1}'),(59377,1,43,18,1002272,1,'',0,-1,-1,'{luk=2, level=2, wdef=42, mdef=70, int=9, itemLevel=1}'),(59378,1,43,19,1372041,1,'',0,-1,-1,'{luk=2, watk=92, matk=145, upgradeSlots=7, itemLevel=1}'),(59379,1,43,20,1382051,1,'',0,-1,-1,'{luk=2, watk=108, matk=178, upgradeSlots=7, int=1, itemLevel=1}'),(59380,1,43,21,1472053,1,'',0,-1,-1,'{luk=6, watk=46, wdef=6, upgradeSlots=7, itemLevel=1}'),(59381,1,43,22,1382008,1,'',0,-1,-1,'{watk=65, matk=100, upgradeSlots=7, itemLevel=1}'),(59382,1,43,23,1382008,1,'',0,-1,-1,'{watk=65, matk=100, upgradeSlots=7, itemLevel=1}'),(59383,1,43,24,1812001,1,'',0,1471483020934,747172657,'{itemLevel=1}'),(59384,1,43,25,1002357,1,'',0,-1,-1,'{str=15, acc=20, luk=15, level=10, dex=15, wdef=150, mdef=150, avoid=20, int=35, itemLevel=1}'),(59385,1,43,26,1382036,1,'',0,-1,-1,'{watk=80, matk=125, upgradeSlots=7, itemLevel=1}'),(59386,1,43,27,1372032,1,'',0,-1,-1,'{watk=75, matk=123, upgradeSlots=7, itemLevel=1}'),(59387,1,43,29,1032021,1,'',0,-1,-1,'{upgradeSlots=5, mdef=35, itemLevel=1}'),(59388,1,43,30,1051151,1,'',0,-1,-1,'{itemLevel=1}'),(59389,-1,43,-1,1002140,1,'',0,-1,-1,'{str=999, acc=200, luk=999, dex=999, wdef=200, upgradeSlots=7, mdef=200, avoid=200, int=999, speed=30, jump=50, itemLevel=1}'),(59390,-1,43,-4,1032046,1,'',0,-1,-1,'{level=5, matk=50, wdef=5, mdef=85, int=30, itemLevel=1}'),(59391,-1,43,-5,1051046,1,'',0,-1,-1,'{luk=1, mp=95, level=10, wdef=52, mdef=47, int=43, itemLevel=1}'),(59392,-1,43,-101,1003050,1,'',0,1471029725863,-3795294127529682495,'{itemLevel=1}'),(59393,-1,43,-7,1072226,1,'',0,-1,-1,'{luk=2, level=5, matk=1, wdef=39, mdef=19, int=4, speed=10, jump=100, itemLevel=1}'),(59394,-1,43,-8,1082002,1,'',0,-1,-1,'{level=5, matk=15, wdef=2, mdef=5, int=15, itemLevel=1}'),(59395,-1,43,-104,1032024,1,'',0,1471028468826,619631698601787659,'{itemLevel=1}'),(59396,-1,43,-9,1102205,1,'',0,-1,-1,'{str=4, luk=4, level=7, dex=4, wdef=35, mdef=40, int=18, itemLevel=1}'),(59397,-1,43,-105,1041130,1,'',0,1471030309684,3726642794451508719,'{itemLevel=1}'),(59398,-1,43,-106,1061001,1,'',0,1471029703026,7457334740265985517,'{itemLevel=1}'),(59399,-1,43,-11,1382047,1,'',0,-1,-1,'{luk=1, level=7, watk=72, matk=188, mdef=14, int=43, itemLevel=1}'),(59400,-1,43,-107,1072153,1,'',0,1471029315647,-8858305966696600382,'{itemLevel=1}'),(59401,-1,43,-108,1082102,1,'',0,1471028463495,-8948904108902205225,'{itemLevel=1}'),(59402,-1,43,-109,1102112,1,'',0,1471028741294,2110422253529507854,'{itemLevel=1}'),(59403,-1,43,-49,1142008,1,'',0,-1,-1,'{str=8, acc=5, luk=8, dex=8, hp=10, int=8, itemLevel=1}'),(59404,-1,43,-18,1902000,1,'',0,-1,-1,'{itemLevel=1}'),(59405,-1,43,-19,1912000,1,'',0,-1,-1,'{itemLevel=1}'),(59406,-1,43,-123,1812000,1,'',0,1471482913090,75036195,'{itemLevel=1}'),(59407,-1,43,-124,1812002,1,'',0,1471488068426,399787710,'{itemLevel=1}'),(59408,-1,43,-125,1812003,1,'',0,1471488071001,1337788551,'{itemLevel=1}'),(59409,-1,43,-126,1812004,1,'',0,1471483031287,1763113914,'{itemLevel=1}'),(59410,-1,43,-127,1812005,1,'',0,1471483059187,2045796615,'{itemLevel=1}'),(59411,2,43,1,2000002,14,'',0,-1,-1,NULL),(59412,2,43,2,2041017,100,'',0,-1,-1,NULL),(59413,2,43,3,2020015,10,'',0,-1,-1,NULL),(59414,2,43,4,2040514,70,'',0,-1,-1,NULL),(59415,2,43,5,2000003,1,'',0,-1,-1,NULL),(59416,2,43,6,2022174,64,'',0,-1,-1,NULL),(59417,2,43,7,2002001,100,'',0,-1,-1,NULL),(59418,2,43,8,2000003,100,'',0,-1,-1,NULL),(59419,2,43,9,2210006,4,'',0,-1,-1,NULL),(59420,2,43,10,2020014,1,'',0,-1,-1,NULL),(59421,2,43,11,2002001,6,'',0,-1,-1,NULL),(59422,2,43,12,2012002,1,'',0,-1,-1,NULL),(59423,2,43,16,2022457,25,'FilthyMan',0,-1,-1,NULL),(59424,2,43,17,2022457,100,'FilthyMan',0,-1,-1,NULL),(59425,2,43,19,2043803,71,'',0,-1,-1,NULL),(59426,2,43,20,2043703,46,'',0,-1,-1,NULL),(59427,2,43,21,2040512,88,'',0,-1,-1,NULL),(59428,2,43,22,2040519,70,'',0,-1,-1,NULL),(59429,2,43,23,2040026,51,'',0,-1,-1,NULL),(59430,2,43,24,2040816,80,'',0,-1,-1,NULL),(59431,2,43,25,2040303,75,'',0,-1,-1,NULL),(59432,2,43,26,2040517,100,'',0,-1,-1,NULL),(59433,2,43,27,2040516,88,'',0,-1,-1,NULL),(59434,2,43,28,2040518,74,'',0,-1,-1,NULL),(59435,2,43,29,2041017,60,'',0,-1,-1,NULL),(59436,2,43,30,2020012,4,'',0,-1,-1,NULL),(59437,2,43,31,2000004,28,'',0,-1,-1,NULL),(59438,2,43,32,2041016,92,'',0,-1,-1,NULL),(59439,2,43,33,2041015,100,'',0,-1,-1,NULL),(59440,2,43,35,2020007,50,'',0,-1,-1,NULL),(59441,2,43,36,2043705,86,'',0,-1,-1,NULL),(59442,2,43,37,2000005,26,'',0,-1,-1,NULL),(59443,2,43,42,2000006,18,'',0,-1,-1,NULL),(59444,2,43,43,2040714,88,'',0,-1,-1,NULL),(59445,2,43,45,2040012,90,'',0,-1,-1,NULL),(59446,2,43,46,2040716,95,'',0,-1,-1,NULL),(59447,2,43,47,2043701,1,'',0,-1,-1,NULL),(65319,2,62,1,2000022,3,'',0,-1,-1,NULL),(65320,2,62,2,2000023,5,'',0,-1,-1,NULL),(65321,2,62,3,2043002,93,'',0,-1,-1,NULL),(65322,-1,62,-5,1042167,1,'',0,-1,-1,'{wdef=3, upgradeSlots=7, itemLevel=1}'),(65323,-1,62,-6,1062115,1,'',0,-1,-1,'{wdef=2, upgradeSlots=7, itemLevel=1}'),(65324,-1,62,-7,1072383,1,'',0,-1,-1,'{wdef=2, upgradeSlots=5, itemLevel=1}'),(65325,-1,62,-11,1302000,1,'dasdsadsa',0,-1,-1,'{watk=17, itemLevel=1}'),(65326,4,62,1,4161048,1,'',0,-1,-1,NULL),(65327,4,62,2,4001271,1,'',0,-1,-1,NULL),(65328,1,62,1,1442079,1,'',0,-1,-1,'{watk=22, upgradeSlots=7, itemLevel=1}'),(71212,1,48,1,1322005,1,'',0,-1,-1,'{watk=19, upgradeSlots=7, itemLevel=1}'),(71213,1,48,2,1072060,1,'',0,-1,-1,'{wdef=7, upgradeSlots=5, itemLevel=1}'),(71214,-1,48,-5,1040002,1,'',0,-1,-1,'{wdef=3, upgradeSlots=7, itemLevel=1}'),(71215,-1,48,-6,1060002,1,'',0,-1,-1,'{wdef=2, upgradeSlots=7, itemLevel=1}'),(71216,-1,48,-7,1072001,1,'',0,-1,-1,'{wdef=2, upgradeSlots=5, itemLevel=1}'),(71217,-1,48,-11,1372053,1,'',0,-1,-1,'{watk=33, matk=53, upgradeSlots=7, itemLevel=1}'),(71218,-1,48,-49,1142107,1,'',0,-1,-1,'{mp=50, hp=50, itemLevel=1}'),(71219,4,48,1,4161001,1,'',0,-1,-1,NULL),(71220,4,48,2,4000019,112,'',0,-1,-1,NULL),(71221,4,48,3,4020000,1,'',0,-1,-1,NULL),(71222,4,48,4,4010000,2,'',0,-1,-1,NULL),(71223,4,48,5,4000011,7,'',0,-1,-1,NULL),(71224,4,48,6,4000000,4,'',0,-1,-1,NULL),(71225,4,48,7,4000016,9,'',0,-1,-1,NULL),(71226,4,48,8,4000021,1,'',0,-1,-1,NULL),(71227,4,48,9,4010006,1,'',0,-1,-1,NULL),(71228,4,48,10,4000004,2,'',0,-1,-1,NULL),(71229,4,48,11,4000010,1,'',0,-1,-1,NULL),(71230,4,48,12,4032086,1,'',0,-1,-1,NULL),(71231,2,48,1,2010009,9,'',0,-1,-1,NULL),(71232,2,48,2,2061000,5,'',0,-1,-1,NULL),(71233,2,48,3,2000000,4,'',0,-1,-1,NULL),(71234,2,48,4,2060000,3,'',0,-1,-1,NULL),(71235,2,48,5,2388069,1,'Tyler',0,-1,-1,NULL),(71523,4,66,1,4161001,1,'',0,-1,-1,NULL),(71524,-1,66,-5,1040002,1,'',0,-1,-1,'{wdef=3, upgradeSlots=7, itemLevel=1}'),(71525,-1,66,-6,1060002,1,'',0,-1,-1,'{wdef=2, upgradeSlots=7, itemLevel=1}'),(71526,-1,66,-7,1072005,1,'',0,-1,-1,'{wdef=2, upgradeSlots=5, itemLevel=1}'),(71527,-1,66,-103,1022005,1,'',0,1480734443083,479388403,'{itemLevel=1}'),(71528,-1,66,-11,1302000,1,'',0,-1,-1,'{watk=17, upgradeSlots=7, itemLevel=1}'),(71613,4,68,1,4161001,1,'',0,-1,-1,NULL),(71614,4,68,8,4000075,200,'',0,-1,-1,NULL),(71615,-1,68,-5,1040010,1,'',0,-1,-1,'{wdef=3, upgradeSlots=7, itemLevel=1}'),(71616,-1,68,-6,1060006,1,'',0,-1,-1,'{wdef=2, upgradeSlots=7, itemLevel=1}'),(71617,-1,68,-7,1072038,1,'',0,-1,-1,'{wdef=2, upgradeSlots=5, itemLevel=1}'),(71618,-1,68,-11,1322005,1,'',0,-1,-1,'{watk=19, upgradeSlots=7, itemLevel=1}'),(71877,1,69,1,1322005,1,'',0,-1,-1,'{watk=19, upgradeSlots=7, itemLevel=1}'),(71878,1,69,2,1040006,1,'',0,-1,-1,'{wdef=3, upgradeSlots=7, itemLevel=1}'),(71879,1,69,3,1060006,1,'',0,-1,-1,'{wdef=2, upgradeSlots=7, itemLevel=1}'),(71880,1,69,4,1050030,1,'',0,-1,-1,'{luk=4, mp=5, wdef=32, upgradeSlots=10, mdef=16, itemLevel=1}'),(71881,1,69,5,1382050,1,'',0,-1,-1,'{watk=108, matk=178, upgradeSlots=7, int=3, itemLevel=1}'),(71882,1,69,6,1442080,1,'',0,-1,-1,'{watk=62, upgradeSlots=7, itemLevel=1}'),(71883,1,69,7,1322045,1,'',0,-1,-1,'{watk=98, upgradeSlots=7, itemLevel=1}'),(71884,1,69,8,1322052,1,'',0,-1,-1,'{level=7, watk=117, itemLevel=1}'),(71885,1,69,9,1322053,1,'',0,-1,-1,'{watk=15, upgradeSlots=7, itemLevel=1}'),(71886,4,69,1,4161001,1,'',0,-1,-1,NULL),(71887,4,69,2,4000019,16,'',0,-1,-1,NULL),(71888,4,69,3,4006000,65,'',0,-1,-1,NULL),(71889,4,69,4,4000000,1,'',0,-1,-1,NULL),(71890,4,69,5,4000006,2,'',0,-1,-1,NULL),(71891,2,69,1,2061000,1,'',0,-1,-1,NULL),(71892,2,69,2,2060000,1,'',0,-1,-1,NULL),(71893,2,69,3,2043200,93,'',0,-1,-1,NULL),(71894,2,69,4,2043205,86,'',0,-1,-1,NULL),(71895,-1,69,-7,1072038,1,'',0,-1,-1,'{wdef=2, upgradeSlots=5, itemLevel=1}'),(71896,-1,69,-11,1322054,1,'',0,-1,-1,'{str=25, acc=35, level=4, watk=121, wdef=8, itemLevel=1}'),(72832,2,71,1,2060000,1,'',0,-1,-1,NULL),(72833,2,71,2,2022503,1,'',0,-1,-1,NULL),(72834,2,71,3,2000004,1,'',0,-1,-1,NULL),(72835,2,71,4,2022514,1,'',0,-1,-1,NULL),(72836,2,71,5,2000005,1,'',0,-1,-1,NULL),(72837,2,71,6,2049000,1,'',0,-1,-1,NULL),(72838,2,71,7,2049100,1,'',0,-1,-1,NULL),(72839,2,71,8,2000002,90,'',0,-1,-1,NULL),(72840,2,71,9,2000007,60,'',0,-1,-1,NULL),(72841,2,71,10,2041300,1,'',0,-1,-1,NULL),(72842,2,71,11,2000003,20,'',0,-1,-1,NULL),(72843,3,71,1,3010116,1,'',0,-1,-1,NULL),(72844,4,71,1,4161001,1,'',0,-1,-1,NULL),(72845,4,71,2,4000019,8,'',0,-1,-1,NULL),(72846,4,71,3,4310000,700,'',0,-1,-1,NULL),(72847,-1,71,-5,1040010,1,'',0,-1,-1,'{wdef=3, upgradeSlots=7, itemLevel=1}'),(72848,-1,71,-6,1060006,1,'',0,-1,-1,'{wdef=2, upgradeSlots=7, itemLevel=1}'),(72849,-1,71,-7,1072038,1,'',0,-1,-1,'{wdef=2, upgradeSlots=5, itemLevel=1}'),(72850,-1,71,-11,1312004,1,'',0,-1,-1,'{watk=17, upgradeSlots=7, itemLevel=1}'),(72851,-1,71,-17,1122017,1,'',0,-1,-1,'{itemLevel=1}'),(72852,1,71,1,1132010,1,'',0,-1,-1,'{wdef=7, upgradeSlots=1, mdef=7, itemLevel=1}'),(72853,1,71,2,1003016,1,'',0,-1,-1,'{str=18, acc=25, luk=18, dex=18, wdef=180, upgradeSlots=10, mdef=180, avoid=25, int=18, itemLevel=1}'),(72854,1,71,3,1132010,1,'',0,-1,-1,'{wdef=7, upgradeSlots=1, mdef=7, itemLevel=1}'),(72855,1,71,4,1132010,1,'',0,-1,-1,'{wdef=7, upgradeSlots=1, mdef=7, itemLevel=1}');
-/*!40000 ALTER TABLE `inventory_items` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `keybindings`
@@ -370,18 +313,8 @@ CREATE TABLE `keybindings` (
   PRIMARY KEY (`id`),
   KEY `keybindings_ibfk_1` (`character`),
   CONSTRAINT `keybindings_ibfk_1` FOREIGN KEY (`character`) REFERENCES `characters` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `keybindings`
---
-
-LOCK TABLES `keybindings` WRITE;
-/*!40000 ALTER TABLE `keybindings` DISABLE KEYS */;
-INSERT INTO `keybindings` VALUES (8,43,42,1,2001005),(9,43,56,1,2301005),(10,43,57,5,53),(11,43,83,0,2000017),(12,43,8,1,2001003),(14,43,49,2,2022174),(15,43,30,1,2301001),(16,43,48,2,2022457),(17,43,36,0,2311004),(18,43,5,1,2001002),(19,43,6,1,2301003),(20,43,7,1,2301002),(21,43,4,1,2301004),(22,43,20,6,101),(23,43,21,6,102),(24,43,22,6,104),(25,43,60,0,101),(26,43,61,0,102),(27,43,62,0,103),(28,43,63,0,104),(34,43,51,1,2311004),(35,43,9,1,2311003),(37,43,45,1,2311006),(38,43,11,1,2311001),(39,43,82,0,1004),(40,43,10,1,1004),(41,48,42,1,2001005),(42,62,42,1,20001000),(43,69,42,1,1221011),(44,69,82,0,1221011),(45,69,71,1,2321006);
-/*!40000 ALTER TABLE `keybindings` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `notes`
@@ -404,15 +337,6 @@ CREATE TABLE `notes` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `notes`
---
-
-LOCK TABLES `notes` WRITE;
-/*!40000 ALTER TABLE `notes` DISABLE KEYS */;
-/*!40000 ALTER TABLE `notes` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `party_quest`
 --
 
@@ -428,18 +352,8 @@ CREATE TABLE `party_quest` (
   UNIQUE KEY `player_UNIQUE` (`player`),
   KEY `pq_player_id_idx` (`player`),
   CONSTRAINT `pq_player_id` FOREIGN KEY (`player`) REFERENCES `characters` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `party_quest`
---
-
-LOCK TABLES `party_quest` WRITE;
-/*!40000 ALTER TABLE `party_quest` DISABLE KEYS */;
-INSERT INTO `party_quest` VALUES (3,43,15,0),(7,48,0,0),(11,62,0,0),(13,66,0,0),(15,68,0,0),(16,69,0,0),(18,71,0,0);
-/*!40000 ALTER TABLE `party_quest` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `quest_progress`
@@ -457,18 +371,8 @@ CREATE TABLE `quest_progress` (
   PRIMARY KEY (`id`),
   KEY `owner_id_idx` (`owner`),
   CONSTRAINT `progress_owner_id` FOREIGN KEY (`owner`) REFERENCES `characters` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `quest_progress`
---
-
-LOCK TABLES `quest_progress` WRITE;
-/*!40000 ALTER TABLE `quest_progress` DISABLE KEYS */;
-INSERT INTO `quest_progress` VALUES (125,43,3446,8141000,20),(126,43,3446,8141000,20),(127,43,3446,8141000,20),(128,43,3446,8141000,20);
-/*!40000 ALTER TABLE `quest_progress` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `quests`
@@ -488,18 +392,8 @@ CREATE TABLE `quests` (
   PRIMARY KEY (`id`),
   KEY `owner_idx` (`owner`),
   CONSTRAINT `quests_owner_id` FOREIGN KEY (`owner`) REFERENCES `characters` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6565 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6822 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `quests`
---
-
-LOCK TABLES `quests` WRITE;
-/*!40000 ALTER TABLE `quests` DISABLE KEYS */;
-INSERT INTO `quests` VALUES (5367,43,3444,2,0,1470188116029,2041026),(5368,43,7300,1,0,0,2081000),(5369,43,3445,2,0,1469991363490,2041026),(5370,43,3446,2,0,1469990670098,2041026),(5371,43,2230,1,0,0,1032102),(5372,43,29015,1,0,0,9000066),(5373,43,29900,2,0,1470192488797,9000040),(5374,43,29901,1,0,0,9000040),(5375,43,29902,2,0,1470192501186,9000040),(5377,43,3444,2,0,1470188116029,2041026),(5378,43,7300,1,0,0,2081000),(5379,43,3445,2,0,1469991363490,2041026),(5380,43,3446,2,0,1469990670098,2041026),(5381,43,2230,1,0,0,1032102),(5382,43,29015,1,0,0,9000066),(5383,43,29900,2,0,1470192488797,9000040),(5384,43,29901,1,0,0,9000040),(5385,43,29902,2,0,1470192501186,9000040),(5387,43,3444,2,0,1470188116029,2041026),(5388,43,7300,1,0,0,2081000),(5389,43,3445,2,0,1469991363490,2041026),(5390,43,3446,2,0,1469990670098,2041026),(5391,43,2230,1,0,0,1032102),(5392,43,29015,1,0,0,9000066),(5393,43,29900,2,0,1470192488797,9000040),(5394,43,29901,1,0,0,9000040),(5395,43,29902,2,0,1470192501186,9000040),(5397,43,3444,2,0,1470188116029,2041026),(5398,43,7300,1,0,0,2081000),(5399,43,3445,2,0,1469991363490,2041026),(5400,43,3446,2,0,1469990670098,2041026),(5401,43,2230,1,0,0,1032102),(5402,43,29015,1,0,0,9000066),(5403,43,29900,2,0,1470192488797,9000040),(5404,43,29901,1,0,0,9000040),(5405,43,29902,2,0,1470192501186,9000040),(5822,62,21010,2,2,1476921768621,1202001),(5823,62,21011,1,0,0,1202003),(5824,62,21000,2,0,1476920288215,1209006),(5825,62,21001,2,0,1476920411346,1209007),(5826,62,21010,2,2,1476921768621,1202001),(5827,62,21011,1,0,0,1202003),(5828,62,21000,2,0,1476920288215,1209006),(5829,62,21001,2,0,1476920411346,1209007),(5830,62,21010,2,2,1476921768621,1202001),(5831,62,21011,1,0,0,1202003),(5832,62,21000,2,0,1476920288215,1209006),(5833,62,21001,2,0,1476920411346,1209007),(6356,48,3845,1,0,0,2092001),(6357,48,2230,1,0,0,1032102),(6358,48,29015,1,0,0,9000066),(6359,48,8248,2,0,1477184396454,9209001),(6363,48,3845,1,0,0,2092001),(6364,48,2230,1,0,0,1032102),(6365,48,29015,1,0,0,9000066),(6366,48,8248,2,0,1477184396454,9209001),(6370,48,3845,1,0,0,2092001),(6371,48,2230,1,0,0,1032102),(6372,48,29015,1,0,0,9000066),(6373,48,8248,2,0,1477184396454,9209001),(6374,48,8249,2,0,1477850713958,9209001),(6375,48,3845,1,0,0,2092001),(6376,48,2230,1,0,0,1032102),(6377,48,29015,1,0,0,9000066),(6378,48,8248,2,0,1477184396454,9209001),(6379,48,8249,2,0,1477850713958,9209001),(6380,48,3845,1,0,0,2092001),(6381,48,2230,1,0,0,1032102),(6382,48,29015,1,0,0,9000066),(6383,48,8248,2,0,1477184396454,9209001),(6384,48,8249,2,0,1477850713958,9209001),(6385,48,3845,1,0,0,2092001),(6386,48,2230,1,0,0,1032102),(6387,48,29015,1,0,0,9000066),(6388,48,8248,2,0,1477184396454,9209001),(6389,48,8249,2,0,1477850713958,9209001),(6390,48,3845,1,0,0,2092001),(6391,48,2230,1,0,0,1032102),(6392,48,29015,1,0,0,9000066),(6393,48,8248,2,0,1477184396454,9209001),(6394,48,8249,2,0,1477850713958,9209001),(6398,48,3845,1,0,0,2092001),(6399,48,2230,1,0,0,1032102),(6400,48,29015,1,0,0,9000066),(6401,48,8248,2,0,1477184396454,9209001),(6402,48,8249,2,0,1477850713958,9209001),(6505,69,29015,1,0,0,9000066),(6506,69,29900,1,0,0,9000040),(6507,69,29901,1,0,0,9000040),(6508,69,29902,1,0,0,9000040),(6509,69,29903,1,0,0,9000040),(6510,69,29015,1,0,0,9000066),(6511,69,29900,1,0,0,9000040),(6512,69,29901,1,0,0,9000040),(6513,69,29902,1,0,0,9000040),(6514,69,29903,1,0,0,9000040),(6515,69,29015,1,0,0,9000066),(6516,69,29900,1,0,0,9000040),(6517,69,29901,1,0,0,9000040),(6518,69,29902,1,0,0,9000040),(6519,69,29903,1,0,0,9000040),(6520,69,29015,1,0,0,9000066),(6521,69,29900,1,0,0,9000040),(6522,69,29901,1,0,0,9000040),(6523,69,29902,1,0,0,9000040),(6524,69,29903,1,0,0,9000040),(6525,69,29015,1,0,0,9000066),(6526,69,29900,1,0,0,9000040),(6527,69,29901,1,0,0,9000040),(6528,69,29902,1,0,0,9000040),(6529,69,29903,1,0,0,9000040),(6530,69,29015,1,0,0,9000066),(6531,69,29900,1,0,0,9000040),(6532,69,29901,1,0,0,9000040),(6533,69,29902,1,0,0,9000040),(6534,69,29903,1,0,0,9000040),(6535,69,29015,1,0,0,9000066),(6536,69,29900,1,0,0,9000040),(6537,69,29901,1,0,0,9000040),(6538,69,29902,1,0,0,9000040),(6539,69,29903,1,0,0,9000040),(6540,69,29015,1,0,0,9000066),(6541,69,29900,1,0,0,9000040),(6542,69,29901,1,0,0,9000040),(6543,69,29902,1,0,0,9000040),(6544,69,29903,1,0,0,9000040),(6545,69,29015,1,0,0,9000066),(6546,69,29900,1,0,0,9000040),(6547,69,29901,1,0,0,9000040),(6548,69,29902,1,0,0,9000040),(6549,69,29903,1,0,0,9000040),(6550,69,29015,1,0,0,9000066),(6551,69,29900,1,0,0,9000040),(6552,69,29901,1,0,0,9000040),(6553,69,29902,1,0,0,9000040),(6554,69,29903,1,0,0,9000040),(6555,69,29015,1,0,0,9000066),(6556,69,29900,1,0,0,9000040),(6557,69,29901,1,0,0,9000040),(6558,69,29902,1,0,0,9000040),(6559,69,29903,1,0,0,9000040),(6560,69,29015,1,0,0,9000066),(6561,69,29900,1,0,0,9000040),(6562,69,29901,1,0,0,9000040),(6563,69,29902,1,0,0,9000040),(6564,69,29903,1,0,0,9000040);
-/*!40000 ALTER TABLE `quests` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `shopitems`
@@ -565,21 +459,12 @@ CREATE TABLE `skills` (
   `owner` int(11) NOT NULL,
   `skillid` int(11) NOT NULL,
   `level` int(11) NOT NULL,
+  `mastery` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `skills_ibfk_1` (`owner`),
   CONSTRAINT `skills_ibfk_1` FOREIGN KEY (`owner`) REFERENCES `characters` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=927 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=961 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `skills`
---
-
-LOCK TABLES `skills` WRITE;
-/*!40000 ALTER TABLE `skills` DISABLE KEYS */;
-INSERT INTO `skills` VALUES (543,43,2001004,1),(544,43,2001005,20),(545,43,2000000,16),(546,43,2000001,10),(547,43,2001002,20),(548,43,2301002,30),(549,43,2301001,20),(550,43,2001003,12),(551,43,2301003,20),(552,43,2301004,20),(554,43,2301005,30),(564,43,2311004,30),(566,43,2311006,19),(567,43,2300000,1),(569,43,2311001,20),(570,43,2311005,6),(571,43,2310000,11),(572,43,2311002,5),(573,43,2311003,30),(577,43,8,1),(578,43,1004,1),(582,48,2001004,1),(583,48,2001005,1),(604,62,20000017,0),(605,62,20000018,0),(606,62,20000014,0),(607,62,20000015,0),(608,62,20000016,0),(609,62,20001000,1),(740,69,1031,1),(741,69,8,1),(742,69,12,20),(743,69,9000,1),(744,69,9001,1),(745,69,9002,1),(746,69,1000,3),(747,69,1001,3),(748,69,1002,3),(749,69,1003,1),(750,69,1004,1),(751,69,1005,1),(752,69,1006,1),(753,69,1007,3),(754,69,1009,1),(755,69,1010,1),(756,69,1011,1),(757,69,1013,2),(758,69,1014,1),(759,69,1015,1),(760,69,1017,1),(761,69,1018,1),(762,69,1019,1),(763,69,1020,1),(764,69,1001005,20),(765,69,1001004,20),(766,69,1001003,20),(767,69,1000002,8),(768,69,1000001,10),(769,69,1000000,16),(770,69,2300000,20),(771,69,2301003,20),(772,69,2301002,30),(773,69,2301001,20),(774,69,2301005,30),(775,69,2301004,20),(776,69,2001004,20),(777,69,2001005,20),(778,69,2001002,20),(779,69,2001003,20),(780,69,2211003,30),(781,69,2211002,30),(782,69,2211005,20),(783,69,2211004,20),(784,69,2000000,16),(785,69,2000001,10),(786,69,2211006,30),(787,69,2210001,30),(788,69,2210000,20),(789,69,2121000,30),(790,69,2121001,30),(791,69,2121002,30),(792,69,2121003,30),(793,69,2121004,30),(794,69,2121005,30),(795,69,2121006,30),(796,69,2121007,30),(797,69,2121008,5),(798,69,2201001,20),(799,69,2201003,20),(800,69,2201002,20),(801,69,2201005,30),(802,69,2201004,30),(803,69,2200000,20),(804,69,2110000,20),(805,69,2110001,30),(806,69,2111002,30),(807,69,2111003,30),(808,69,2111004,20),(809,69,2111005,20),(810,69,2111006,30),(811,69,2321003,30),(812,69,2321002,30),(813,69,2321001,30),(814,69,2321000,30),(815,69,2321007,30),(816,69,2321006,10),(817,69,2321005,30),(818,69,2321004,30),(819,69,2321009,5),(820,69,2321008,30),(821,69,2100000,20),(822,69,2101001,20),(823,69,2101002,20),(824,69,2101003,20),(825,69,2101004,30),(826,69,2101005,30),(827,69,2310000,20),(828,69,2311003,30),(829,69,2311002,20),(830,69,2311001,20),(831,69,2311006,30),(832,69,2311005,30),(833,69,2311004,30),(834,69,2221001,30),(835,69,2221000,30),(836,69,2221003,30),(837,69,2221002,30),(838,69,2221005,30),(839,69,2221004,30),(840,69,2221007,30),(841,69,2221006,30),(842,69,2221008,5),(843,69,1321010,5),(844,69,1321007,10),(845,69,1321000,30),(846,69,1321001,30),(847,69,1321002,30),(848,69,1321003,30),(849,69,1320005,30),(850,69,1320006,30),(851,69,1320008,25),(852,69,1320009,25),(853,69,1101004,20),(854,69,1101005,20),(855,69,1101006,20),(856,69,1101007,30),(857,69,1100000,20),(858,69,1100001,20),(859,69,1100002,30),(860,69,1100003,30),(861,69,1311004,30),(862,69,1311005,30),(863,69,1311006,30),(864,69,1311007,20),(865,69,1311001,30),(866,69,1311002,30),(867,69,1311003,30),(868,69,1310000,20),(869,69,1311008,20),(870,69,1221011,30),(871,69,1221009,30),(872,69,1221012,5),(873,69,1221002,30),(874,69,1221003,20),(875,69,1221000,30),(876,69,1221001,30),(877,69,1221007,30),(878,69,1221004,20),(879,69,1220006,30),(880,69,1220005,30),(881,69,1220010,10),(882,69,1301007,30),(883,69,1301006,20),(884,69,1301005,20),(885,69,1301004,20),(886,69,1300003,30),(887,69,1300002,30),(888,69,1300001,20),(889,69,1300000,20),(890,69,1211002,30),(891,69,1211003,30),(892,69,1211006,30),(893,69,1211007,30),(894,69,1211004,30),(895,69,1211005,30),(896,69,1210000,20),(897,69,1210001,20),(898,69,1211008,30),(899,69,1211009,20),(900,69,1121008,30),(901,69,1121011,5),(902,69,1121010,30),(903,69,1121001,30),(904,69,1121000,30),(905,69,1121002,30),(906,69,1121006,30),(907,69,1120003,30),(908,69,1120005,30),(909,69,1120004,30),(910,69,1201006,20),(911,69,1201007,30),(912,69,1201004,20),(913,69,1201005,20),(914,69,1200002,30),(915,69,1200003,30),(916,69,1200000,20),(917,69,1200001,20),(918,69,1111002,30),(919,69,1111003,30),(920,69,1111004,30),(921,69,1111005,30),(922,69,1111006,30),(923,69,1111007,20),(924,69,1110000,20),(925,69,1110001,20),(926,69,1111008,30);
-/*!40000 ALTER TABLE `skills` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `storage_item_equip_data`
@@ -618,15 +503,6 @@ CREATE TABLE `storage_item_equip_data` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `storage_item_equip_data`
---
-
-LOCK TABLES `storage_item_equip_data` WRITE;
-/*!40000 ALTER TABLE `storage_item_equip_data` DISABLE KEYS */;
-/*!40000 ALTER TABLE `storage_item_equip_data` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `storage_items`
 --
 
@@ -650,15 +526,6 @@ CREATE TABLE `storage_items` (
 ) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `storage_items`
---
-
-LOCK TABLES `storage_items` WRITE;
-/*!40000 ALTER TABLE `storage_items` DISABLE KEYS */;
-INSERT INTO `storage_items` VALUES (66,1,1,0,1092003,1,'dasdsad',0,-1,-1,-1),(67,2,1,1,2061000,1,'',0,-1,-1,-1);
-/*!40000 ALTER TABLE `storage_items` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -669,4 +536,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-12-23 13:24:37
+-- Dump completed on 2018-10-11 10:18:52

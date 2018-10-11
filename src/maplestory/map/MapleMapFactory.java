@@ -330,6 +330,9 @@ public class MapleMapFactory {
 			return -1;
 		String link = mapData.readString("info/link", "");
 		
+		if(link.isEmpty())
+			return -1;
+		
 		return Integer.valueOf(link);
     }
     

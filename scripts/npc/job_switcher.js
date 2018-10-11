@@ -17,7 +17,7 @@ function action(mode, type, selection){
 	if(status == 0){
 		s = "Please select a job: \r\n#b";
 		
-		for each(job in MapleJob.values()){
+		for each(job in cm.getCharacter().getJob().getNext()){
 			s += "#L"+job.getId()+"#"+job.getName()+"#l\r\n";
 		}
 		

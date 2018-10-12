@@ -289,6 +289,20 @@ public class PlayerInteractionHandler extends MaplePacketHandler {
 				return;
 			}
 			
+			int inInventory = inv.countById(item.getItemId());
+			int alreadyTrading = ti.countTradedItem(item.getItemId(), client.getCharacter());
+			
+			if(inInventory - alreadyTrading <= 0){
+				client.sendReallowActions();
+				return;
+			}else if(alreadyTrading + amount > inInventory){
+				client.getCharacter().sendMessage(MessageType.POPUP, "Please enter a number between 1 and "+(inInventory - alreadyTrading));
+				client.sendReallowActions();
+				return;
+			}
+			
+			item = item.copyOf(amount);
+			
 			ti.putItem(item, target, client.getCharacter());
 		}else if(action == Action.MAINTENANCE_OFF){
 			

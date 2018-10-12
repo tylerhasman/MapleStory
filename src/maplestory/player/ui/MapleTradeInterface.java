@@ -225,7 +225,20 @@ public class MapleTradeInterface extends MapleUserInterface implements TradeInte
 		chr.getClient().sendPacket(PacketFactory.tradeInvite(other.getName(), other.getId()));
 	}
 	
-	
+
+	@Override
+	public int countTradedItem(int itemId, MapleCharacter chr) {
+		if(!getPlayers().contains(chr)){
+			throw new IllegalArgumentException(chr.getName()+" is not part of the trade.");
+		}
+		int amount = 0;
+		for(Item item : getOffer(chr).items){
+			if(item != null && item.getItemId() == itemId){
+				amount += item.getAmount();
+			}
+		}
+		return amount;
+	}
 
 	static class TradeOffer {
 		
@@ -240,5 +253,7 @@ public class MapleTradeInterface extends MapleUserInterface implements TradeInte
 		}
 		
 	}
+
+
 
 }

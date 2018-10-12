@@ -12,4 +12,6 @@ public interface TradeInterface extends UserInterface {
 	
 	public void offerMesos(int amount, MapleCharacter chr);
 	
+	public int countTradedItem(int itemId, MapleCharacter chr);
+	
 }

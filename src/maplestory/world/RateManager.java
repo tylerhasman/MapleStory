@@ -21,29 +21,10 @@ public class RateManager {
 	private Rates globalRates;
 	
 	private Map<Integer, Rates> byCharacterRates;
-	private Map<Integer, Map<String, RateModifier>> modifiers;
 	
 	public RateManager(Rates globalRates) {
 		this.globalRates = globalRates;
-		modifiers = new HashMap<>();
 		byCharacterRates = new HashMap<>();
-	}
-	
-	public void addModifier(MapleCharacter chr, String modId, RateModifier mod) {
-		if(!modifiers.containsKey(chr.getId())) {
-			modifiers.put(chr.getId(), new HashMap<>());
-		}
-		modifiers.get(chr.getId()).put(modId, mod);
-	}
-	
-	public void removeModifier(MapleCharacter chr, String modId) {
-		if(modifiers.containsKey(chr.getId())) {
-			modifiers.get(chr.getId()).remove(modId);
-		}
-	}
-	
-	public boolean hasModifier(MapleCharacter chr, String modId) {
-		return modifiers.get(chr.getId()).containsKey(modId);
 	}
 	
 	public void setGlobalRate(RateType type, float val) {
@@ -70,15 +51,6 @@ public class RateManager {
 		return getCharacterRate(chr, type, true);
 	}
 	
-	public float modify(MapleCharacter chr, RateType type, float val) {
-		if(modifiers.containsKey(chr.getId())) {
-			for(RateModifier mod : modifiers.get(chr.getId()).values()) {
-				val = mod.modify(type, val);
-			}
-		}
-		return val;
-	}
-	
 	public float getCharacterRate(MapleCharacter chr, RateType type, boolean applyModifiers) {
 		float rate;
 		
@@ -88,14 +60,6 @@ public class RateManager {
 			rate = getGlobalRate(type);
 		}
 	
-		if(applyModifiers) {
-			if(modifiers.containsKey(chr.getId())) {
-				for(RateModifier mod : modifiers.get(chr.getId()).values()) {
-					rate = mod.modify(type, rate);
-				}
-			}	
-		}
-		
 		return rate;
 	}
 	

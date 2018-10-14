@@ -85,6 +85,10 @@ public class MapleScriptInstance {
 		function("onUnEquip", chr, item);
 	}
 
+	public int giveExp(MapleCharacter mapleCharacter, int exp) throws NoSuchMethodException, ScriptException {
+		return (int) function("onGiveExp", mapleCharacter, exp);
+	}
+
 /*	public void onUserEnter(MapleCharacter mapleCharacter) throws NoSuchMethodException, ScriptException {
 		function("onUserEnter", mapleCharacter);
 	}*/

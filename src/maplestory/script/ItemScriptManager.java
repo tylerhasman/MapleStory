@@ -7,6 +7,7 @@ import javax.script.SimpleBindings;
 
 import maplestory.inventory.item.EquipItem;
 import maplestory.inventory.item.EquipItemInfo;
+import maplestory.inventory.item.Item;
 import maplestory.map.MapleMapItem;
 import maplestory.player.MapleCharacter;
 
@@ -80,6 +81,28 @@ public class ItemScriptManager {
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
 		}
+	}
+
+	public static int onGiveExp(MapleCharacter mapleCharacter, int exp, Item item) {
+		String scriptName = "scripts/item/"+item.getItemId()+".js";
+		
+		MapleScript script = new MapleScript(scriptName);
+		
+		if(script.isDisabled()) {
+			return exp;
+		}
+		
+		try {
+			MapleScriptInstance inst = script.execute(new SimpleBindings());
+
+			return inst.giveExp(mapleCharacter, exp);
+		} catch (ScriptException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+		}
+		return exp;
 	}
 	
 }

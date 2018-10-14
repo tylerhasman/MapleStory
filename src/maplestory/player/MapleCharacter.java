@@ -76,6 +76,7 @@ import maplestory.player.ui.UserInterface;
 import maplestory.quest.MapleQuest;
 import maplestory.quest.MapleQuestInstance;
 import maplestory.quest.MapleQuestInstance.MapleQuestStatus;
+import maplestory.script.ItemScriptManager;
 import maplestory.script.MapleScript;
 import maplestory.script.MapleScriptInstance;
 import maplestory.script.NpcConversationManager;
@@ -2018,7 +2019,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		
 		int total = amount + partyBonus;
 		
-		int equip = (int) getWorld().getRates().modify(this, quest ? RateType.QUEST : RateType.EXP, total);
+		int equip = 0;
+		
+		for(Item item : getInventory(InventoryType.EQUIPPED).getItems().values()){
+			ItemScriptManager.onGiveExp(this, total, item);
+		}
+		
 		equip -= total;
 		
 		total += equip;

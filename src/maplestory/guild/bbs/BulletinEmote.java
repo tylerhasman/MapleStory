@@ -28,7 +28,7 @@ public enum BulletinEmote {
 				return emote;
 			}
 		}
-		return null;
+		return BulletinEmote.HAPPY;
 	}
 	
 }

@@ -42,15 +42,16 @@ public class GuildBBSHandler extends MaplePacketHandler {
 			int icon = buf.readInt();
 			
 			BulletinEmote emote = BulletinEmote.getById(icon);
-			
+
 			if(emote.isPremium()){
 				if(client.getCharacter().getItemQuantity(5290000 + icon - 0x64, false) == 0){
 					emote = BulletinEmote.SMILE;
 				}
 			}
 			
+			
 			if(edit){
-				bulletin.editPost(postId, title, text, icon, client.getCharacter());
+				bulletin.editPost(postId, title, text, emote, client.getCharacter());
 			}else if(!notice){
 				bulletin.addPost(title, text, emote, client.getCharacter());
 			}else{

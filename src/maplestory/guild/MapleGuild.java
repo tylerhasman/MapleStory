@@ -356,19 +356,17 @@ public class MapleGuild {
 			MapleDatabase.getInstance().execute("DELETE FROM `guild_bbs` WHERE `guild`=?", guildId);
 			MapleDatabase.getInstance().execute("DELETE FROM `guild_bbs_replies` WHERE `guild`=?", guildId);
 			
-			String scriptNotice = "INSERT INTO `guild_bbs` (`guild`,`post_id`,`title`,`content`,`poster`,`post_time`,`notice`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			String scriptNotice = "INSERT INTO `guild_bbs` (`guild`,`post_id`,`title`,`content`,`poster`,`post_time`,`emote`,`notice`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 			
-			BatchedScript script = new BatchedScript("INSERT INTO `guild_bbs` (`guild`,`post_id`,`title`,`content`,`poster`,`post_time`) VALUES (?, ?, ?, ?, ?, ?)");
+			BatchedScript script = new BatchedScript("INSERT INTO `guild_bbs` (`guild`,`post_id`,`title`,`content`,`poster`,`post_time`,`emote`) VALUES (?, ?, ?, ?, ?, ?, ?)");
 			BatchedScript replyScript = new BatchedScript("INSERT INTO `guild_bbs_replies` (`guild`, `post`, `author`, `post_time`, `content`) VALUES (?, ?, ?, ?, ?)");
 			
 			for(BulletinPost post : bulletin.getPosts()){
 				
-				script.addBatch(guildId, post.getPostId(), post.getSubject(), post.getContent(), post.getAuthor().getId(), post.getPostTime());
-				System.out.println("Post "+post.getPostId());
+				script.addBatch(guildId, post.getPostId(), post.getSubject(), post.getContent(), post.getAuthor().getId(), post.getPostTime(), post.getEmote().getId());
 				for(BulletinReply reply : post.getReplies()){
 					
 					replyScript.addBatch(guildId, post.getPostId(), reply.getAuthor(), reply.getPostTime(), reply.getContent());
-					System.out.println("Adding reply "+reply.getAuthor()+" "+reply.getReplyId()+" "+reply.getContent());
 					
 				}
 				
@@ -378,11 +376,10 @@ public class MapleGuild {
 			
 			if(bulletin.getNotice() != null){
 				BulletinPost notice = bulletin.getNotice();
-				MapleDatabase.getInstance().execute(scriptNotice, guildId, 0, notice.getSubject(), notice.getContent(), notice.getAuthor().getId(), notice.getPostTime(), true);
+				MapleDatabase.getInstance().execute(scriptNotice, guildId, 0, notice.getSubject(), notice.getContent(), notice.getAuthor().getId(), notice.getPostTime(), notice.getEmote().getId(), true);
 				for(BulletinReply reply : notice.getReplies()){
 					
 					replyScript.addBatch(guildId, notice.getPostId(), reply.getAuthor(), reply.getPostTime(), reply.getContent());
-					System.out.println("Adding reply "+reply.getAuthor()+" "+reply.getReplyId()+" "+reply.getContent());
 					
 				}
 			}

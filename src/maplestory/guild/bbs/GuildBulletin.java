@@ -22,7 +22,7 @@ public interface GuildBulletin {
 
 	public void setNotice(String title, String text, BulletinEmote emote, MapleCharacter character);
 
-	public void editPost(int postId, String title, String text, int icon, MapleCharacter character);
+	public void editPost(int postId, String title, String text, BulletinEmote emote, MapleCharacter character);
 	
 	
 }

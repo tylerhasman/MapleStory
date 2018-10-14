@@ -56,12 +56,12 @@ public class MapleGuildBulletin implements GuildBulletin {
 	}
 	
 	@Override
-	public void editPost(int postId, String title, String text, int icon, MapleCharacter character) {
+	public void editPost(int postId, String title, String text, BulletinEmote emote, MapleCharacter character) {
 		BulletinPost old = getPost(postId);
 		
 		if(old != null){
 			
-			MapleBulletinPost newPost = new MapleBulletinPost(character.getId(), old.getPostId(), old.getPostTime(), text, title, null);
+			MapleBulletinPost newPost = new MapleBulletinPost(character.getId(), old.getPostId(), old.getPostTime(), text, title, emote, null);
 			
 			posts.put(old.getPostId(), newPost);
 			
@@ -79,14 +79,14 @@ public class MapleGuildBulletin implements GuildBulletin {
 	
 	@Override
 	public void addPost(String title, String text, BulletinEmote emote, MapleCharacter poster) {
-		MapleBulletinPost post = new MapleBulletinPost(poster.getId(), nextPost++, System.currentTimeMillis(), text, title, null);
+		MapleBulletinPost post = new MapleBulletinPost(poster.getId(), nextPost++, System.currentTimeMillis(), text, title, emote, null);
 		
 		posts.put(post.postId, post);
 	}
 	
 	@Override
 	public void setNotice(String title, String text, BulletinEmote emote, MapleCharacter poster) {
-		notice = new MapleBulletinPost(poster.getId(), nextPost++, System.currentTimeMillis(), text, title, null);
+		notice = new MapleBulletinPost(poster.getId(), nextPost++, System.currentTimeMillis(), text, title, emote, null);
 	}
 	
 	@AllArgsConstructor(access=AccessLevel.PROTECTED)
@@ -113,6 +113,8 @@ public class MapleGuildBulletin implements GuildBulletin {
 		private long postTime;
 		
 		private String content, subject;
+
+		private BulletinEmote emote;
 		
 		private List<BulletinReply> replies;
 		
@@ -143,7 +145,7 @@ public class MapleGuildBulletin implements GuildBulletin {
 
 		@Override
 		public BulletinEmote getEmote() {
-			return BulletinEmote.SMILE;
+			return emote;
 		}
 
 		@Override
@@ -194,7 +196,7 @@ public class MapleGuildBulletin implements GuildBulletin {
 		
 		bulletin.posts = new HashMap<>();
 		
-		List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `post_id`,`title`,`content`,`poster`,`post_time`,`notice` FROM `guild_bbs` WHERE `guild`=?", guild.getGuildId());
+		List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `post_id`,`title`,`content`,`poster`,`post_time`,`notice`,`emote` FROM `guild_bbs` WHERE `guild`=?", guild.getGuildId());
 		
 		for(QueryResult result : results){
 			
@@ -203,7 +205,8 @@ public class MapleGuildBulletin implements GuildBulletin {
 			String content = result.get("content");
 			int poster = result.get("poster");
 			long post_time = result.get("post_time");
-			boolean notice = result.get("notice");
+			int notice = result.get("notice");
+			int emote = result.get("emote");
 			
 			List<QueryResult> replyResults = MapleDatabase.getInstance().query("SELECT  `author`, `post_time`, `content` FROM `guild_bbs_replies` WHERE `post`=?", postId);
 			
@@ -222,9 +225,10 @@ public class MapleGuildBulletin implements GuildBulletin {
 				}
 			}
 			
-			MapleBulletinPost post = new MapleBulletinPost(poster, postId, post_time, content, title, null);
+			MapleBulletinPost post = new MapleBulletinPost(poster, postId, post_time, content, title, BulletinEmote.getById(emote), replies);
 			
-			if(notice){
+			
+			if(notice == 1){
 				bulletin.notice = post;
 			}else{
 				bulletin.posts.put(postId, post);

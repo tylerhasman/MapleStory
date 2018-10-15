@@ -8,7 +8,6 @@ import maplestory.server.net.MaplePacketHandler;
 
 public class CharSelectHandler extends MaplePacketHandler {
 
-	//TODO: This isn't save since packet editors could use it to avoid pics
 	@Override
 	public void handle(ByteBuf buf, MapleClient client) throws Exception {
 		

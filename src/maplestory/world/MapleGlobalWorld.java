@@ -45,6 +45,11 @@ public class MapleGlobalWorld implements World {
 	}
 	
 	@Override
+	public MapleChannel findAvailableChannel() {
+		return channel;
+	}
+	
+	@Override
 	public void broadcastMessage(MessageType type, String msg) {
 		channel.broadcastMessage(type, msg);
 	}

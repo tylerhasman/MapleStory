@@ -24,6 +24,7 @@ public class MapleCharacterSnapshot {
 	private final int level;
 	private final int channel, world;
 	private final int mapId;
+	private final int account;
 	
 	MapleCharacterSnapshot(MapleCharacter chr){
 		name = chr.getName();
@@ -33,9 +34,10 @@ public class MapleCharacterSnapshot {
 		channel = chr.getClient().getChannelId();
 		world = chr.getClient().getWorldId();
 		mapId = chr.getMapId();
+		account = chr.getClient().getId();
 	}
 	
-	private MapleCharacterSnapshot(String name, int job, int id, int level, int world, int mapId) {
+	private MapleCharacterSnapshot(String name, int job, int id, int level, int world, int mapId, int accountId) {
 		this.name = name;
 		this.job = job;
 		this.id = id;
@@ -43,6 +45,7 @@ public class MapleCharacterSnapshot {
 		this.world = world;
 		this.mapId = mapId;
 		channel = -1;
+		account = accountId;
 	}
 	
 	/**
@@ -56,6 +59,7 @@ public class MapleCharacterSnapshot {
 		channel = 0;
 		world = 0;
 		mapId = 0;
+		account = 0;
 	}
 
 	/**
@@ -91,8 +95,9 @@ public class MapleCharacterSnapshot {
 		int level = result.get("level");
 		int map = result.get("map");
 		int world = result.get("world");
+		int account = result.get("owner");
 		
-		MapleCharacterSnapshot snapshot = new MapleCharacterSnapshot(name, job, characterId, level, world, map);
+		MapleCharacterSnapshot snapshot = new MapleCharacterSnapshot(name, job, characterId, level, world, map, account);
 		
 		return snapshot;
 	}
@@ -101,10 +106,10 @@ public class MapleCharacterSnapshot {
 		MapleCharacterSnapshot snapshot = null;
 		
 		try {
-			List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `name`,`job`,`level`,`map`,`world` FROM `characters` WHERE `id`=?", characterId);
+			List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `name`,`job`,`level`,`map`,`world`,`owner` FROM `characters` WHERE `id`=?", characterId);
 		
 			if(results.size() == 0){
-				return new MapleCharacterSnapshot("[Unknown]", -1, -1, -1, -1, -1);
+				return new MapleCharacterSnapshot("[Unknown]", -1, -1, -1, -1, -1, -1);
 			}
 			
 			QueryResult result = results.get(0);
@@ -119,7 +124,7 @@ public class MapleCharacterSnapshot {
 	
 	public static List<MapleCharacterSnapshot> getCharacters(World world) throws SQLException{
 		
-		List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `id`,`name`,`job`,`level`,`map`,`world` FROM `characters` WHERE `world`=?", world.getId());
+		List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `id`,`name`,`job`,`level`,`map`,`world`,`owner` FROM `characters` WHERE `world`=?", world.getId());
 		
 		
 		List<MapleCharacterSnapshot> snapshots = new ArrayList<>(results.size());
@@ -148,7 +153,7 @@ public class MapleCharacterSnapshot {
 			List<QueryResult> results = MapleDatabase.getInstance().query("SELECT `id`,`name`,`job`,`level`,`map`,`world` FROM `characters` WHERE `name`=?", name);
 		
 			if(results.size() == 0){
-				return new MapleCharacterSnapshot("[Unknown]", -1, -1, -1, -1, -1);
+				return new MapleCharacterSnapshot("[Unknown]", -1, -1, -1, -1, -1, -1);
 			}
 			
 			QueryResult result = results.get(0);

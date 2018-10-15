@@ -880,8 +880,9 @@ public class PacketFactory {
         mplew.writeLong(0);//isquietban time
         mplew.writeLong(0); //creation time
         mplew.writeInt(0);
-        mplew.writeShort(2);//PIN
-
+        mplew.write(2);//PIN
+        mplew.writeBool(c.isPicCreated());
+        
         return mplew.getPacket();
     }
     

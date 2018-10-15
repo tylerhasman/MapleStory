@@ -48,6 +48,7 @@ import maplestory.server.MapleServer;
 import maplestory.server.MapleStory;
 import maplestory.server.net.MapleConnectionHandler;
 import maplestory.server.net.PacketFactory;
+import maplestory.util.Randomizer;
 import tools.TimerManager;
 import tools.TimerManager.MapleTask;
 
@@ -150,6 +151,11 @@ public class MapleWorld implements World {
 			}
 			
 		}
+	}
+	
+	@Override
+	public MapleChannel findAvailableChannel() {
+		return channels.get(Randomizer.rand(0, channels.size() - 1));
 	}
 	
 	public Channel getVirtualChannelSocket() {

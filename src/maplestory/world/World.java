@@ -76,6 +76,8 @@ public interface World {
 	public void unregisterMerchant(MapleHiredMerchant merchant);
 	
 	public void unregisterParty(MapleParty party);
+
+	public MapleChannel findAvailableChannel();
 	
 	
 }

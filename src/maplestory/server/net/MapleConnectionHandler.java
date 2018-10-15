@@ -58,6 +58,8 @@ public class MapleConnectionHandler extends ChannelInboundHandlerAdapter {
 			handlers.put(RecvOpcode.DELETE_CHAR.getValue(), new DeleteCharHandler());
 			handlers.put(RecvOpcode.CLIENT_START_ERROR.getValue(), new ClientStartErrorHandler());
 			handlers.put(RecvOpcode.VIEW_ALL_CHAR.getValue(), new ViewAllCharactersHandler());
+			handlers.put(RecvOpcode.VIEW_ALL_PIC_REGISTER.getValue(), new ViewAllPicRegisterHandler());
+			handlers.put(RecvOpcode.VIEW_ALL_WITH_PIC.getValue(), new ViewAllSelectCharacterWithPicHandler());
 		}else{
 			handlers.put(RecvOpcode.PLAYER_LOGGEDIN.getValue(), new PlayerLoggedInHandler());
 			handlers.put(RecvOpcode.MOVE_PLAYER.getValue(), new MovePlayerHandler());

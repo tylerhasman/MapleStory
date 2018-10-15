@@ -80,6 +80,8 @@ public class MapleClient {
 	
 	private long pingTracker = 0;
 	
+	private int picAttempts;
+	
 	public MapleClient(Channel connection, Logger logger, MapleAESOFB out, MapleAESOFB in){
 		this.connection = connection;
 		this.logger = logger;
@@ -87,6 +89,7 @@ public class MapleClient {
 		cryptRecv = in;
 		id = -1;
 		gmLevel = 0;
+		picAttempts = 0;
 	}
 	
 	public void setLoginMessage(String loginMessage) {
@@ -327,6 +330,22 @@ public class MapleClient {
 		if(pic.equals(pic2)){
 			return true;
 		}
+		
+		int maxAttempts = MapleStory.getServerConfig().getMaxWrongPicAttempts();
+
+		picAttempts++;
+		
+		if(maxAttempts > -1){
+			
+			if(picAttempts > maxAttempts){
+				
+				closeConnection();
+				logger.warn("Client was disconnected for guessing a wrong pic "+maxAttempts+" time(s)");
+				
+			}
+			
+		}
+		
 		return false;
 	}
 

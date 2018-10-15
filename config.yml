@@ -16,6 +16,8 @@ server:
     cache_scripts: false
     auto_register: true
     virtual_channels: true
+    #Set to -1 for unlimited attempts
+    max_wrong_pic_attempts: 5
 cross_world_maps: # These maps will be cross world. When a player joins it they will be able to see other players from other worlds
     - 910000000
 game:

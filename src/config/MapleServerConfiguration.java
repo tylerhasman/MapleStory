@@ -68,6 +68,8 @@ public class MapleServerConfiguration {
 	
 	private List<String> events;
 	
+	private int maxWrongPicAttempts;
+	
 	@Getter
 	private int startingMapAran, startingMapBeginner, startingMapCygnus;
 	
@@ -90,6 +92,7 @@ public class MapleServerConfiguration {
 		picEnabled = config.getBoolean("server.pic_enabled");
 		characterSlots = config.getInt("server.character_slots");
 		channelServerIp = config.getString("server.channel_server_ip");
+		maxWrongPicAttempts = config.getInt("server.max_wrong_pic_attempts");
 		
 		virtualChannelsEnabled = config.getBoolean("server.virtual_channels");
 		

@@ -70,7 +70,7 @@ public interface Inventory {
 
 	public Item firstOf(int itemId);
 
-	public int findByCashId(int cashUniqueId);
+	public int findByCashId(long cashUniqueId);
 
 	public void transferToCashInventory(int targetItem, CashShopInventory cashInventory);
 

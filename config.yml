@@ -1,8 +1,8 @@
 server_version: 83
 database:
-    jdbc: jdbc:mysql://127.0.0.1/maplestory?autoReconnect=true&useSSL=false
-    user: root
-    pass: ''
+    jdbc: jdbc:mysql://127.0.0.1:3306/maplestory?autoReconnect=true&useSSL=true
+    user: maple
+    pass: 'MapleStory!@#456'
     verbose: false
 server:
     worlds: 2
@@ -40,6 +40,7 @@ game:
         meso: 10
         quest: 10
         drop: 5
+    event_message: "Welcome #b$username$#k to $worldname$\r\n\r\n#kThe time is now $time$\r\n#rHappy Mapling!"
 events:
    - ellinia_orbis_boat
 world:
@@ -56,6 +57,7 @@ world:
         name: Bera
         channels: 2
         flag: none
+        event_message: "This message is custom to Bera!"
     2:
         name: Windia
         channels: 2

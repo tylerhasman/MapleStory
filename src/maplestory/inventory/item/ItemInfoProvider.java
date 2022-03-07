@@ -728,7 +728,7 @@ public class ItemInfoProvider {
 		
 		List<GachaponItem> possible = new ArrayList<>();
 		
-		possible.addAll(getInstance().gachaponItems.get("GLOBAL"));
+		possible.addAll(getInstance().gachaponItems.getOrDefault("GLOBAL", Collections.emptyList()));
 		possible.addAll(getInstance().gachaponItems.getOrDefault(area, Collections.emptyList()));
 		
 		int randomValue = Randomizer.nextInt(100);

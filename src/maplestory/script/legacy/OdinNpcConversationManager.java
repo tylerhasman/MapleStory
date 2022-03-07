@@ -41,7 +41,6 @@ import maplestory.shop.MapleShop;
 import maplestory.skill.MapleStatEffect;
 import maplestory.skill.Skill;
 import maplestory.skill.SkillFactory;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * The purpose of this class is to provide backwards compatibility to odin-ms
@@ -362,7 +361,7 @@ public class OdinNpcConversationManager extends NpcConversationManager {
 	}
 
 	public Object getEventInstanceManager() {
-		throw new NotImplementedException();
+		throw new RuntimeException("Not yet implemented");
 	}
 
 	public Inventory getInventory(InventoryType type) {

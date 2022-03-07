@@ -336,6 +336,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 	}
 	
 	private void dropItems(MapleCharacter chr){
+		if(chr == null)
+			return;
+
 		List<MonsterDrop> possible = MonsterDropManager.getInstance().getPossibleDrops(getId());
 		
 		float dropRate = chr.getRate(RateType.DROP);

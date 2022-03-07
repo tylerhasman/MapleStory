@@ -110,7 +110,7 @@ public class MapleInventory implements Inventory {
 	}
 	
 	@Override
-	public int findByCashId(int cashUniqueId) {
+	public int findByCashId(long cashUniqueId) {
 		operationLock.readLock().lock();
 		try{
 			for(Entry<Integer, Item> item : items.entrySet()){

@@ -14,7 +14,6 @@ import database.BatchedScript;
 import database.ExecuteResult;
 import database.MapleDatabase;
 import database.QueryResult;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import maplestory.channel.MapleChannel;
@@ -89,7 +88,7 @@ public class MapleGuild {
 	}
 	
 	public void increaseCapacity(){
-		throw new NotImplementedException();
+		throw new RuntimeException("Not yet implemented");
 	}
 	
 	public void changeNotice(String notice){

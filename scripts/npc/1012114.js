@@ -39,11 +39,13 @@ function clearMap(map){
 
 function complete(){
 	cm.giveItem(4001101, -10);
-	for each(member in cm.getCharacter().getParty()){
-		snapshot = member.getShapshot();
-		if(snapshot.isOnline() && snapshot.getMapId() == PQMapId){
-			snapshot.getLiveCharacter().giveExp(completionExpReward);
-			snapshot.getLiveCharacter().changeMap(exitMapSuccess);
+	for each(member in cm.getCharacter().getParty().getMembers()){
+		snapshot = member.getSnapshot();
+		if(snapshot.isOnline()){
+		    if(snapshot.getLiveCharacter().get().getMapId() == PQMapId){
+			    snapshot.getLiveCharacter().get().giveExp(completionExpReward);
+			    snapshot.getLiveCharacter().get().changeMap(exitMapSuccess);
+		    }
 		}
 	}
 	

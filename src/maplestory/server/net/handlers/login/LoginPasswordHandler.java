@@ -26,15 +26,22 @@ public class LoginPasswordHandler extends MaplePacketHandler {
 			if(result == 0){
 				if(client.getLoginStatus() == LoginStatus.IN_GAME){
 					
+					boolean noCharsFound = true;
+					
 					for(World world : MapleServer.getWorlds()){
 						MapleCharacter chr = world.getPlayerStorage().getByAccountId(client.getId());
-						if(chr == null){
-							client.setLoggedInStatus(LoginStatus.OFFLINE);
-						}else if(chr.getClient() == null){
+						if(chr == null)
+							continue;
+						noCharsFound = false;
+						if(chr.getClient() == null){
 							client.setLoggedInStatus(LoginStatus.OFFLINE);
 						}else if(!chr.getClient().getConnection().isOpen()){
 							client.setLoggedInStatus(LoginStatus.OFFLINE);
 						}
+					}
+					
+					if(noCharsFound){
+						client.setLoggedInStatus(LoginStatus.OFFLINE);
 					}
 					
 				}

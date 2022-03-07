@@ -23,7 +23,7 @@ function action(mode, type, selection) {
             status--; 
             if (status == 0) { 
             if (cm.getLevel() < 25) { 
-                cm.sendDimensionalMirror("#-1# There is no place for you to transport to from here."); 
+                cm.sendDimensionalMirror("#-1# No destinations available"); 
                 cm.dispose(); 
             } else { 
                 var selStr = ""; 

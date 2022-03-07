@@ -22,7 +22,6 @@ import maplestory.server.MapleServer;
 import maplestory.server.MapleStory;
 import maplestory.server.net.PacketFactory;
 import maplestory.world.World;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import tools.TimerManager;
 
 public class MapleCrossWorldChannel implements MapleChannel {
@@ -174,9 +173,8 @@ public class MapleCrossWorldChannel implements MapleChannel {
 	
 	@Override
 	public World getWorld() {
-		throw new NotImplementedException();
+		return MapleServer.getWorld(MapleServer.CROSS_WORLD_ID);
 	}
-	
 
 	@Override
 	public Collection<MapleEvent> getEvents() {

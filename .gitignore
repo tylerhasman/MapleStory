@@ -5,3 +5,5 @@ bin/simplelogger.properties
 /bin/
 /wz/
 hotswap-agent-1.1.0-SNAPSHOT.jar
+.idea/*
+*.iml

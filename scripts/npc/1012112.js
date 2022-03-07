@@ -87,7 +87,7 @@ function action(mode, type, selection){
 					cm.dispose();
 				}
 				
-				partyMap = cm.getClient().getChannel().getMapFactory().getMap(PQMapId);
+				partyMap = cm.getClient().getChannel().getMap(PQMapId);
 				
 				if(partyMap.getPlayers().size() > 0){
                     cm.sendOk("Someone is already attempting the PQ. Please wait for them to finish, or find another channel.");
@@ -99,7 +99,7 @@ function action(mode, type, selection){
 				
 				for each(member in party.getMembers()){
 					if(member.getSnapshot().isOnline() && member.getSnapshot().getMapId() == henesysParkId){
-						member.getSnapshot().getLiveCharacter().changeMap(PQMapId);
+						member.getSnapshot().getLiveCharacter().get().changeMap(PQMapId);
 					}
 				}
 				

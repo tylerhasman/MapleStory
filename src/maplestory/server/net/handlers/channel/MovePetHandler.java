@@ -5,18 +5,20 @@ import maplestory.client.MapleClient;
 import maplestory.life.movement.MovementPath;
 import maplestory.player.MapleCharacter;
 import maplestory.server.net.PacketFactory;
+import maplestory.util.Hex;
 
 public class MovePetHandler extends MovementPacketHandler {
 
 	@Override
 	public void handle(ByteBuf buf, MapleClient client) throws Exception {
-		int petId = buf.readInt();
+		
+		int uniqueId = buf.readInt();
 		buf.skipBytes(8);
 		
 		MovementPath moves = parseMovement(buf);
 		
 		MapleCharacter chr = client.getCharacter();
-		int slot = chr.getPetSlot(petId);
+		int slot = chr.getPetSlot(uniqueId);
 		
 		if(slot == -1){
 			return;

@@ -1583,7 +1583,7 @@ public class PacketFactory {
     }
     
     public static byte[] getPickupDroppedItemPacket(MapleMapItem item, MapleCharacter who, MaplePetInstance pet){
-    	return getRemoveItemPacket(item, 5, who.getId(), true, pet.getOwner().getPetSlot(pet.getSource().getItemId()));
+    	return getRemoveItemPacket(item, 5, who.getId(), true, pet.getOwner().getPetSlot(pet.getSource().getUniqueId()));
     }
     
     public static byte[] getShowInventoryFull() {
@@ -3114,10 +3114,11 @@ public class PacketFactory {
 		out.writeInt(0);
 		out.writeInt(storage.getMesos());
 		out.writeShort(0);
-		out.write(storage.sumOfItems());
-		for(Item item : storage.getItems()){
+		//out.write(storage.sumOfItems());
+		out.write(0);
+		/*for(Item item : storage.getItems()){
 			out.writeItemInfo(item);
-		}
+		}*/
 		out.writeShort(0);
 		out.write(0);
 		
@@ -4192,6 +4193,35 @@ public class PacketFactory {
 		MaplePacketWriter out = new MaplePacketWriter();
 		out.writeShort(SendOpcode.BOAT_STATE.getValue());
 		out.writeShort(docked ? 1 : 2);
+		
+		return out.getPacket();
+	}
+
+	public static byte[] showPetLevelUp(MapleCharacter chr, int petSlot, boolean ownPet) {
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(ownPet ? SendOpcode.FIELD_UPDATE.getValue() : SendOpcode.SHOW_FOREIGN_EFFECT.getValue());
+		if(!ownPet)
+			out.writeInt(chr.getId());
+		out.write(4);
+		out.write(0);
+		out.write(petSlot);
+		
+		return out.getPacket();
+	}
+	
+	public static byte[] petCommandResponse(int cid, int petSlot, int animation, boolean success){
+		MaplePacketWriter out = new MaplePacketWriter();
+		out.writeShort(SendOpcode.PET_COMMAND.getValue());
+
+		out.writeInt(cid);
+		out.write(petSlot);
+		out.write((animation == 1 || !success) ? 1 : 0);
+		out.write(animation);
+		if(animation == 1)
+			out.write(0);
+		else
+			out.writeShort(success ? 1 : 0);
+		
 		
 		return out.getPacket();
 	}

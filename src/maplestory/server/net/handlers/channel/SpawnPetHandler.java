@@ -3,6 +3,7 @@ package maplestory.server.net.handlers.channel;
 import io.netty.buffer.ByteBuf;
 import maplestory.client.MapleClient;
 import maplestory.inventory.InventoryType;
+import maplestory.inventory.item.CashItem;
 import maplestory.inventory.item.Item;
 import maplestory.inventory.item.PetItem;
 import maplestory.player.MapleCharacter;
@@ -16,7 +17,7 @@ public class SpawnPetHandler extends MaplePacketHandler {
 		
 		short slot = buf.readShort();
 		
-		Item item = client.getCharacter().getInventory(InventoryType.CASH).getItem(slot);
+		CashItem item = (CashItem) client.getCharacter().getInventory(InventoryType.CASH).getItem(slot);
 		
 		if(item == null){
 			client.sendReallowActions();
@@ -31,7 +32,9 @@ public class SpawnPetHandler extends MaplePacketHandler {
 		
 		MapleCharacter chr = client.getCharacter();
 		
-		if(chr.isPetSpawned(item.getItemId())){
+		System.out.println(chr.isPetSpawned(item.getUniqueId())+" "+item);
+		
+		if(chr.isPetSpawned(item.getUniqueId())){
 			chr.despawnPet((PetItem) item);
 			client.sendReallowActions();
 		}else{

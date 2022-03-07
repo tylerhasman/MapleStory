@@ -137,6 +137,7 @@ public class MapleConnectionHandler extends ChannelInboundHandlerAdapter {
 			handlers.put(RecvOpcode.PLAYER_INTERACTION.getValue(), new PlayerInteractionHandler());
 			handlers.put(RecvOpcode.HIRED_MERCHANT_REQUEST.getValue(), new HiredMerchantRequestHandler());
 			handlers.put(RecvOpcode.BUDDYLIST_MODIFY.getValue(), new BuddyListModifyHandler());
+			handlers.put(RecvOpcode.PET_FOOD.getValue(), new PetFoodHandler());
 		}
 	}
 	

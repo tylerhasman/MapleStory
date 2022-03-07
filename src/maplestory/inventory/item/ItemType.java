@@ -215,6 +215,12 @@ public enum ItemType {
 		public boolean isThis(int itemId) {
 			return itemId == 5370000;
 		}
+	}, 
+	PET_FOOD {
+		@Override
+		public boolean isThis(int itemId) {
+			return (itemId / 10000) == 212;
+		}
 	}
 	
 	

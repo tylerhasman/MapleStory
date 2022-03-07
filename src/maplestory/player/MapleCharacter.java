@@ -3197,12 +3197,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		return true;
 	}
 
-	public boolean isPetSpawned(int itemId) {
-		return getPetSlot(itemId) != -1;
+	public boolean isPetSpawned(long uniqueId) {
+		return getPetSlot(uniqueId) != -1;
 	}
 
 	public boolean spawnPet(PetItem item) {
-		if(isPetSpawned(item.getItemId())){
+		if(isPetSpawned(item.getUniqueId())){
 			return false;
 		}
 		int slot = getNextPetSlot();
@@ -3244,10 +3244,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 		return -1;
 	}
 
-	public int getPetSlot(int petItemId){
+	public int getPetSlot(long uniqueId){
 		for(int i = 0; i < pets.length;i++){
 			if(pets[i] != null){
-				if(pets[i].getSource().getItemId() == petItemId){
+				if(pets[i].getSource().getUniqueId() == uniqueId){
 					return i;
 				}
 			}
@@ -3280,10 +3280,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
 	}
 	
 	public boolean despawnPet(PetItem item) {
-		if(!isPetSpawned(item.getItemId())){
+		if(!isPetSpawned(item.getUniqueId())){
 			return false;
 		}
-		int slot = getPetSlot(item.getItemId());
+		int slot = getPetSlot(item.getUniqueId());
 		getMap().broadcastPacket(PacketFactory.destroyPet(this, pets[slot], slot, false));
 		item.setSummoned(false);
 		pets[slot] = null;

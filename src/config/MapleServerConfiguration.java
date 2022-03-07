@@ -69,6 +69,8 @@ public class MapleServerConfiguration {
 	private List<String> events;
 	
 	private int maxWrongPicAttempts;
+
+	private String eventMessage;
 	
 	@Getter
 	private int startingMapAran, startingMapBeginner, startingMapCygnus;
@@ -116,7 +118,9 @@ public class MapleServerConfiguration {
 		
 		autoSaveEnabled = config.getBoolean("game.auto_save.enabled");
 		autoSaveInterval = config.getLong("game.auto_save.interval");
-		
+
+		eventMessage = config.getString("game.event_message", "");
+
 		g_expRate = config.getInt("game.rates.exp");
 		g_mesoRate = config.getInt("game.rates.meso");
 		g_questExpRate = config.getInt("game.rates.quest");
@@ -132,13 +136,14 @@ public class MapleServerConfiguration {
 			
 			String name = config.getString("world."+i+".name");
 			int channels = config.getInt("world."+i+".channels");
+			String eventMessage = config.getString("world."+i+".event_message", "$global$");
 
 			int expRate = config.getInt("world."+i+".rates.exp", g_expRate);
 			int mesoRate = config.getInt("world."+i+".rates.meso", g_mesoRate);
 			int dropRate = config.getInt("world."+i+".rates.drop", g_dropRate);
 			int questRate = config.getInt("world."+i+".rates.quest", g_questExpRate);
 			
-			worldConfigurations.put(i, new WorldConfiguration(name, channels, 
+			worldConfigurations.put(i, new WorldConfiguration(name, eventMessage, channels,
 					new RateManager(Rates.builder()
 					.exp(expRate)
 					.meso(mesoRate)
@@ -162,7 +167,7 @@ public class MapleServerConfiguration {
 		if(worldConfigurations.containsKey(id)){
 			return worldConfigurations.get(id);
 		}
-		return new WorldConfiguration("Unknown", 0, RateManager.STATIC_RATE_MANAGER);
+		return new WorldConfiguration("Unknown", "", 0, RateManager.STATIC_RATE_MANAGER);
 	}
 
 	@Getter
@@ -170,6 +175,7 @@ public class MapleServerConfiguration {
 	public static class WorldConfiguration {
 		
 		private final String name;
+		private final String eventMessage;
 		private final int channels;
 		private final RateManager rates;
 		

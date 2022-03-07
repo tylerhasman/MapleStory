@@ -278,20 +278,26 @@ public class MapleWorld implements World {
 	}
 
 	public String getEventMessage(MapleClient client) {
-		
+
+		String globalEventMessage = MapleStory.getServerConfig().getEventMessage();
+
+		MapleServerConfiguration.WorldConfiguration config = MapleStory.getServerConfig().getWorldConfiguration(id);
+
 		Calendar cal = Calendar.getInstance();
 		int hour = cal.get(Calendar.HOUR);
 		int minute = cal.get(Calendar.MINUTE);
 		String am_pm = cal.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM";
-		
-		StringBuilder buf = new StringBuilder();
-		buf.append("Welcome #b"+client.getUsername()+"\r\n\r\n");
-		buf.append("#kThe time is now "+hour+":"+String.format("%02d", minute)+" "+am_pm+"\r\n");
-		buf.append("There are "+MapleServer.getInstance().getOnlinePlayerCount()+" players online.\r\n");
 
-		buf.append("#rHappy Mapling");
+		String message = config.getEventMessage();
+
+		message = message
+				.replace("$global$", globalEventMessage)
+				.replace("$online$", String.valueOf(getPlayerCount()))
+				.replace("$username$", client.getUsername())
+				.replace("$worldname$", config.getName())
+				.replace("$time$", hour+":"+String.format("%02d", minute)+" "+am_pm);
 		
-		return buf.toString();
+		return message;
 	}
 	
 	public MapleGuild getGuild(int guildId){
